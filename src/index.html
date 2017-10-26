@@ -6,6 +6,9 @@
   </head>
   <body>
     <div id="app"></div>
+    <% if (htmlWebpackPlugin.options.env === 'production') { %>
+      <link href="https://cdn.bootcss.com/normalize/7.0.0/normalize.min.css" rel="stylesheet">
+    <% } %>
     <!-- built files will be auto injected -->
   </body>
 </html>
