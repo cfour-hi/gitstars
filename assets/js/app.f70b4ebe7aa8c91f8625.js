@@ -11329,14 +11329,18 @@ if (!_accessToken) {
     if (code) {
       window.localStorage.setItem('code', code);
 
-      __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token?code=' + code + '&client_id=' + clientId + '&client_secret=' + clientSecret).then(function (response) {
+      __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('https://github.com/login/oauth/access_token', {
+        code: code,
+        client_id: clientId,
+        client_secret: clientSecret
+      }).then(function (response) {
         console.log(response);
       });
 
       // axios.post('https://github.com/login/oauth/access_token', {
-      //   code,
-      //   client_id: clientId,
-      //   client_secret: clientSecret
+      // code,
+      // client_id: clientId,
+      // client_secret: clientSecret
       // }).then(({ access_token }) => {
       //   console.log(access_token)
       //   window.localStorage.setItem('access_token', access_token)
@@ -12306,4 +12310,4 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.b8adc9759eaae2d2caa4.js.map
+//# sourceMappingURL=app.f70b4ebe7aa8c91f8625.js.map
