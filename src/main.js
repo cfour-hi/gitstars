@@ -32,29 +32,39 @@ if (!_accessToken) {
     if (code) {
       window.localStorage.setItem('code', code)
 
-      axios.post('https://github.com/login/oauth/access_token', {
-        code,
-        client_id: clientId,
-        client_secret: clientSecret
-      }).then(({ access_token }) => {
-        console.log(access_token)
-        window.localStorage.setItem('access_token', access_token)
-      })
+      axios.post(`https://github.com/login/oauth/access_token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}`)
+        .then(response => {
+          console.log(response)
+        })
+
+      // axios.post('https://github.com/login/oauth/access_token', {
+      //   code,
+      //   client_id: clientId,
+      //   client_secret: clientSecret
+      // }).then(({ access_token }) => {
+      //   console.log(access_token)
+      //   window.localStorage.setItem('access_token', access_token)
+      // })
     } else {
       console.warn('没有 code')
     }
   } else {
     window.localStorage.setItem('code', _code)
 
-    axios.post('https://github.com/login/oauth/access_token', {
-      code: _code,
-      client_id: clientId,
-      client_secret: clientSecret
-    }).then(({ access_token }) => {
-      console.log(access_token)
-      window.localStorage.setItem('access_token', access_token)
-      window.accessToken = access_token // eslint-disable-line
+    axios.post(`https://github.com/login/oauth/access_token?code=${_code}&client_id=${clientId}&client_secret=${clientSecret}`)
+    .then(response => {
+      console.log(response)
     })
+
+    // axios.post('https://github.com/login/oauth/access_token', {
+    //   code: _code,
+    //   client_id: clientId,
+    //   client_secret: clientSecret
+    // }).then(({ access_token }) => {
+    //   console.log(access_token)
+    //   window.localStorage.setItem('access_token', access_token)
+    //   window.accessToken = access_token // eslint-disable-line
+    // })
   }
 } else {
   window.accessToken = _accessToken

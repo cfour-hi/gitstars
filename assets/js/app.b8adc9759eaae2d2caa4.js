@@ -11329,33 +11329,37 @@ if (!_accessToken) {
     if (code) {
       window.localStorage.setItem('code', code);
 
-      __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token', {
-        code: code,
-        client_id: clientId,
-        client_secret: clientSecret
-      }).then(function (_ref) {
-        var access_token = _ref.access_token;
-
-        console.log(access_token);
-        window.localStorage.setItem('access_token', access_token);
+      __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token?code=' + code + '&client_id=' + clientId + '&client_secret=' + clientSecret).then(function (response) {
+        console.log(response);
       });
+
+      // axios.post('https://github.com/login/oauth/access_token', {
+      //   code,
+      //   client_id: clientId,
+      //   client_secret: clientSecret
+      // }).then(({ access_token }) => {
+      //   console.log(access_token)
+      //   window.localStorage.setItem('access_token', access_token)
+      // })
     } else {
       console.warn('没有 code');
     }
   } else {
     window.localStorage.setItem('code', _code);
 
-    __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token', {
-      code: _code,
-      client_id: clientId,
-      client_secret: clientSecret
-    }).then(function (_ref2) {
-      var access_token = _ref2.access_token;
-
-      console.log(access_token);
-      window.localStorage.setItem('access_token', access_token);
-      window.accessToken = access_token; // eslint-disable-line
+    __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token?code=' + _code + '&client_id=' + clientId + '&client_secret=' + clientSecret).then(function (response) {
+      console.log(response);
     });
+
+    // axios.post('https://github.com/login/oauth/access_token', {
+    //   code: _code,
+    //   client_id: clientId,
+    //   client_secret: clientSecret
+    // }).then(({ access_token }) => {
+    //   console.log(access_token)
+    //   window.localStorage.setItem('access_token', access_token)
+    //   window.accessToken = access_token // eslint-disable-line
+    // })
   }
 } else {
   window.accessToken = _accessToken;
@@ -12302,4 +12306,4 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.85f3b5cc3f51d361568e.js.map
+//# sourceMappingURL=app.b8adc9759eaae2d2caa4.js.map
