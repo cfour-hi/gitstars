@@ -11290,9 +11290,12 @@ Vue$3.compile = compileToFunctions;
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__("MVSX");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__App__ = __webpack_require__("M93x");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util__ = __webpack_require__("rQBB");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__("yEoQ");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util__ = __webpack_require__("rQBB");
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+
 
 
 
@@ -11304,23 +11307,58 @@ if (false) {
   require('normalize.css');
 }
 
-var authState = window.localStorage.getItem('auth_state');
-if (!authState) {
-  authState = Date.now();
-  window.localStorage.setItem('auth_state', authState);
-  window.location.href = 'https://github.com/login/oauth/authorize?client_id=75cf00b02deb33e63424&state=' + authState;
-} else {
-  var _parseURLSearch = Object(__WEBPACK_IMPORTED_MODULE_2__util__["a" /* parseURLSearch */])(),
-      state = _parseURLSearch.state;
+var clientId = '75cf00b02deb33e63424';
+var clientSecret = '6fa564cbd46f6bdfa1fb81ddce5503dcbe4ab4c4';
+var _accessToken = window.localStorage.getItem('access_token');
 
-  console.log('authState" ' + authState);
-  console.log('state" ' + state);
+if (!_accessToken) {
+  var _code = window.localStorage.getItem('code');
+  if (!_code) {
+    var href = 'https://github.com/login/oauth/authorize';
 
-  if (authState === state) {
-    console.log('已授权并且 state 相等');
+    var _authState = window.localStorage.getItem('auth_state');
+    if (!_authState) {
+      _authState = Date.now();
+      window.localStorage.setItem('auth_state', _authState);
+      window.location.href = href + '?$client_id=' + clientId + '&state=' + _authState;
+    }
+
+    var _parseURLSearch = Object(__WEBPACK_IMPORTED_MODULE_3__util__["a" /* parseURLSearch */])(),
+        code = _parseURLSearch.code;
+
+    if (code) {
+      window.localStorage.setItem('code', code);
+
+      __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token', {
+        code: code,
+        client_id: clientId,
+        client_secret: clientSecret
+      }).then(function (_ref) {
+        var access_token = _ref.access_token;
+
+        console.log(access_token);
+        window.localStorage.setItem('access_token', access_token);
+      });
+    } else {
+      console.warn('没有 code');
+    }
   } else {
-    console.log('已授权但 state 不相等');
+    window.localStorage.setItem('code', _code);
+
+    __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post('https://github.com/login/oauth/access_token', {
+      code: _code,
+      client_id: clientId,
+      client_secret: clientSecret
+    }).then(function (_ref2) {
+      var access_token = _ref2.access_token;
+
+      console.log(access_token);
+      window.localStorage.setItem('access_token', access_token);
+      window.accessToken = access_token; // eslint-disable-line
+    });
   }
+} else {
+  window.accessToken = _accessToken;
 }
 
 /* eslint-disable no-new */
@@ -12075,7 +12113,11 @@ module.exports = function (key) {
 
 function parseURLSearch() {
   var search = {};
-  var kvs = window.location.search.slice(1).split('&');
+  var searchStr = window.location.search;
+
+  if (!searchStr.length) return search;
+
+  var kvs = searchStr.slice(1).split('&');
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -12260,4 +12302,4 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.4f8dd006847d83eeba34.js.map
+//# sourceMappingURL=app.bdce4c6c70e145fd7d0c.js.map

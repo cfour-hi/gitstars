@@ -44,7 +44,7 @@ if (!_accessToken) {
       console.warn('没有 code')
     }
   } else {
-    window.localStorage.setItem('code', code)
+    window.localStorage.setItem('code', _code)
 
     axios.post('https://github.com/login/oauth/access_token', {
       code: _code,
@@ -53,7 +53,7 @@ if (!_accessToken) {
     }).then(({ access_token }) => {
       console.log(access_token)
       window.localStorage.setItem('access_token', access_token)
-      window.accessToken = accessToken
+      window.accessToken = access_token // eslint-disable-line
     })
   }
 } else {
