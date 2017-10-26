@@ -11320,7 +11320,7 @@ if (!_accessToken) {
     if (!_authState) {
       _authState = Date.now();
       window.localStorage.setItem('auth_state', _authState);
-      window.location.href = href + '?$client_id=' + clientId + '&state=' + _authState;
+      window.location.href = href + '?client_id=' + clientId + '&state=' + _authState;
     }
 
     var _parseURLSearch = Object(__WEBPACK_IMPORTED_MODULE_3__util__["a" /* parseURLSearch */])(),
@@ -12302,4 +12302,4 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.bdce4c6c70e145fd7d0c.js.map
+//# sourceMappingURL=app.85f3b5cc3f51d361568e.js.map

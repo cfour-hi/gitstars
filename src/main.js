@@ -25,7 +25,7 @@ if (!_accessToken) {
     if (!_authState) {
       _authState = Date.now()
       window.localStorage.setItem('auth_state', _authState)
-      window.location.href = `${href}?$client_id=${clientId}&state=${_authState}`
+      window.location.href = `${href}?client_id=${clientId}&state=${_authState}`
     }
 
     const { code } = parseURLSearch()
