@@ -33,9 +33,11 @@ if (!_accessToken) {
       window.localStorage.setItem('code', code)
 
       axios.get(`https://github.com/login/oauth/access_token`, {
-        code,
-        client_id: clientId,
-        client_secret: clientSecret
+        params: {
+          code,
+          client_id: clientId,
+          client_secret: clientSecret
+        }
       }).then(response => {
         console.log(response)
       })

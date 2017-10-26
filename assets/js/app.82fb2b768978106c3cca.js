@@ -11330,9 +11330,11 @@ if (!_accessToken) {
       window.localStorage.setItem('code', code);
 
       __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('https://github.com/login/oauth/access_token', {
-        code: code,
-        client_id: clientId,
-        client_secret: clientSecret
+        params: {
+          code: code,
+          client_id: clientId,
+          client_secret: clientSecret
+        }
       }).then(function (response) {
         console.log(response);
       });
@@ -12310,4 +12312,4 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.f70b4ebe7aa8c91f8625.js.map
+//# sourceMappingURL=app.82fb2b768978106c3cca.js.map
