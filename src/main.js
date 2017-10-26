@@ -18,6 +18,9 @@ if (!authState) {
   window.location.href = 'https://github.com/login/oauth/authorize?client_id=75cf00b02deb33e63424&state=' + authState
 } else {
   const { state } = parseURLSearch()
+  console.log(`authState" ${authState}`)
+  console.log(`state" ${state}`)
+
   if (authState === state) {
     console.log('已授权并且 state 相等')
   } else {

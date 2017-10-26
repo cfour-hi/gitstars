@@ -11313,6 +11313,9 @@ if (!authState) {
   var _parseURLSearch = Object(__WEBPACK_IMPORTED_MODULE_2__util__["a" /* parseURLSearch */])(),
       state = _parseURLSearch.state;
 
+  console.log('authState" ' + authState);
+  console.log('state" ' + state);
+
   if (authState === state) {
     console.log('已授权并且 state 相等');
   } else {
@@ -12082,7 +12085,7 @@ function parseURLSearch() {
       var kv = _step.value;
 
       var skv = kv.split('=');
-      search[skv[0]] = decodeURIComponent(search[skv[1]]);
+      search[skv[0]] = decodeURIComponent(skv[1]);
     }
   } catch (err) {
     _didIteratorError = true;
@@ -12257,4 +12260,4 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.c872cb55aae47e4d65b7.js.map
+//# sourceMappingURL=app.4f8dd006847d83eeba34.js.map

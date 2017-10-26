@@ -3,7 +3,7 @@ export function parseURLSearch () {
   const kvs = window.location.search.slice(1).split('&')
   for (const kv of kvs) {
     const skv = kv.split('=')
-    search[skv[0]] = decodeURIComponent(search[skv[1]])
+    search[skv[0]] = decodeURIComponent(skv[1])
   }
   return search
 }
