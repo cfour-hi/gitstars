@@ -1,17 +1,39 @@
 <template>
   <div id="app">
     <layout-sidebar></layout-sidebar>
-    <layout-header></layout-header>
+    <layout-main :starred-repos="starredRepos"></layout-main>
   </div>
 </template>
 
 <script>
-import layoutHeader from './components/Header'
-import layoutSidebar from './components/Sidebar'
+import LayoutSidebar from './components/Sidebar'
+import LayoutMain from './components/Main'
+
+import { getStarredRepos } from './api'
 
 export default {
   name: 'app',
-  components: { layoutHeader, layoutSidebar }
+  components: { LayoutSidebar, LayoutMain },
+  data () {
+    return {
+      starredRepos: []
+    }
+  },
+  created () {
+    getStarredRepos().then(response => {
+      this.starredRepos = response
+    })
+  }
 }
 </script>
 
+<style scoped>
+#app {
+  display: flex;
+  height: 100%;
+}
+</style>
+
+<style>
+@import "app.css";
+</style>

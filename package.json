@@ -11,9 +11,11 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "axios": "^0.17.0",
-    "normalize.css": "^7.0.0",
-    "vue": "^2.5.2"
+    "axios": "0.17.0",
+    "font-awesome": "4.7.0",
+    "github-markdown-css": "2.9.0",
+    "normalize.css": "7.0.0",
+    "vue": "2.5.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -55,7 +57,7 @@
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "^2.5.2",
+    "vue-template-compiler": "2.5.2",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-middleware": "^1.12.0",

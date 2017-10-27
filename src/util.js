@@ -1,13 +1,14 @@
-export function parseURLSearch () {
+export function parseURLSearch (searchStr = window.location.search) {
   const search = {}
-  const searchStr = window.location.search
 
   if (!searchStr.length) return search
+  if (searchStr[0] === '?') searchStr = searchStr.slice(1)
 
-  const kvs = searchStr.slice(1).split('&')
+  const kvs = searchStr.split('&')
   for (const kv of kvs) {
     const skv = kv.split('=')
     search[skv[0]] = decodeURIComponent(skv[1])
   }
+
   return search
 }
