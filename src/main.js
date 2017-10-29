@@ -19,8 +19,11 @@ axios.interceptors.response.use(({ data }) => {
   return Promise.reject(err)
 })
 
-axios.get(`/${process.env.NODE_ENV === 'production' ? 'gitstars/' : ''}assets/config.json`).then(({ access, token }) => {
-  window.access_token = `${access}${token}`
+axios.get(`/${process.env.NODE_ENV === 'production' ? 'gitstars/' : ''}assets/config.json`).then(({ access, token, username }) => {
+  Object.assign(window, {
+    username,
+    access_token: `${access}${token}`
+  })
 
   /* eslint-disable no-new */
   new Vue({

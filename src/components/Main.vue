@@ -1,11 +1,17 @@
 <template>
   <main class="main">
-    <layout-header></layout-header>
+    <layout-header @changeSearchValue="handleChangeSearchValue"></layout-header>
     <div class="content-wrap">
-      <sub-sidebar :starred-repos="starredRepos" @toggleRepo="handleToggleRepo"></sub-sidebar>
+      <sub-sidebar :starred-repos="filteredRepos" :loaded-starred-repos="loadedStarredRepos" @toggleRepo="handleToggleRepo"></sub-sidebar>
       <div class="content">
-        <article v-if="repoReadme" v-html="repoReadme" class="markdown-body"></article>
-        <i v-else class="fa fa-5x fa-cloud" aria-hidden="true"></i>
+        <article v-show="repoReadme" v-html="repoReadme" class="markdown-body"></article>
+        <div v-show="!repoReadme" class="waiting vc-p">
+          <div class="readme">README.md</div>
+          <p class="loading">
+            <i v-if="loadingRepoReadme" class="fa fa-cog fa-spin fa-2x fa-fw"></i>
+            <span v-else>点击左侧 star 查看</span>
+          </p>
+        </div>
       </div>
     </div>
   </main>
@@ -24,28 +30,40 @@ export default {
     starredRepos: {
       type: Array,
       default: []
+    },
+    loadedStarredRepos: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
-      repoReadme: ''
+      repoReadme: '',
+      searchValue: '',
+      loadingRepoReadme: false
+    }
+  },
+  computed: {
+    filteredRepos () {
+      return this.starredRepos.filter(repo => (repo.owner.login.toLowerCase().includes(this.searchValue) || repo.name.toLowerCase().includes(this.searchValue)))
     }
   },
   methods: {
-    handleToggleRepo (repo) {
-      getRepoReadme(repo).then(({ content }) => {
-        const readme = decodeURIComponent(escape(window.atob(content)))
-        console.log(readme)
-        getRenderedReadme(readme).then(response => {
-          this.repoReadme = response
-        })
-      })
+    async handleToggleRepo (repo) {
+      this.loadingRepoReadme = true
+      this.repoReadme = ''
+      const { content } = await getRepoReadme(repo)
+      this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content))))
+      this.loadingRepoReadme = false
+    },
+    handleChangeSearchValue (searchValue) {
+      this.searchValue = searchValue.toLowerCase()
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .main {
   display: flex;
   flex-direction: column;
@@ -53,27 +71,43 @@ export default {
 }
 
 .content-wrap {
-  display: flex;
   flex: auto;
+  position: relative;
 }
 
 .content {
-  position: relative;
   overflow: auto;
-  flex: auto;
-  padding: 15px 0 30px;
-}
-
-.fa-cloud {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #e9e9e9;
+  left: 400px;
+  right: 0;
+  height: 100%;
 }
 
 .markdown-body {
-  width: calc(100% - 60px);
-  margin: 0 auto;
+  padding: 20px;
+  font-size: 14px;
+  color: #5a5a5a;
+}
+
+.waiting {
+  font-size: 14px;
+  text-align: center;
+  color: #d9d9d9;
+}
+
+.readme {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.loading {
+  height: 28px;
+}
+</style>
+
+<style>
+.markdown-body a:hover {
+  color: #0366d6;
+  text-decoration: none;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <layout-sidebar></layout-sidebar>
-    <layout-main :starred-repos="starredRepos"></layout-main>
+    <layout-sidebar :stared-repos-len="starredRepos.length"></layout-sidebar>
+    <layout-main :starred-repos="starredRepos" :loaded-starred-repos="loadedStarredRepos"></layout-main>
   </div>
 </template>
 
@@ -16,13 +16,20 @@ export default {
   components: { LayoutSidebar, LayoutMain },
   data () {
     return {
-      starredRepos: []
+      starredRepos: [],
+      loadedStarredRepos: false
     }
   },
   created () {
-    getStarredRepos().then(response => {
-      this.starredRepos = response
-    })
+    this._getStarredRepos()
+  },
+  methods: {
+    _getStarredRepos (page = 1) {
+      return getStarredRepos(page).then(response => {
+        this.starredRepos = this.starredRepos.concat(response)
+        response.length < 100 ? this.loadedStarredRepos = true : this._getStarredRepos(++page)
+      })
+    }
   }
 }
 </script>

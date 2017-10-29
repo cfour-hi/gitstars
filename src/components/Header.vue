@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <label class="search-label">
-      <input type="text" class="search-input" placeholder="仓库名">
+      <input v-model="searchValue" type="text" class="search-input" placeholder="开发者 | 仓库名" @input="handleChangeSearchValue">
       <i class="fa fa-search" aria-hidden="true"></i>
     </label>
   </header>
@@ -14,6 +14,16 @@ export default {
     label: {
       type: String,
       default: '所有标签'
+    }
+  },
+  data () {
+    return {
+      searchValue: ''
+    }
+  },
+  methods: {
+    handleChangeSearchValue () {
+      this.$emit('changeSearchValue', this.searchValue)
     }
   }
 }

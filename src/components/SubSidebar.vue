@@ -1,6 +1,6 @@
 <template>
   <aside class="sub-sidebar">
-    <ol class="repo-list">
+    <ol v-if="loadedStarredRepos" class="repo-list">
       <li v-for="repo in starredRepos" :key="repo.id" :class="{ active: repo.id === activeRepoId }" class="repo-item" @click="handleToggleRepo(repo)">
         <h3 class="repo-title">
           <a :href="repo.html_url" target="_blank">{{repo.owner.login}} / {{repo.name}}</a>
@@ -12,6 +12,10 @@
         </div>
       </li>
     </ol>
+    <div v-else class="loading vc-p">
+      <i class="fa fa-cog fa-spin fa-2x fa-fw"></i>
+      <p>正在获取 stars</p>
+    </div>
   </aside>
 </template>
 
@@ -22,6 +26,10 @@ export default {
     starredRepos: {
       type: Array,
       default: []
+    },
+    loadedStarredRepos: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -42,7 +50,9 @@ export default {
 <style scoped>
 .sub-sidebar {
   overflow: auto;
-  flex: 0 0 399px;
+  position: absolute;
+  width: 399px;
+  height: 100%;
   border-right: 1px solid #e9e9e9;
   background-color: #fbfbfb;
 }
@@ -78,7 +88,7 @@ export default {
 
 .repo-desc {
   margin: 10px 0;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.5;
   color: #5a5a5a;
 }
@@ -93,5 +103,11 @@ export default {
 
 .repo-footer .fa {
   margin-right: 5px;
+}
+
+.loading {
+  font-size: 14px;
+  text-align: center;
+  color: #d9d9d9;
 }
 </style>
