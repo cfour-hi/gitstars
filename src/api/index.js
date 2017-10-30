@@ -6,6 +6,14 @@ export function getUserInfo () {
   return axios.get(`${GITHUB_API}/users/${window.username}?access_token=${window.access_token}`)
 }
 
+export function getGists () {
+  return axios.get(`${GITHUB_API}/users/${window.username}/gists?access_token=${window.access_token}`)
+}
+
+export function getFile (url) {
+  return axios.get(url)
+}
+
 export function getStarredRepos (page) {
   return axios.get(`${GITHUB_API}/users/${window.username}/starred?access_token=${window.access_token}&page=${page}&per_page=100`)
 }

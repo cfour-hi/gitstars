@@ -5,18 +5,35 @@
       <h2 class="user-name">{{user.name}}</h2>
     </div>
     <ol class="nav-list">
-      <li v-for="nav in navStar" :key="nav.name" class="nav-item">
-        <span class="nav-label">{{nav.name}}</span>
-        <span class="nav-badge">{{nav.number}}</span>
+      <li class="nav-item" @click="handleToggleLabel('_all$')">
+        <span class="nav-label">所有 star</span>
+        <span class="nav-badge">{{starredReposLen}}</span>
+      </li>
+      <li class="nav-item" @click="handleToggleLabel('_unlabeled$')">
+        <span class="nav-label">未标签 star</span>
+        <span class="nav-badge">{{unlabeledReposLen}}</span>
       </li>
     </ol>
     <div class="nav-caption">
       <span>标签</span>
-      <div class="add-label-btn">
+      <div class="add-label-btn" @click="newLabelVisible = true">
         <i class="fa fa-plus-square" aria-hidden="true"></i>
         <span>添加</span>
       </div>
     </div>
+    <div v-show="newLabelVisible" class="new-label">
+      <input type="text" class="new-label-input" placeholder="标签名称" @focus="operateType = 'save'" @blur="operateType = ''">
+      <div class="new-label-operate" :class="operateType" @mouseleave="operateType = ''">
+        <button type="button" class="new-label-btn save" @mouseenter="operateType = 'save'">SAVE</button>
+        <button type="button" class="new-label-btn cancel" @mouseenter="operateType = 'cancel'" @click="newLabelVisible = false">CANCEL</button>
+      </div>
+    </div>
+    <ol class="nav-list label-list">
+      <li v-for="(repos, name) in labels" :key="name" class="nav-item" @click="handleToggleLabel(name)">
+        <span class="nav-label">{{name}}</span>
+        <span class="nav-badge">{{repos.length}}</span>
+      </li>
+    </ol>
   </aside>
 </template>
 
@@ -26,30 +43,35 @@ import { getUserInfo } from '../api'
 export default {
   name: 'sidebar',
   props: {
-    staredReposLen: {
+    starredReposLen: {
       type: Number,
       default: 0
+    },
+    unlabeledReposLen: {
+      type: Number,
+      default: 0
+    },
+    labels: {
+      type: Object,
+      default: {}
     }
   },
   data () {
     return {
       user: {},
-      navStar: [
-        {
-          name: '所有 star',
-          number: this.staredReposLen
-        },
-        {
-          name: '未标签 star',
-          number: 0
-        }
-      ]
+      newLabelVisible: false,
+      operateType: ''
     }
   },
   created () {
     getUserInfo().then(response => {
       this.user = response
     })
+  },
+  methods: {
+    handleToggleLabel (name) {
+      this.$emit('toggleLabel', name)
+    }
   }
 }
 </script>
@@ -58,7 +80,7 @@ export default {
 .sidebar {
   flex: 0 0 280px;
   color: #d9d9d9;
-  background-color: rgb(45, 63, 76);
+  background-color: #28343d;
 }
 
 .user-info {
@@ -93,13 +115,18 @@ export default {
   align-items: center;
   height: 40px;
   padding: 0 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
 }
 
 .nav-item:hover,
 .add-label-btn:hover {
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item:active,
+.add-label-btn:active {
+  background-color: rgba(255, 255, 255, 0.1)
 }
 
 .nav-badge {
@@ -115,13 +142,95 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding-left: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 12px;
 }
 
 .add-label-btn {
   line-height: 40px;
   padding: 0 15px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
+}
+
+.fa-plus-square {
+  margin-right: 3px;
+}
+
+.new-label {
+  display: flex;
+  height: 38px;
+  font-size: 12px;
+}
+
+.new-label-input {
+  flex: 0 0 208px;
+  box-sizing: border-box;
+  padding: 0 15px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.new-label-input:focus {
+  color: #28343d;
+  background-color: #fff;
+}
+
+.new-label-operate {
+  flex: auto;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.new-label-btn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: none;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: margin-left 0.1s, background-colo 0.1s;
+}
+
+.new-label-btn.save {
+  margin-left: -50%;
+  background-color: #3dbd7d;
+}
+
+.new-label-btn.save:active {
+  background-color: #39b175;
+}
+
+.new-label-operate.save .save {
+  margin-left: 0;
+}
+
+.new-label-operate.save .cancel {
+  margin-left: 100%;
+}
+
+.new-label-btn.cancel {
+  margin-left: 50%;
+  background-color: #697178;
+}
+
+.new-label-btn.cancel:active {
+  background-color: #616970;
+}
+
+.new-label-operate.cancel .save {
+  margin-left: -100%;
+}
+
+.new-label-operate.cancel .cancel {
+  margin-left: 0;
+}
+
+.label-list {
+  border-top: none;
 }
 </style>
