@@ -6,31 +6,42 @@
     </div>
     <ol class="nav-list">
       <li class="nav-item" @click="handleToggleLabel('_all$')">
-        <span class="nav-label">所有 star</span>
+        <span class="nav-label">
+          <i class="fa fa-fw fa-bars" aria-hidden="true"></i>
+          <span>全部</span>
+        </span>
         <span class="nav-badge">{{starredReposLen}}</span>
       </li>
       <li class="nav-item" @click="handleToggleLabel('_unlabeled$')">
-        <span class="nav-label">未标签 star</span>
+        <span class="nav-label">
+          <i class="fa fa-fw fa-star-o" aria-hidden="true"></i>
+          <span>未标签</span>
+        </span>
         <span class="nav-badge">{{unlabeledReposLen}}</span>
       </li>
     </ol>
     <div class="nav-caption">
-      <span>标签</span>
-      <div class="add-label-btn" @click="newLabelVisible = true">
+      <span class="title">标签</span>
+      <span class="add-label-btn" @click="handleAddNewLabel">
         <i class="fa fa-plus-square" aria-hidden="true"></i>
         <span>添加</span>
-      </div>
+      </span>
     </div>
-    <div v-show="newLabelVisible" class="new-label">
-      <input type="text" class="new-label-input" placeholder="标签名称" @focus="operateType = 'save'" @blur="operateType = ''">
-      <div class="new-label-operate" :class="operateType" @mouseleave="operateType = ''">
-        <button type="button" class="new-label-btn save" @mouseenter="operateType = 'save'">SAVE</button>
-        <button type="button" class="new-label-btn cancel" @mouseenter="operateType = 'cancel'" @click="newLabelVisible = false">CANCEL</button>
+    <transition name="slide-down">
+      <div v-show="newLabelVisible" class="new-label">
+        <input v-model="labelName" ref="newLabelNameInput" type="text" class="new-label-input" placeholder="标签名称" @input="handleLabelNameInput" @focus="handleLabelNameInput" @blur="handleLabelNameInput" @keyup.enter="handleSaveNewLabel">
+        <div class="new-label-operate" :class="operateType" @mouseleave="operateType = ''">
+          <button type="button" class="new-label-btn save" @mouseenter="operateType = 'save'" @click="handleSaveNewLabel">SAVE</button>
+          <button type="button" class="new-label-btn cancel" @mouseenter="operateType = 'cancel'" @click="newLabelVisible = false">CANCEL</button>
+        </div>
       </div>
-    </div>
+    </transition>
     <ol class="nav-list label-list">
       <li v-for="(repos, name) in labels" :key="name" class="nav-item" @click="handleToggleLabel(name)">
-        <span class="nav-label">{{name}}</span>
+        <label class="nav-label">
+          <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
+          <span>{{name}}</span>
+        </label>
         <span class="nav-badge">{{repos.length}}</span>
       </li>
     </ol>
@@ -39,6 +50,9 @@
 
 <script>
 import { getUserInfo } from '../api'
+
+const SAVE = 'save'
+const CANCEL = 'cancel'
 
 export default {
   name: 'sidebar',
@@ -60,7 +74,8 @@ export default {
     return {
       user: {},
       newLabelVisible: false,
-      operateType: ''
+      operateType: '',
+      labelName: ''
     }
   },
   created () {
@@ -71,6 +86,20 @@ export default {
   methods: {
     handleToggleLabel (name) {
       this.$emit('toggleLabel', name)
+    },
+    handleAddNewLabel () {
+      this.newLabelVisible = true
+      this.$nextTick(() => this.$refs.newLabelNameInput.focus())
+    },
+    handleLabelNameInput () {
+      this.operateType = this.labelName.trim().length ? SAVE : CANCEL
+    },
+    handleSaveNewLabel () {
+      const labelName = this.labelName.trim()
+      if (!labelName || Object.keys(this.labels).includes(labelName)) return
+      this.$emit('saveNewLabel', labelName)
+      this.newLabelVisible = false
+      this.labelName = ''
     }
   }
 }
@@ -78,7 +107,9 @@ export default {
 
 <style scoped>
 .sidebar {
-  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 250px;
   color: #d9d9d9;
   background-color: #28343d;
 }
@@ -126,11 +157,11 @@ export default {
 
 .nav-item:active,
 .add-label-btn:active {
-  background-color: rgba(255, 255, 255, 0.1)
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-badge {
-  width: 30px;
+  padding: 0 0.8em;
   line-height: 1.8;
   border-radius: 1em;
   text-align: center;
@@ -141,9 +172,16 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex: none;
   padding-left: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 12px;
+}
+
+.nav-caption .title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #919191;
 }
 
 .add-label-btn {
@@ -159,17 +197,29 @@ export default {
 
 .new-label {
   display: flex;
+  flex: none;
   height: 38px;
   font-size: 12px;
 }
 
+.slide-down-enter,
+.slide-down-leave-active {
+  height: 0;
+}
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: height 0.2s ease-out;
+}
+
 .new-label-input {
-  flex: 0 0 208px;
+  flex: auto;
   box-sizing: border-box;
   padding: 0 15px;
   border: none;
-  background-color: rgba(255, 255, 255, 0.1);
+  line-height: 1.5;
   outline: none;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .new-label-input:focus {
@@ -178,7 +228,7 @@ export default {
 }
 
 .new-label-operate {
-  flex: auto;
+  flex: 0 0 72px;
   overflow: hidden;
   position: relative;
   height: 100%;
@@ -193,7 +243,8 @@ export default {
   color: #fff;
   cursor: pointer;
   outline: none;
-  transition: margin-left 0.1s, background-colo 0.1s;
+  transition: margin-left 0.3s ease-out 0.1s,
+    background-color 0.3s ease-out 0.1s;
 }
 
 .new-label-btn.save {
@@ -231,6 +282,8 @@ export default {
 }
 
 .label-list {
+  overflow: auto;
+  flex: auto;
   border-top: none;
 }
 </style>

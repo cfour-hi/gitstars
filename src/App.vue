@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel"></layout-sidebar>
-    <layout-main :label-repos="labelRepos" :loaded-starred-repos="loadedStarredRepos"></layout-main>
+    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel"></layout-sidebar>
+    <layout-main :label-repos="labelRepos" :loaded-starred-repos="loadedStarredRepos" :labels="labels" @addNewLabel="handleAddNewLabel" @deleteLabel="handleDeleteLabel"></layout-main>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
-import { getStarredRepos, getGists, getFile } from './api'
+import { getStarredRepos, getGists, getFile, saveGist } from './api'
 
 export default {
   name: 'app',
@@ -21,7 +21,8 @@ export default {
       starredRepos: [],
       loadedStarredRepos: false,
       labels: {},
-      currentLabelName: '_all$'
+      currentLabelName: '_all$',
+      gistId: ''
     }
   },
   computed: {
@@ -59,14 +60,23 @@ export default {
   },
   created () {
     axios.all([this._getStarredRepos(), getGists()]).then(axios.spread(async (repos, gists) => {
-      for (const { files, description } of gists) {
+      for (const { files, description, id } of gists) {
         if (description === 'gitstars') {
+          this.gistId = id
           const { raw_url } = files[Object.keys(files)[0]]
           this.labels = await getFile(raw_url)
           break
         }
       }
-      // TODO
+      for (const { id, _labels } of this.starredRepos) {
+        for (const key of Object.keys(this.labels)) {
+          for (const repoId of this.labels[key]) {
+            if (repoId === id) {
+              _labels.push(key)
+            }
+          }
+        }
+      }
     }))
   },
   methods: {
@@ -75,6 +85,7 @@ export default {
         let repos = null
         do {
           repos = await getStarredRepos(page++)
+          repos.forEach(repo => (repo._labels = []))
           this.starredRepos = this.starredRepos.concat(repos)
         } while (repos.length === 100)
         this.loadedStarredRepos = true
@@ -83,6 +94,28 @@ export default {
     },
     handleToggleLabel (name) {
       this.currentLabelName = name
+    },
+    handleAddNewLabel ({ id, name }) {
+      if (this.labels[name]) {
+        if (!this.labels[name.includes(id)]) {
+          this.labels[name].push(id)
+        }
+      } else {
+        this.$set(this.labels, name, [id])
+      }
+      const { _labels } = this.starredRepos.find(repo => repo.id === id)
+      _labels.push(name)
+    },
+    handleDeleteLabel ({ id, name }) {
+      let index = this.labels[name].findIndex(repoId => repoId === id)
+      this.labels[name].splice(index, 1)
+      const { _labels } = this.starredRepos.find(repo => repo.id === id)
+      index = _labels.findIndex(label => label === name)
+      _labels.splice(index, 1)
+    },
+    handleSaveNewLabel (name) {
+      this.$set(this.labels, name, [])
+      saveGist(this.gistId, this.labels)
     }
   }
 }
