@@ -1,19 +1,19 @@
 <template>
   <aside class="sub-sidebar">
-    <ol v-if="loadedStarredRepos" class="repo-list">
+    <ol v-if="loadStarredReposCompleted" class="repo-list">
       <li v-for="repo in repos" :key="repo.id" :class="{ active: repo.id === activeRepoId }" class="repo-item" @click="handleToggleRepo(repo)">
         <h3 class="repo-title">
           <a :href="repo.html_url" target="_blank">{{repo.owner.login}} / {{repo.name}}</a>
         </h3>
         <p class="repo-desc">{{repo.description}}</p>
         <ul v-if="repo._labels && repo._labels.length" class="repo-label-list">
-          <li v-for="(label, index) in repo._labels" :key="label" class="repo-label-item">
+          <li v-for="(label, index) in repo._labels" :key="label" class="repo-label-item" @click.stop="handleToggleLabel(label)">
             <el-tag size="small" closable>{{label}}</el-tag>
             <el-popover placement="right" title="Are you sure?">
               <i slot="reference" class="el-tag__close el-icon-close delete-btn"></i>
               <div class="popover-footer">
-                <el-button size="mini" @click="handleCancelDelete">No</el-button>
-                <el-button type="primary" size="mini" @click="handleDeleteLabel(label, repo.id)">Yes</el-button>
+                <el-button size="mini" @click="handleCancelDeleteRepoLabel">No</el-button>
+                <el-button type="primary" size="mini" @click="handleDeleteRepoLabel(label, repo.id)">Yes</el-button>
               </div>
             </el-popover>
           </li>
@@ -35,14 +35,8 @@
 export default {
   name: 'sub-sidebar',
   props: {
-    repos: {
-      type: Array,
-      default: []
-    },
-    loadedStarredRepos: {
-      type: Boolean,
-      default: false
-    }
+    repos: { type: Array, default: [] },
+    loadStarredReposCompleted: { type: Boolean, default: false }
   },
   data () {
     return {
@@ -56,10 +50,13 @@ export default {
       const { login } = owner
       this.$emit('toggleRepo', { id, login, name })
     },
-    handleDeleteLabel (name, id) {
-      this.$emit('deleteLabel', { id, name })
+    handleToggleLabel (name) {
+      this.$emit('toggleLabel', name)
     },
-    handleCancelDelete () {
+    handleDeleteRepoLabel (name, id) {
+      this.$emit('deleteRepoLabel', { id, name })
+    },
+    handleCancelDeleteRepoLabel () {
       document.body.click()
     }
   }

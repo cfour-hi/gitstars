@@ -26,30 +26,39 @@
         <i class="fa fa-plus-square" aria-hidden="true"></i>
         <span>添加</span>
       </span>
+      <div v-show="isEditLabel" class="edit-label-btn" @click="handleCompleteEditLabels">完成</div>
+      <span v-show="!isEditLabel" class="edit-label-btn" @click="handleEditLabels">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+        <span>编辑</span>
+      </span>
     </div>
     <transition name="slide-down">
-      <div v-show="newLabelVisible" class="new-label">
-        <input v-model="labelName" ref="newLabelNameInput" type="text" class="new-label-input" placeholder="标签名称" @input="handleLabelNameInput" @focus="handleLabelNameInput" @blur="handleLabelNameInput" @keyup.enter="handleSaveNewLabel">
-        <div class="new-label-operate" :class="operateType" @mouseleave="operateType = ''">
-          <button type="button" class="new-label-btn save" @mouseenter="operateType = 'save'" @click="handleSaveNewLabel">SAVE</button>
-          <button type="button" class="new-label-btn cancel" @mouseenter="operateType = 'cancel'" @click="newLabelVisible = false">CANCEL</button>
+      <div v-show="labelNameFormVisible" class="new-label">
+        <input v-model="labelName" ref="newLabelNameInput" type="text" class="new-label-input" placeholder="标签名称" @input="handleInputLabelName" @focus="handleInputLabelName" @blur="handleInputLabelName" @keyup.enter="handleAddLabel">
+        <div class="new-label-operate" :class="saveOrCancel" @mouseleave="saveOrCancel = ''">
+          <button type="button" class="new-label-btn save" @mouseenter="saveOrCancel = 'save'" @click="handleAddLabel">SAVE</button>
+          <button type="button" class="new-label-btn cancel" @mouseenter="saveOrCancel = 'cancel'" @click="handleCancelAddLabel">CANCEL</button>
         </div>
       </div>
     </transition>
-    <ol class="nav-list label-list">
-      <li v-for="(repos, name) in labels" :key="name" class="nav-item" @click="handleToggleLabel(name)">
+    <transition-group name="label-list" tag="ol" class="nav-list label-list">
+      <li v-for="{name, repos} of labels" :key="name" class="nav-item" @click="handleToggleLabel(name)">
         <label class="nav-label">
           <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
           <span>{{name}}</span>
         </label>
-        <span class="nav-badge">{{repos.length}}</span>
+        <i v-show="isEditLabel" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel(name)"></i>
+        <span v-show="!isEditLabel" class="nav-badge">{{repos.length}}</span>
       </li>
-    </ol>
+    </transition-group>
   </aside>
 </template>
 
 <script>
 import { getUserInfo } from '../api'
+
+// TODO
+// 删除标签动效
 
 const SAVE = 'save'
 const CANCEL = 'cancel'
@@ -57,49 +66,59 @@ const CANCEL = 'cancel'
 export default {
   name: 'sidebar',
   props: {
-    starredReposLen: {
-      type: Number,
-      default: 0
-    },
-    unlabeledReposLen: {
-      type: Number,
-      default: 0
-    },
-    labels: {
-      type: Object,
-      default: {}
-    }
+    starredReposLen: { type: Number, default: 0 },
+    unlabeledReposLen: { type: Number, default: 0 },
+    labels: { type: Array, default: [] }
   },
   data () {
     return {
       user: {},
-      newLabelVisible: false,
-      operateType: '',
-      labelName: ''
+      labelNameFormVisible: false,
+      labelName: '',
+      saveOrCancel: '',
+      isEditLabel: false
     }
   },
   created () {
-    getUserInfo().then(response => {
-      this.user = response
-    })
+    getUserInfo().then(response => (this.user = response))
   },
   methods: {
     handleToggleLabel (name) {
       this.$emit('toggleLabel', name)
     },
     handleAddNewLabel () {
-      this.newLabelVisible = true
+      this.labelNameFormVisible = true
       this.$nextTick(() => this.$refs.newLabelNameInput.focus())
     },
-    handleLabelNameInput () {
-      this.operateType = this.labelName.trim().length ? SAVE : CANCEL
+    handleInputLabelName () {
+      this.saveOrCancel = this.labelName.trim().length ? SAVE : CANCEL
     },
-    handleSaveNewLabel () {
+    handleAddLabel () {
+      let message = ''
       const labelName = this.labelName.trim()
-      if (!labelName || Object.keys(this.labels).includes(labelName)) return
+      if (!labelName) message = '标签名称不能为空'
+      if (this.labels.find(({ name }) => name === labelName)) message = '已存在此标签'
+      if (message) {
+        this.$notify.info({ message, position: 'top-left', duration: 3000 })
+        return this.$refs.newLabelNameInput.focus()
+      }
+
       this.$emit('saveNewLabel', labelName)
-      this.newLabelVisible = false
+      this.labelNameFormVisible = false
       this.labelName = ''
+    },
+    handleCancelAddLabel () {
+      this.labelNameFormVisible = false
+      this.labelName = ''
+    },
+    handleEditLabels () {
+      this.isEditLabel = true
+    },
+    handleCompleteEditLabels () {
+      this.isEditLabel = false
+    },
+    handleDeleteLabel (name) {
+      this.$emit('deleteLabel', name)
     }
   }
 }
@@ -151,12 +170,14 @@ export default {
 }
 
 .nav-item:hover,
-.add-label-btn:hover {
+.add-label-btn:hover,
+.edit-label-btn:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
 .nav-item:active,
-.add-label-btn:active {
+.add-label-btn:active,
+.edit-label-btn:active {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -179,16 +200,21 @@ export default {
 }
 
 .nav-caption .title {
+  flex: auto;
   font-size: 14px;
   font-weight: 700;
   color: #919191;
 }
 
-.add-label-btn {
+.add-label-btn,
+.edit-label-btn {
+  flex: 0 0 49px;
   line-height: 40px;
-  padding: 0 15px;
+  padding: 0 10px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
   cursor: pointer;
+  user-select: none;
 }
 
 .fa-plus-square {
@@ -228,7 +254,7 @@ export default {
 }
 
 .new-label-operate {
-  flex: 0 0 72px;
+  flex: 0 0 70px;
   overflow: hidden;
   position: relative;
   height: 100%;
@@ -285,5 +311,24 @@ export default {
   overflow: auto;
   flex: auto;
   border-top: none;
+}
+
+.fa-times-circle {
+  font-size: 16px;
+  transition: transform 0.1s;
+}
+
+.fa-times-circle:hover {
+  transform: scale(1.5);
+}
+
+.label-list-enter,
+.label-list-level-to {
+  transform: translateX(-100%);
+}
+
+.label-list-enter-active,
+.label-list-level-active {
+  transition: transform 0.3s;
 }
 </style>

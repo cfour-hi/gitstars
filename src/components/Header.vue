@@ -11,10 +11,7 @@
 export default {
   name: 'header',
   props: {
-    label: {
-      type: String,
-      default: '所有标签'
-    }
+    label: { type: String, default: '所有标签' }
   },
   data () {
     return {

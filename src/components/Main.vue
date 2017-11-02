@@ -2,12 +2,12 @@
   <main class="main">
     <layout-header @changeSearchValue="handleChangeSearchValue"></layout-header>
     <div class="content-wrap">
-      <sub-sidebar :repos="filteredRepos" :loaded-starred-repos="loadedStarredRepos" @toggleRepo="handleToggleRepo" @deleteLabel="handleDeleteLabel"></sub-sidebar>
+      <sub-sidebar :repos="filteredRepos" :load-starred-repos-completed="loadStarredReposCompleted" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
       <div class="content">
         <div v-show="repoReadme" class="detail">
           <div class="detail-header">
-            <el-autocomplete v-show="newLabelInputVisible" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggs" ref="newLabelInput" size="small" class="new-label-input" placeholder="标签名称" @select="handleSelectLabel" @blur="handleNewLabelInputBlur" @keyup.enter.native="handleSaveNewLabel"></el-autocomplete>
-            <el-button v-show="!newLabelInputVisible" size="small" class="new-label-btn" @click="handleAddNewLabel">
+            <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="new-label-input" @select="handleSelectLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel"></el-autocomplete>
+            <el-button v-show="!isInputLabelName" size="small" class="new-label-btn" @click="handleAddRepoLabel">
               <i class="fa fa-plus-square" aria-hidden="true"></i>
               <span>添加标签</span>
             </el-button>
@@ -19,8 +19,8 @@
         <div v-show="!repoReadme" class="waiting">
           <div class="readme">README.md</div>
           <p class="loading">
-            <i v-show="loadingRepoReadme" class="fa fa-cog fa-spin fa-2x fa-fw"></i>
-            <span v-if="!clickedRepo">点击左侧 starred 仓库查看</span>
+            <i v-show="isLoadingRepoReadme" class="fa fa-cog fa-spin fa-2x fa-fw"></i>
+            <span v-if="!isSelectedRepo">点击左侧 starred 仓库查看</span>
           </p>
         </div>
       </div>
@@ -38,79 +38,72 @@ export default {
   name: 'main',
   components: { LayoutHeader, SubSidebar },
   props: {
-    labelRepos: {
-      type: Array,
-      default: []
-    },
-    loadedStarredRepos: {
-      type: Boolean,
-      default: false
-    },
-    labels: {
-      type: Object,
-      default: {}
-    }
+    currentLabelRepos: { type: Array, default: [] },
+    loadStarredReposCompleted: { type: Boolean, default: false },
+    labels: { type: Array, default: [] }
   },
   data () {
     return {
       repoReadme: '',
       searchValue: '',
-      loadingRepoReadme: false,
-      clickedRepo: false,
       labelName: '',
-      newLabelInputVisible: false,
-      currentRepo: ''
+      currentRepo: '',
+      isLoadingRepoReadme: false,
+      isSelectedRepo: false,
+      isInputLabelName: false
     }
   },
   computed: {
     filteredRepos () {
-      const { labelRepos = [], searchValue = '' } = this
-      return labelRepos.filter(({ owner = {}, name = '' } = {}) => {
+      return this.currentLabelRepos.filter(({ owner = {}, name = '' } = {}) => {
         const { login = '' } = owner
-        return (login.toLowerCase().includes(searchValue) || name.toLowerCase().includes(searchValue))
+        return (login.toLowerCase().includes(this.searchValue) || name.toLowerCase().includes(this.searchValue))
       })
     },
-    unlabeledLabels () {
-      return Object.keys(this.labels).filter(label => !this.currentRepo._labels.includes(label))
+    currentRepoUnlabeledLabels () {
+      return this.labels.filter(({ name }) => !this.currentRepo._labels.includes(name)).map(({ name }) => name)
     }
   },
   methods: {
-    async handleToggleRepo (repo) {
-      this.currentRepo = this.labelRepos.find(({ id }) => id === repo.id)
-      this.clickedRepo = true
-      this.loadingRepoReadme = true
+    async handleToggleRepo ({ id, login, name } = {}) {
+      this.currentRepo = this.currentLabelRepos.find(repo => repo.id === id)
+      this.isSelectedRepo = true
+      this.isLoadingRepoReadme = true
       this.repoReadme = ''
-      const { content } = await getRepoReadme(repo)
-      this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content))))
-      this.loadingRepoReadme = false
+      const { content } = await getRepoReadme(login, name)
+      this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content)))) // 包含中文内容的 base64 解码
+      this.isLoadingRepoReadme = false
     },
-    handleChangeSearchValue (searchValue) {
+    handleToggleLabel (name) {
+      this.$emit('toggleLabel', name)
+    },
+    handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
     },
-    handleAddNewLabel () {
-      this.newLabelInputVisible = true
-      this.$nextTick(() => this.$refs.newLabelInput.$refs.input.focus())
+    handleAddRepoLabel () {
+      this.isInputLabelName = true
+      this.$nextTick(() => this.$refs.repoLabelNameInput.$refs.input.focus())
     },
-    handleNewLabelInputBlur () {
-      this.newLabelInputVisible = false
+    handleRepoLabelInputBlur () {
+      this.isInputLabelName = false
     },
-    handleSaveNewLabel () {
+    handleSaveRepoLabel () {
       const labelName = this.labelName.trim()
-      if (!labelName) return
+      if (!labelName) return this.$notify.info({ message: '标签名称不能为空', position: 'top-left', duration: 3000 })
       const { id } = this.currentRepo
-      this.$emit('addNewLabel', { id, name: labelName })
+      this.$emit('addRepoLabel', { id, name: labelName })
       this.labelName = ''
-      this.newLabelInputVisible = false
+      this.isInputLabelName = false
     },
-    handleDeleteLabel (payload) {
-      this.$emit('deleteLabel', payload)
+    handleDeleteRepoLabel (payload) {
+      this.$emit('deleteRepoLabel', payload)
     },
-    handleFetchLabelSuggs (inputStr, cb) {
-      cb(this.unlabeledLabels.filter(label => label.includes(inputStr)).map(label => ({ value: label })))
+    handleFetchLabelSuggestions (inputStr, cb) {
+      cb(this.currentRepoUnlabeledLabels.filter(name => name.includes(inputStr)).map(name => ({ value: name })))
     },
     handleSelectLabel ({ value }) {
       this.labelName = value
-      this.handleSaveNewLabel()
+      this.handleSaveRepoLabel()
     }
   }
 }

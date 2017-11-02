@@ -2,7 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import axios from 'axios'
-import { Tag, Input, Button, Popover, Autocomplete } from 'element-ui'
+import { Tag, Input, Button, Popover, Autocomplete, Notification } from 'element-ui'
 
 Vue.config.productionTip = false
 Vue.use(Tag)
@@ -10,6 +10,7 @@ Vue.use(Input)
 Vue.use(Button)
 Vue.use(Popover)
 Vue.use(Autocomplete)
+Vue.prototype.$notify = Notification
 
 if (process.env.NODE_ENV === 'development') {
   require('normalize.css')
@@ -19,23 +20,24 @@ if (process.env.NODE_ENV === 'development') {
 
 axios.interceptors.response.use(({ data }) => {
   return data
-}, err => {
-  return Promise.reject(err)
+}, ({ response }) => {
+  const { status, statusText, data } = response
+  const { message } = data
+  Notification.error({ message, title: `${status} ${statusText}` })
+  return Promise.reject(response)
 })
 
-axios.get(`/${process.env.NODE_ENV === 'production' ? 'gitstars/' : ''}assets/config.json`)
-  .then(({ access, token, username, filename }) => {
-    const App = () => import('./App')
-    window._gitstars = {
-      username,
-      filename,
-      accessToken: `${access}${token}`
-    }
+const { protocol, host } = window.location
+const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
 
-    /* eslint-disable no-new */
-    new Vue({
-      el: '#app',
-      template: '<App/>',
-      components: { App }
-    })
+axios.get(`${protocol}//${host}${pathname}assets/config.json`).then(({ access, token, username, filename }) => {
+  const App = () => import('./App')
+  window._gitstars = { username, filename, accessToken: `${access}${token}` }
+
+  /* eslint-disable no-new */
+  new Vue({
+    el: '#app',
+    template: '<App/>',
+    components: { App }
   })
+})

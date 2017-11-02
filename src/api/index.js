@@ -7,19 +7,15 @@ export function getUserInfo () {
   return axios.get(`${GITHUB_API}/users/${username}?access_token=${accessToken}`)
 }
 
-export function getGists () {
+export function getUserGists () {
   return axios.get(`${GITHUB_API}/users/${username}/gists?access_token=${accessToken}`)
-}
-
-export function getFile (url) {
-  return axios.get(url)
 }
 
 export function getStarredRepos (page) {
   return axios.get(`${GITHUB_API}/users/${username}/starred?access_token=${accessToken}&page=${page}&per_page=100`)
 }
 
-export function getRepoReadme ({ login, name }) {
+export function getRepoReadme (login, name) {
   return axios.get(`${GITHUB_API}/repos/${login}/${name}/readme?access_token=${accessToken}`)
 }
 
@@ -36,7 +32,7 @@ export function getRenderedReadme (data) {
 }
 
 // https://developer.github.com/v3/gists/
-export function saveGist (id, labels) {
+export function saveLabelGist (id, labels) {
   return axios.patch(`${GITHUB_API}/gists/${id}?access_token=${accessToken}`, {
     files: {
       [filename]: {
