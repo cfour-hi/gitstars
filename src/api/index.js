@@ -1,30 +1,53 @@
 import axios from 'axios'
+import { Notification } from 'element-ui'
 
-const GITHUB_API = 'https://api.github.com'
 const { username, accessToken, filename } = window._gitstars
 
+axios.defaults.baseURL = 'https://api.github.com'
+
+axios.interceptors.request.use(config => {
+  if (config.url.includes('http')) return config
+
+  config.url += config.url.includes('?') ? '&' : '?'
+  config.url += `access_token=${accessToken}`
+  return config
+}, err => {
+  return Promise.reject(err)
+})
+
+axios.interceptors.response.use(({ data }) => {
+  return data
+}, err => {
+  let message = err.message
+  const { response = {} } = err
+  const { status, statusText, data } = response
+
+  if (data) message = data.message
+  Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
+  return Promise.reject(err)
+})
+
 export function getUserInfo () {
-  return axios.get(`${GITHUB_API}/users/${username}?access_token=${accessToken}`)
+  return axios.get(`/users/${username}`)
 }
 
 export function getUserGists () {
-  return axios.get(`${GITHUB_API}/users/${username}/gists?access_token=${accessToken}`)
+  return axios.get(`/users/${username}/gists`)
 }
 
 export function getStarredRepos (page) {
-  return axios.get(`${GITHUB_API}/users/${username}/starred?access_token=${accessToken}&page=${page}&per_page=100`)
+  return axios.get(`/users/${username}/starred?&page=${page}&per_page=100`)
 }
 
 export function getRepoReadme (login, name) {
-  return axios.get(`${GITHUB_API}/repos/${login}/${name}/readme?access_token=${accessToken}`)
+  return axios.get(`/repos/${login}/${name}/readme`)
 }
 
 export function getRenderedReadme (data) {
   return axios({
     data,
-    url: `/markdown/raw?access_token=${accessToken}`,
+    url: `/markdown/raw`,
     method: 'post',
-    baseURL: GITHUB_API,
     headers: {
       'Content-Type': 'text/plain'
     }
@@ -33,7 +56,7 @@ export function getRenderedReadme (data) {
 
 // https://developer.github.com/v3/gists/
 export function saveLabelGist (id, labels) {
-  return axios.patch(`${GITHUB_API}/gists/${id}?access_token=${accessToken}`, {
+  return axios.patch(`/gists/${id}`, {
     files: {
       [filename]: {
         content: JSON.stringify(labels)

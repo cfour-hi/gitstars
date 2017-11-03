@@ -18,21 +18,18 @@ if (process.env.NODE_ENV === 'development') {
   require('github-markdown-css')
 }
 
-axios.interceptors.response.use(({ data }) => {
-  return data
-}, ({ response }) => {
-  const { status, statusText, data } = response
-  const { message } = data
-  Notification.error({ message, title: `${status} ${statusText}` })
-  return Promise.reject(response)
-})
-
 const { protocol, host } = window.location
 const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
 
-axios.get(`${protocol}//${host}${pathname}assets/config.json`).then(({ access, token, username, filename }) => {
+axios.get(`${protocol}//${host}${pathname}assets/config.json`).then(({ data }) => {
+  const { access, token, username, filename } = data
+  window._gitstars = {
+    username,
+    filename,
+    accessToken: `${access}${token}`
+  }
+
   const App = () => import('./App')
-  window._gitstars = { username, filename, accessToken: `${access}${token}` }
 
   /* eslint-disable no-new */
   new Vue({

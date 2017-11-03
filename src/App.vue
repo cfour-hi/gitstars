@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @deleteLabel="handleDeleteLabel"></layout-sidebar>
-    <layout-main :current-label-repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
+    <layout-main :user="user" :current-label-repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
   </div>
 </template>
 
@@ -11,13 +11,14 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
-import { getStarredRepos, getUserGists, saveLabelGist } from './api'
+import { getUserInfo, getStarredRepos, getUserGists, saveLabelGist } from './api'
 
 export default {
   name: 'app',
   components: { LayoutSidebar, LayoutMain },
   data () {
     return {
+      user: {},
       starredRepos: [],
       loadStarredReposCompleted: false,
       labels: [],
@@ -56,6 +57,8 @@ export default {
     }
   },
   created () {
+    getUserInfo().then(response => (this.user = response))
+
     axios.all([this._getStarredRepos(), getUserGists()]).then(axios.spread(async (repos, gists) => {
       for (const { files, description, id } of gists) {
         if (description === 'gitstars') {
@@ -89,8 +92,14 @@ export default {
       })
     },
     _saveLabelGist (message) {
+      const loadingNotify = this.$notify.info({
+        iconClass: 'fa fa-cog fa-spin fa-fw',
+        message: '正在执行，请稍后...',
+        showClose: false
+      })
       return saveLabelGist(this.gistId, this.labels).then(() => {
-        this.$notify.success({ message, position: 'top-left', duration: 3000 })
+        loadingNotify.close()
+        this.$notify.success({ message, showClose: false })
       })
     },
     handleToggleLabel (name) {
@@ -118,9 +127,10 @@ export default {
       // 而不会改变 currentRepo (当前仓库) readme 的内容
       // this.currentLabelRepos 不一定包含 currentRepo
       // const { _labels } = this.currentLabelRepos.find(repo => repo.id === id)
-      const { _labels } = this.starredRepos.find(repo => repo.id === id)
+      const repo = this.starredRepos.find(repo => repo.id === id)
+      const { _labels } = repo
       _labels.push(name)
-      this._saveLabelGist(`添加仓库 ${name} 标签`).catch(() => _labels.pop())
+      this._saveLabelGist(`${repo.owner.login} / ${repo.name} 仓库添加 ${name} 标签`).catch(() => _labels.pop())
     },
     handleDeleteRepoLabel ({ id, name }) {
       // 因为计算函数 this.currentLabelRepos 依赖 this.labels
@@ -129,7 +139,8 @@ export default {
       // 则 this.currentLabelRepos 内无法找到 id 值对应的仓库
       // 因为 this.labels 内的值被改变之后立即更新了 this.currentLabelRepos 的值
       // 即已删除 id 值对应的仓库
-      const { _labels } = this.currentLabelRepos.find(repo => repo.id === id)
+      const repo = this.currentLabelRepos.find(repo => repo.id === id)
+      const { _labels } = repo
       const labelIndex = _labels.findIndex(labelName => labelName === name)
       _labels.splice(labelIndex, 1)
 
@@ -137,7 +148,7 @@ export default {
       const idIndex = repos.findIndex(repoId => repoId === id)
       repos.splice(idIndex, 1)
 
-      this._saveLabelGist(`删除仓库 ${name} 标签`).catch(() => {
+      this._saveLabelGist(`${repo.owner.login} / ${repo.name} 仓库删除 ${name} 标签`).catch(() => {
         _labels.splice(labelIndex, 0, name)
         repos.splice(idIndex, 0, id)
       })

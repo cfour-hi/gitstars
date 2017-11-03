@@ -25,6 +25,12 @@ a:hover {
   transform: translate(-50%, -50%);
 }
 
+.slo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -36,4 +42,34 @@ a:hover {
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: #bfbfbf;
+}
+
+.el-notification {
+  align-items: center;
+  padding: 15px 20px 15px 15px;
+}
+
+.el-notification__icon {
+  width: 21px;
+  height: 21px;
+  font-size: 21px;
+  transform: none;
+}
+
+.el-notification__icon.fa {
+  font-family: FontAwesome !important;
+}
+
+.el-notification__title {
+  line-height: 1.8;
+}
+
+.el-notification__content {
+  margin: 0;
+  line-height: 24px;
+}
+
+.popover-footer {
+  display: flex;
+  justify-content: flex-end;
 }

@@ -1,28 +1,30 @@
 <template>
-  <main class="main">
-    <layout-header @changeSearchValue="handleChangeSearchValue"></layout-header>
-    <div class="content-wrap">
+  <main id="main">
+    <layout-header :user="user" @changeSearchValue="handleChangeSearchValue"></layout-header>
+    <div class="main-body">
       <sub-sidebar :repos="filteredRepos" :load-starred-repos-completed="loadStarredReposCompleted" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
       <div class="content">
-        <div v-show="repoReadme" class="detail">
-          <div class="detail-header">
-            <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="new-label-input" @select="handleSelectLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel"></el-autocomplete>
-            <el-button v-show="!isInputLabelName" size="small" class="new-label-btn" @click="handleAddRepoLabel">
+        <section v-show="repoReadme" class="repo-readme">
+          <header class="repo-readme__header">
+            <h3 v-if="currentRepo" class="repo-title">{{currentRepo.owner.login}} / {{currentRepo.name}}</h3>
+            <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="repo-label-input" @select="handleSelectLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel"></el-autocomplete>
+            <el-button v-show="!isInputLabelName" size="small" @click="handleAddRepoLabel">
               <i class="fa fa-plus-square" aria-hidden="true"></i>
               <span>添加标签</span>
             </el-button>
-          </div>
-          <div class="article-wrap">
-            <article v-html="repoReadme" class="markdown-body"></article>
-          </div>
-        </div>
-        <div v-show="!repoReadme" class="waiting">
-          <div class="readme">README.md</div>
-          <p class="loading">
+          </header>
+          <article v-html="repoReadme" class="markdown-body"></article>
+        </section>
+        <section v-show="!repoReadme" class="waiting">
+          <h4 class="readme">README.md</h4>
+          <p class="loader">
             <i v-show="isLoadingRepoReadme" class="fa fa-cog fa-spin fa-2x fa-fw"></i>
-            <span v-if="!isSelectedRepo">点击左侧 starred 仓库查看</span>
+            <span v-if="!isSelectedRepo">
+              <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
+              <span>点击左侧 starred 仓库查看</span>
+            </span>
           </p>
-        </div>
+        </section>
       </div>
     </div>
   </main>
@@ -38,6 +40,7 @@ export default {
   name: 'main',
   components: { LayoutHeader, SubSidebar },
   props: {
+    user: { type: Object, default: {} },
     currentLabelRepos: { type: Array, default: [] },
     loadStarredReposCompleted: { type: Boolean, default: false },
     labels: { type: Array, default: [] }
@@ -89,7 +92,7 @@ export default {
     },
     handleSaveRepoLabel () {
       const labelName = this.labelName.trim()
-      if (!labelName) return this.$notify.info({ message: '标签名称不能为空', position: 'top-left', duration: 3000 })
+      if (!labelName) return this.$notify.info({ message: '标签名称不能为空', showClose: false })
       const { id } = this.currentRepo
       this.$emit('addRepoLabel', { id, name: labelName })
       this.labelName = ''
@@ -110,13 +113,13 @@ export default {
 </script>
 
 <style scoped>
-.main {
+#main {
   display: flex;
   flex-direction: column;
   flex: auto;
 }
 
-.content-wrap {
+.main-body {
   flex: auto;
   position: relative;
 }
@@ -128,12 +131,13 @@ export default {
   height: 100%;
 }
 
-.detail {
+.repo-readme {
   height: 100%;
 }
 
-.detail-header {
+.repo-readme__header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   height: 44px;
   padding: 0 15px;
@@ -142,17 +146,17 @@ export default {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.new-label-input {
-  width: 95px;
+.repo-title {
+  color: #5a5a5a;
 }
 
-.article-wrap {
-  overflow: auto;
-  height: calc(100% - 45px);
+.repo-label-input {
+  width: 95px;
 }
 
 .markdown-body {
   overflow: auto;
+  height: calc(100% - 85px);
   padding: 20px;
   font-size: 14px;
   color: #5a5a5a;
@@ -164,14 +168,16 @@ export default {
   font-size: 14px;
   text-align: center;
   color: #d9d9d9;
+  user-select: none;
 }
 
 .readme {
   font-size: 30px;
+  margin: .5em;
   font-weight: 700;
 }
 
-.loading {
+.loader {
   height: 28px;
 }
 </style>
@@ -182,7 +188,7 @@ export default {
   text-decoration: none;
 }
 
-.detail-header .new-label-input .el-input__inner {
+.repo-readme__header .repo-label-input .el-input__inner {
   text-align: center;
 }
 </style>

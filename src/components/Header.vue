@@ -1,5 +1,7 @@
 <template>
-  <header class="header">
+  <header id="header">
+    <h1 class="user-name">{{user.name}}</h1>
+    <img :src="user.avatar_url" alt="头像" class="user-avatar">
     <label class="search-label">
       <input v-model="searchValue" type="text" class="search-input" placeholder="开发者 | 仓库名" @input="handleChangeSearchValue">
       <i class="fa fa-search" aria-hidden="true"></i>
@@ -11,7 +13,7 @@
 export default {
   name: 'header',
   props: {
-    label: { type: String, default: '所有标签' }
+    user: { type: Object, default: {} }
   },
   data () {
     return {
@@ -27,21 +29,18 @@ export default {
 </script>
 
 <style scoped>
-.header {
+#header {
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
   flex: 0 0 70px;
   padding: 0 15px;
   border-bottom: 1px solid #e9e9e9;
 }
 
-.label-name {
-  font-size: 22px;
-  color: #404040;
-}
-
 .search-label {
   display: flex;
+  flex: auto;
   position: relative;
   align-items: center;
 }
@@ -64,5 +63,19 @@ export default {
   top: 7px;
   left: 12px;
   color: #d9d9d9;
+}
+
+.user-avatar {
+  flex: none;
+  height: 40px;
+  margin: 0 10px;
+  border-radius: 50%;
+}
+
+.user-name {
+  flex: none;
+  font-size: 20px;
+  text-align: center;
+  color: #7265e6;
 }
 </style>
