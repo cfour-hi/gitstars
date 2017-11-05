@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>gitstars</title>
-    <link href='http://cdn.webfont.youziku.com/webfonts/nomal/96209/28827/59fc2d57f629d80ed4712495.css' rel='stylesheet' type='text/css' />
-  </head>
-  <body>
-    <div id="app"></div>
-    <% if (htmlWebpackPlugin.options.env === 'production') { %>
-      <link href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css" rel="stylesheet">
-      <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-      <link href="//cdn.bootcss.com/github-markdown-css/2.8.0/github-markdown.min.css" rel="stylesheet">
+
+<head>
+  <meta charset="utf-8">
+  <title>gitstars</title>
+  <% if (htmlWebpackPlugin.options.env === 'production') { %>
+    <link href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/github-markdown-css/2.8.0/github-markdown.min.css" rel="stylesheet">
     <% } %>
-    <!-- built files will be auto injected -->
-  </body>
+</head>
+
+<body>
+  <div id="app"></div>
+  <% if (htmlWebpackPlugin.options.env === 'production') { %>
+    <script src="//unpkg.com/vue@2.5.3/dist/vue.min.js"></script>
+    <script src="//unpkg.com/element-ui@2.0.3/lib/index.js"></script>
+    <script src="//unpkg.com/axios@0.17.0/dist/axios.min.js"></script>
+    <% } %>
+</body>
+
 </html>

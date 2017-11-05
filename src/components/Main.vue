@@ -172,7 +172,7 @@ export default {
 }
 
 .readme {
-  font-size: 30px;
+  font-size: 28px;
   margin: .5em;
   font-weight: 700;
 }

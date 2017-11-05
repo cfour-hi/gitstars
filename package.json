@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "0.17.0",
-    "element-ui": "^2.0.1",
+    "element-ui": "2.0.1",
     "font-awesome": "4.7.0",
     "github-markdown-css": "2.9.0",
     "normalize.css": "7.0.0",
@@ -76,6 +76,9 @@
     "not ie <= 8"
   ],
   "standard": {
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "ignore": [
+      "/assets/"
+    ]
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <header id="header">
     <h1 class="user-name">{{user.name}}</h1>
-    <img :src="user.avatar_url" alt="头像" class="user-avatar">
+    <img :src="user.avatar_url" class="user-avatar">
     <label class="search-label">
       <input v-model="searchValue" type="text" class="search-input" placeholder="开发者 | 仓库名" @input="handleChangeSearchValue">
       <i class="fa fa-search" aria-hidden="true"></i>
@@ -33,7 +33,7 @@ export default {
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
-  flex: 0 0 70px;
+  flex: 0 0 60px;
   padding: 0 15px;
   border-bottom: 1px solid #e9e9e9;
 }

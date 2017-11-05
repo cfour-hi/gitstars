@@ -29,8 +29,8 @@
           <i class="fa fa-plus-square" aria-hidden="true"></i>
           <span>添加</span>
         </div>
-        <div v-show="isEditLabel" class="nav-caption__operate-btn nav-caption__complete-btn" @click="handleCompleteEditLabels">完成</div>
-        <div v-show="!isEditLabel" class="nav-caption__operate-btn" @click="handleEditLabels">
+        <div v-show="isEditLabel" class="nav-caption__operate-btn nav-caption__complete-btn" @click="isEditLabel = false">完成</div>
+        <div v-show="!isEditLabel" class="nav-caption__operate-btn" @click="isEditLabel = true">
           <i class="fa fa-cog" aria-hidden="true"></i>
           <span>编辑</span>
         </div>
@@ -60,6 +60,10 @@
           <span v-show="!isEditLabel" class="nav-item-badge">{{repos.length}}</span>
         </li>
       </transition-group>
+      <div v-show="!labels.length" class="no-label vc-p">
+        <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
+        <p>添加标签</p>
+      </div>
     </div>
     <footer class="sidebar-footer">
       <span>Author&nbsp;:&nbsp;</span>
@@ -69,9 +73,6 @@
 </template>
 
 <script>
-// TODO
-// 删除标签动效
-
 const SAVE = 'save'
 const CANCEL = 'cancel'
 
@@ -119,12 +120,6 @@ export default {
       this.labelNameFormVisible = false
       this.labelName = ''
     },
-    handleEditLabels () {
-      this.isEditLabel = true
-    },
-    handleCompleteEditLabels () {
-      this.isEditLabel = false
-    },
     handleDeleteLabel () {
       document.body.click()
     },
@@ -151,7 +146,7 @@ export default {
 
 .app-name-img {
   width: 100%;
-  padding: 15px 0;
+  padding: 10px 0;
 }
 
 .nav-label {
@@ -196,6 +191,7 @@ export default {
 }
 
 .label-nav {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: auto;
@@ -222,6 +218,7 @@ export default {
   align-items: center;
   flex: 0 0 49px;
   padding: 0 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   user-select: none;
 }
@@ -347,6 +344,12 @@ export default {
 .label-list-enter-active,
 .label-list-level-active {
   transition: transform 0.3s;
+}
+
+.no-label {
+  font-size: 14px;
+  text-align: center;
+  color: #919191;
 }
 
 .sidebar-footer {

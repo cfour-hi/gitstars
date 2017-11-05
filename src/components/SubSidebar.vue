@@ -28,7 +28,7 @@
         </li>
       </ul>
       <div v-show="!repos.length" class="no-match vc-p">
-        <i class="fa fa-bell-o fa-5x" aria-hidden="true"></i>
+        <i class="fa fa-bell-o fa-3x" aria-hidden="true"></i>
         <p>没有匹配仓库</p>
         <p>
           <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
@@ -41,7 +41,7 @@
     </div>
     <div v-else class="loader vc-p">
       <i class="fa fa-cog fa-spin fa-2x"></i>
-      <p>正在获取 stars</p>
+      <p>正在获取 starred 仓库</p>
     </div>
   </nav>
 </template>

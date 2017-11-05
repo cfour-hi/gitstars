@@ -11,7 +11,9 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
-import { getUserInfo, getStarredRepos, getUserGists, saveLabelGist } from './api'
+import { getUserInfo, getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
+
+const GITSTARS_GIST_ID = 'gitstarsGistId'
 
 export default {
   name: 'app',
@@ -59,23 +61,48 @@ export default {
   created () {
     getUserInfo().then(response => (this.user = response))
 
-    axios.all([this._getStarredRepos(), getUserGists()]).then(axios.spread(async (repos, gists) => {
-      for (const { files, description, id } of gists) {
-        if (description === 'gitstars') {
-          this.gistId = id
-          const { raw_url } = files[Object.keys(files)[0]]
-          this.labels = await axios.get(raw_url)
-          break
-        }
+    const gitstarsGistId = window.localStorage.getItem(GITSTARS_GIST_ID)
+
+    new Promise((resolve, reject) => {
+      if (gitstarsGistId) {
+        this.gistId = gitstarsGistId
+        axios.all([this._getStarredRepos(), getGitstarsGist(gitstarsGistId)])
+          .then(axios.spread((repos, { files = {} } = {}) => {
+            const { content = '[]' } = files[Object.keys(files)[0]]
+            this.labels = JSON.parse(content)
+            resolve(this.labels)
+          }))
+      } else {
+        axios.all([this._getStarredRepos(), getUserGists()])
+          .then(axios.spread(async (repos, gists = []) => {
+            for (const { files = {}, description, id } of gists) {
+              if (description === window._gitstars.description) {
+                this.gistId = id
+                window.localStorage.setItem(GITSTARS_GIST_ID, id)
+                const { raw_url } = files[Object.keys(files)[0]]
+                this.labels = await axios.get(raw_url)
+                break
+              }
+            }
+            if (!this.gistId) {
+              createGitstarsGist().then(({ id }) => {
+                this.gistId = id
+                window.localStorage.setItem(GITSTARS_GIST_ID, id)
+                this.labels = []
+              })
+            }
+            resolve(this.labels)
+          }))
       }
+    }).then((labels = []) => {
       for (const { id, _labels } of this.starredRepos) {
-        for (const { name, repos } of this.labels) {
+        for (const { name, repos } of labels) {
           for (const repoId of repos) {
             if (repoId === id) _labels.push(name)
           }
         }
       }
-    }))
+    })
   },
   methods: {
     _getStarredRepos (page = 1) {
@@ -91,13 +118,13 @@ export default {
         resolve(this.starredRepos)
       })
     },
-    _saveLabelGist (message) {
+    _saveGitstarsGist (message) {
       const loadingNotify = this.$notify.info({
         iconClass: 'fa fa-cog fa-spin fa-fw',
         message: '正在执行，请稍后...',
         showClose: false
       })
-      return saveLabelGist(this.gistId, this.labels).then(() => {
+      return saveGitstarsGist(this.gistId, this.labels).then(() => {
         loadingNotify.close()
         this.$notify.success({ message, showClose: false })
       })
@@ -107,13 +134,13 @@ export default {
     },
     handleSaveNewLabel (name) {
       this.labels.push({ name, repos: [] })
-      this._saveLabelGist(`添加 ${name} 标签`).catch(() => this.labels.pop())
+      this._saveGitstarsGist(`添加 ${name} 标签`).catch(() => this.labels.pop())
     },
     handleDeleteLabel (labelName) {
       const index = this.labels.findIndex(({ name }) => name === labelName)
       const repos = this.labels[index]
       this.labels.splice(index, 1)
-      this._saveLabelGist(`删除 ${labelName} 标签`).catch(() => this.splice(index, 0, repos))
+      this._saveGitstarsGist(`删除 ${labelName} 标签`).catch(() => this.splice(index, 0, repos))
     },
     handleAddRepoLabel ({ id, name }) {
       const { repos } = this.labels.find(label => label.name === name) || {}
@@ -130,11 +157,11 @@ export default {
       const repo = this.starredRepos.find(repo => repo.id === id)
       const { _labels } = repo
       _labels.push(name)
-      this._saveLabelGist(`${repo.owner.login} / ${repo.name} 仓库添加 ${name} 标签`).catch(() => _labels.pop())
+      this._saveGitstarsGist(`${repo.owner.login} / ${repo.name} 仓库添加 ${name} 标签`).catch(() => _labels.pop())
     },
     handleDeleteRepoLabel ({ id, name }) {
       // 因为计算函数 this.currentLabelRepos 依赖 this.labels
-      // 所以先操作 this.currentLabelRepos 在操作 this.labels
+      // 所以先操作 this.currentLabelRepos 再操作 this.labels
       // 如果操作顺序交换
       // 则 this.currentLabelRepos 内无法找到 id 值对应的仓库
       // 因为 this.labels 内的值被改变之后立即更新了 this.currentLabelRepos 的值

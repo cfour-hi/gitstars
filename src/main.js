@@ -22,10 +22,11 @@ const { protocol, host } = window.location
 const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
 
 axios.get(`${protocol}//${host}${pathname}assets/config.json`).then(({ data }) => {
-  const { access, token, username, filename } = data
+  const { access, token, username, filename, description } = data
   window._gitstars = {
     username,
     filename,
+    description,
     accessToken: `${access}${token}`
   }
 
