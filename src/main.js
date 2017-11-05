@@ -1,8 +1,11 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import axios from 'axios'
 import { Tag, Input, Button, Popover, Autocomplete, Notification } from 'element-ui'
+
+import { parseURLSearch } from './util'
+import { getGitstarsAccessToken } from './api'
+import config from './config'
 
 Vue.config.productionTip = false
 Vue.use(Tag)
@@ -18,21 +21,39 @@ if (process.env.NODE_ENV === 'development') {
   require('github-markdown-css')
 }
 
-const { protocol, host } = window.location
-const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
+const GITSTARS_ACCESS_TOKEN = 'gitstars_access_token'
+const GITSTARS_CODE = 'gitstars_code'
+const { clientId, clientSecret } = config
 
-axios.get(`${protocol}//${host}${pathname}assets/config.json`).then(({ data }) => {
-  const { access, token, username, filename, description } = data
-  window._gitstars = {
-    username,
-    filename,
-    description,
-    accessToken: `${access}${token}`
+/* eslint-disable no-new */
+new Promise((resolve, reject) => {
+  const gitstarsAccessToken = window.localStorage.getItem(GITSTARS_ACCESS_TOKEN)
+  if (gitstarsAccessToken) return resolve(gitstarsAccessToken)
+
+  let gitstarsCode = window.localStorage.getItem(GITSTARS_CODE)
+  const { code } = parseURLSearch()
+  if (!gitstarsCode) gitstarsCode = code
+
+  if (gitstarsCode) {
+    window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
+    const { origin, pathname } = window.location
+    if (code) window.history.replaceState({}, null, `${origin}${pathname}`)
+
+    getGitstarsAccessToken({
+      code: gitstarsCode,
+      client_id: clientId,
+      client_secret: clientSecret
+    }).then(({ access_token }) => {
+      window.localStorage.setItem(GITSTARS_ACCESS_TOKEN, access_token)
+      resolve(access_token)
+    })
+  } else {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`
   }
+}).then(accessToken => {
+  window.gitstarsAccessToken = accessToken
 
   const App = () => import('./App')
-
-  /* eslint-disable no-new */
   new Vue({
     el: '#app',
     template: '<App/>',

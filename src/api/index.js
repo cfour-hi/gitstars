@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Notification } from 'element-ui'
 
-const { username, accessToken, filename, description } = window._gitstars
+import config from '../config'
 
 axios.defaults.baseURL = 'https://api.github.com'
 
@@ -9,7 +9,7 @@ axios.interceptors.request.use(config => {
   if (config.url.includes('http')) return config
 
   config.url += config.url.includes('?') ? '&' : '?'
-  config.url += `access_token=${accessToken}`
+  config.url += `access_token=${window.gitstarsAccessToken}`
   return config
 }, err => {
   return Promise.reject(err)
@@ -26,6 +26,13 @@ axios.interceptors.response.use(({ data }) => {
   Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
   return Promise.reject(err)
 })
+
+const { username, filename, description } = config
+
+export function getGitstarsAccessToken (params) {
+  return axios.post('https://gh-oauth.imsun.net', params)
+  // return axios.post('https://github.com/login/oauth/access_token', { params })
+}
 
 // https://developer.github.com/v3/users/#get-a-single-user
 export function getUserInfo () {

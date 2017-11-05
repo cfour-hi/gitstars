@@ -12,8 +12,9 @@ import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
 import { getUserInfo, getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
+import config from './config'
 
-const GITSTARS_GIST_ID = 'gitstarsGistId'
+const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
 export default {
   name: 'app',
@@ -76,7 +77,7 @@ export default {
         axios.all([this._getStarredRepos(), getUserGists()])
           .then(axios.spread(async (repos, gists = []) => {
             for (const { files = {}, description, id } of gists) {
-              if (description === window._gitstars.description) {
+              if (description === config.description) {
                 this.gistId = id
                 window.localStorage.setItem(GITSTARS_GIST_ID, id)
                 const { raw_url } = files[Object.keys(files)[0]]
