@@ -11,7 +11,7 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
-import { getUserInfo, getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
+import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
 import config from './config'
 
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
@@ -60,8 +60,6 @@ export default {
     }
   },
   created () {
-    getUserInfo().then(response => (this.user = response))
-
     const gitstarsGistId = window.localStorage.getItem(GITSTARS_GIST_ID)
 
     new Promise((resolve, reject) => {

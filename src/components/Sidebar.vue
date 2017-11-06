@@ -108,8 +108,11 @@ export default {
     }
   },
   watch: {
-    labels (newVal) {
-      this.dragLabels = this._tranformLabels(newVal)
+    labels: {
+      deep: true,
+      handler (newVal) {
+        this.dragLabels = this._tranformLabels(newVal)
+      }
     }
   },
   methods: {

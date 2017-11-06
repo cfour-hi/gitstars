@@ -9,7 +9,7 @@ axios.interceptors.request.use(config => {
   if (config.url.includes('http')) return config
 
   config.url += config.url.includes('?') ? '&' : '?'
-  config.url += `access_token=${window.gitstarsAccessToken}`
+  config.url += `access_token=${window._gitstarsAccessToken}`
   return config
 }, err => {
   return Promise.reject(err)
@@ -27,7 +27,7 @@ axios.interceptors.response.use(({ data }) => {
   return Promise.reject(err)
 })
 
-const { username, filename, description } = config
+const { filename, description } = config
 
 export function getGitstarsAccessToken (params) {
   return axios.post('https://gh-oauth.imsun.net', params)
@@ -36,7 +36,7 @@ export function getGitstarsAccessToken (params) {
 
 // https://developer.github.com/v3/users/#get-a-single-user
 export function getUserInfo () {
-  return axios.get(`/users/${username}`)
+  return axios.get(`/user`)
 }
 
 // https://developer.github.com/v3/gists/#create-a-gist
@@ -59,12 +59,12 @@ export function getGitstarsGist (id) {
 
 // https://developer.github.com/v3/gists/#list-a-users-gists
 export function getUserGists () {
-  return axios.get(`/users/${username}/gists`)
+  return axios.get(`/users/${window._gitstarsUser.login}/gists`)
 }
 
 // https://developer.github.com/v3/activity/starring/#list-repositories-being-starred
 export function getStarredRepos (page) {
-  return axios.get(`/users/${username}/starred?&page=${page}&per_page=100`)
+  return axios.get(`/users/${window._gitstarsUser.login}/starred?&page=${page}&per_page=100`)
 }
 
 // https://developer.github.com/v3/repos/contents/#get-the-readme
