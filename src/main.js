@@ -36,8 +36,10 @@ new Promise((resolve, reject) => {
 
   if (gitstarsCode) {
     window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
-    const { origin, pathname } = window.location
-    if (code) window.history.replaceState({}, null, `${origin}${pathname}`)
+
+    let href = window.location.href.replace(/code=[^&]+/, '')
+    if (href[href.length - 1] === '?') href = href.slice(0, -1)
+    if (code) window.history.replaceState({}, null, `${href}`)
 
     getGitstarsAccessToken({
       code: gitstarsCode,
