@@ -25,12 +25,12 @@
     <div class="label-nav">
       <header class="nav-caption">
         <h3 class="nav-caption__title">标签</h3>
-        <div class="nav-caption__operate-btn" @click="handleAddNewLabel">
+        <div class="nav-caption__operate-btn" :class="{ disabled: isEditLabel }" @click="handleAddNewLabel">
           <i class="fa fa-plus-square" aria-hidden="true"></i>
           <span>添加</span>
         </div>
-        <div v-show="isEditLabel" class="nav-caption__operate-btn nav-caption__complete-btn" @click="isEditLabel = false">完成</div>
-        <div v-show="!isEditLabel" class="nav-caption__operate-btn" @click="isEditLabel = true">
+        <div v-show="isEditLabel" class="nav-caption__operate-btn nav-caption__complete-btn" @click="handleCompleteEditLabels">完成</div>
+        <div v-show="!isEditLabel" :class="{ disabled: labelNameFormVisible }" class="nav-caption__operate-btn" @click="handleEditLabels">
           <i class="fa fa-cog" aria-hidden="true"></i>
           <span>编辑</span>
         </div>
@@ -44,22 +44,26 @@
           </div>
         </form>
       </transition>
-      <transition-group name="label-list" tag="ul" class="nav-label label-list">
-        <li v-for="{name, repos} of labels" :key="name" class="nav-item" @click="handleToggleLabel(name)">
-          <label class="nav-item__label slo">
-            <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
-            <span>{{name}}</span>
-          </label>
-          <el-popover placement="right" title="Are you sure?">
-            <i v-show="isEditLabel" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel"></i>
-            <footer class="popover-footer">
-              <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-              <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(name)">Yes</el-button>
-            </footer>
-          </el-popover>
-          <span v-show="!isEditLabel" class="nav-item-badge">{{repos.length}}</span>
-        </li>
-      </transition-group>
+      <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
+      <draggable :list="dragLabels" :options="dragOptions">
+        <transition-group name="label-list" tag="ul" class="nav-label label-list">
+          <li v-for="({name, repos, _isEdit, _ref}, index) of dragLabels" :key="index" class="nav-item" @click="handleToggleLabel(name)">
+            <label class="nav-item__label slo" @dblclick="handleEditLabelName(index)">
+              <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
+              <span v-show="!_isEdit" class="nav-item__name slo">{{name}}</span>
+              <input v-show="_isEdit" :ref="_ref" type="text" :value="name" class="nav-item__input--name" @blur="handleChangeLabelName(index)" @keyup.enter="handleChangeLabelName(index)">
+            </label>
+            <el-popover placement="right" title="Are you sure?">
+              <i v-show="isEditLabel" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel"></i>
+              <footer class="popover-footer">
+                <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
+                <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(index)">Yes</el-button>
+              </footer>
+            </el-popover>
+            <span v-show="!isEditLabel" class="nav-item-badge">{{repos.length}}</span>
+          </li>
+        </transition-group>
+      </draggable>
       <div v-show="!labels.length" class="no-label vc-p">
         <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
         <p>添加标签</p>
@@ -73,11 +77,14 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 const SAVE = 'save'
 const CANCEL = 'cancel'
 
 export default {
   name: 'sidebar',
+  components: { draggable },
   props: {
     starredReposLen: { type: Number, default: 0 },
     unlabeledReposLen: { type: Number, default: 0 },
@@ -88,14 +95,39 @@ export default {
       labelNameFormVisible: false,
       labelName: '',
       saveOrCancel: '',
-      isEditLabel: false
+      isEditLabel: false,
+      dragLabels: this._tranformLabels(),
+      dragLabelsClone: []
+    }
+  },
+  computed: {
+    dragOptions () {
+      return {
+        disabled: !this.isEditLabel
+      }
+    }
+  },
+  watch: {
+    labels (newVal) {
+      this.dragLabels = this._tranformLabels(newVal)
     }
   },
   methods: {
+    _tranformLabels (labels = this.labels) {
+      const dragLabels = JSON.parse(JSON.stringify(labels))
+      dragLabels.forEach((label, index) => {
+        label._isEdit = false
+        label._ref = `labelNameEditInput${index}`
+      })
+      return dragLabels
+    },
     handleToggleLabel (name) {
+      if (this.isEditLabel) return
       this.$emit('toggleLabel', name)
     },
     handleAddNewLabel () {
+      if (this.isEditLabel) return
+
       this.labelNameFormVisible = true
       this.$nextTick(() => this.$refs.labelFormNameInput.focus())
     },
@@ -120,14 +152,44 @@ export default {
       this.labelNameFormVisible = false
       this.labelName = ''
     },
+    handleEditLabels () {
+      if (this.labelNameFormVisible) return
+
+      this.isEditLabel = true
+      this.dragLabelsClone = JSON.parse(JSON.stringify(this.dragLabels))
+    },
+    handleEditLabelName (index) {
+      if (!this.isEditLabel) return
+
+      this.dragLabels.forEach(label => (label._isEdit = false))
+      this.dragLabels[index]._isEdit = true
+      this.$nextTick(() => this.$refs[`labelNameEditInput${index}`][0].focus())
+    },
+    handleChangeLabelName (index) {
+      this.dragLabels[index].name = this.$refs[`labelNameEditInput${index}`][0].value.trim()
+      this.dragLabels[index]._isEdit = false
+    },
     handleDeleteLabel () {
       document.body.click()
     },
-    handleConfirmDeleteLabel (name) {
-      this.$emit('deleteLabel', name)
+    handleConfirmDeleteLabel (index) {
+      this.dragLabels.splice(index, 1)
     },
     handleCancelDeleteLabel () {
       document.body.click()
+    },
+    handleCompleteEditLabels () {
+      this.isEditLabel = false
+
+      let isChanged = false
+      for (const [index, { name }] of this.dragLabelsClone.entries()) {
+        if (!this.dragLabels[index] || name !== this.dragLabels[index].name) {
+          isChanged = true
+          break
+        }
+      }
+      const labels = this.dragLabels.map(({ name, repos }) => ({ name, repos }))
+      if (isChanged) this.$emit('completeEditLabels', labels)
     }
   }
 }
@@ -169,7 +231,7 @@ export default {
   padding: 0 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
-  line-height: 1.8;
+  transition: all 0.3s;
 }
 
 .nav-item:hover,
@@ -182,7 +244,49 @@ export default {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.nav-item.sortable-chosen {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-item__label {
+  display: flex;
+  align-items: center;
+  flex: auto;
+  padding-right: 10px;
+  line-height: 40px;
+  cursor: pointer;
+}
+
+.nav-item__label .fa-tag {
+  flex: 0 0 15px;
+  margin-top: 3px;
+  margin-right: 5px;
+}
+
+.nav-item__name {
+  flex: auto;
+}
+
+.nav-item__input--name {
+  box-shadow: border-box;
+  width: 100%;
+  border: none;
+  line-height: 1.5;
+  color: #fff;
+  background-color: transparent;
+  outline: none;
+}
+
+.edit-label-tip {
+  font-size: 12px;
+  text-align: center;
+  padding: 5px;
+  color: #919191;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .nav-item-badge {
+  flex: none;
   padding: 0 0.8em;
   line-height: 1.8;
   border-radius: 1em;
@@ -221,6 +325,15 @@ export default {
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   user-select: none;
+}
+
+.nav-caption__operate-btn.disabled {
+  color: #919191;
+  cursor: default;
+}
+
+.nav-caption__operate-btn.disabled:hover {
+  background-color: transparent;
 }
 
 .nav-caption__complete-btn {

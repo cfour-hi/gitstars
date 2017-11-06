@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @deleteLabel="handleDeleteLabel"></layout-sidebar>
+    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @completeEditLabels="handleCompleteEditLabels"></layout-sidebar>
     <layout-main :user="user" :current-label-repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
   </div>
 </template>
@@ -136,11 +136,10 @@ export default {
       this.labels.push({ name, repos: [] })
       this._saveGitstarsGist(`添加 ${name} 标签`).catch(() => this.labels.pop())
     },
-    handleDeleteLabel (labelName) {
-      const index = this.labels.findIndex(({ name }) => name === labelName)
-      const repos = this.labels[index]
-      this.labels.splice(index, 1)
-      this._saveGitstarsGist(`删除 ${labelName} 标签`).catch(() => this.splice(index, 0, repos))
+    handleCompleteEditLabels (newLabels = []) {
+      const oldLabels = this.labels
+      this.labels = newLabels
+      this._saveGitstarsGist(`编辑标签完成`).catch(() => (this.labels = oldLabels))
     },
     handleAddRepoLabel ({ id, name }) {
       const { repos } = this.labels.find(label => label.name === name) || {}
