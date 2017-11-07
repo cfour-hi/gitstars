@@ -31,16 +31,18 @@ new Promise(async (resolve, reject) => {
   const accessToken = window.localStorage.getItem(GITSTARS_ACCESS_TOKEN)
   if (accessToken) return resolve(accessToken)
 
-  let gitstarsCode = window.localStorage.getItem(GITSTARS_CODE)
+  const storageCode = window.localStorage.getItem(GITSTARS_CODE)
   const { code } = parseURLSearch()
-  if (!gitstarsCode) gitstarsCode = code
+  const gitstarsCode = storageCode || code
 
   if (gitstarsCode) {
-    window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
+    if (!storageCode) window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
 
-    let href = window.location.href.replace(/code=[^&]+/, '')
-    if (href[href.length - 1] === '?') href = href.slice(0, -1)
-    if (code) window.history.replaceState({}, null, `${href}`)
+    if (code) {
+      let href = window.location.href.replace(/code=[^&]+/, '')
+      if (href[href.length - 1] === '?') href = href.slice(0, -1)
+      window.history.replaceState({}, null, `${href}`)
+    }
 
     const { access_token } = await getGitstarsAccessToken({
       code: gitstarsCode,

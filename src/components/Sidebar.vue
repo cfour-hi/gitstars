@@ -143,7 +143,7 @@ export default {
       if (!labelName) message = '标签名称不能为空'
       if (this.labels.find(({ name }) => name === labelName)) message = '已存在此标签'
       if (message) {
-        this.$notify.info({ message, showClose: false })
+        this.$notify.info({ message, showClose: false, position: 'botton-right' })
         return this.$refs.labelFormNameInput.focus()
       }
 
