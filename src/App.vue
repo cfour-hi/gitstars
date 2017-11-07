@@ -122,11 +122,11 @@ export default {
         iconClass: 'fa fa-cog fa-spin fa-fw',
         message: '正在执行，请稍后...',
         showClose: false,
-        position: 'botton-right'
+        position: 'bottom-right'
       })
       return saveGitstarsGist(this.gistId, this.labels).then(() => {
         loadingNotify.close()
-        this.$notify.success({ message, showClose: false, position: 'botton-right' })
+        this.$notify.success({ message, showClose: false, position: 'bottom-right' })
       })
     },
     handleToggleLabel (name) {
