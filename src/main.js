@@ -1,8 +1,9 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import axios from 'axios'
 import { Tag, Input, Button, Popover, Autocomplete, Notification } from 'element-ui'
+
+import { getConfig, getUserInfo } from './api'
 
 Vue.config.productionTip = false
 Vue.use(Tag)
@@ -18,21 +19,26 @@ if (process.env.NODE_ENV === 'development') {
   require('github-markdown-css')
 }
 
-const { protocol, host } = window.location
-const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
+const GITSTARS = 'gitstars'
 
-axios.get(`${protocol}//${host}${pathname}assets/config.json`).then(({ data }) => {
-  const { access, token, username, filename, description } = data
-  window._gitstars = {
-    username,
-    filename,
-    description,
-    accessToken: `${access}${token}`
+/* eslint-disable no-new */
+new Promise(async (resolve, reject) => {
+  const gitstars = window.localStorage.getItem(GITSTARS)
+  if (gitstars) {
+    window._gitstars = JSON.parse(gitstars)
+    return resolve(window._gitstars)
   }
 
-  const App = () => import('./App')
+  const { access, token, filename, description } = await getConfig()
+  const accessToken = `${access}${token}`
+  window._gitstars = { filename, description, accessToken }
+  window._gitstars.user = await getUserInfo()
 
-  /* eslint-disable no-new */
+  resolve(window._gitstars)
+}).then(gitstars => {
+  window.localStorage.setItem(GITSTARS, JSON.stringify(gitstars))
+
+  const App = () => import('./App')
   new Vue({
     el: '#app',
     template: '<App/>',

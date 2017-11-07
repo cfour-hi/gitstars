@@ -1,6 +1,6 @@
 <template>
   <header id="header">
-    <h1 class="user-name">{{user.name}}</h1>
+    <h1 class="user-name"><a :href="user.html_url" target="_blank">{{user.name}}</a></h1>
     <img :src="user.avatar_url" class="user-avatar">
     <label class="search-label">
       <input v-model="searchValue" type="text" class="search-input" placeholder="开发者 | 仓库名" @input="handleChangeSearchValue">

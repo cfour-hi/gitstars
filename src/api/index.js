@@ -1,15 +1,13 @@
 import axios from 'axios'
 import { Notification } from 'element-ui'
 
-const { username, accessToken, filename, description } = window._gitstars
-
 axios.defaults.baseURL = 'https://api.github.com'
 
 axios.interceptors.request.use(config => {
   if (config.url.includes('http')) return config
 
   config.url += config.url.includes('?') ? '&' : '?'
-  config.url += `access_token=${accessToken}`
+  config.url += `access_token=${window._gitstars.accessToken}`
   return config
 }, err => {
   return Promise.reject(err)
@@ -27,18 +25,24 @@ axios.interceptors.response.use(({ data }) => {
   return Promise.reject(err)
 })
 
-// https://developer.github.com/v3/users/#get-a-single-user
+export function getConfig () {
+  const { protocol, host } = window.location
+  const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
+  return axios.get(`${protocol}//${host}${pathname}assets/config.json`)
+}
+
+// https://developer.github.com/v3/users/#get-the-authenticated-user
 export function getUserInfo () {
-  return axios.get(`/users/${username}`)
+  return axios.get(`/user`)
 }
 
 // https://developer.github.com/v3/gists/#create-a-gist
 export function createGitstarsGist () {
   return axios.post('/gists', {
-    description,
+    description: window._gitstars.description,
     public: true,
     files: {
-      [filename]: {
+      [window._gitstars.filename]: {
         content: JSON.stringify([])
       }
     }
@@ -52,12 +56,12 @@ export function getGitstarsGist (id) {
 
 // https://developer.github.com/v3/gists/#list-a-users-gists
 export function getUserGists () {
-  return axios.get(`/users/${username}/gists`)
+  return axios.get(`/users/${window._gitstars.user.login}/gists`)
 }
 
 // https://developer.github.com/v3/activity/starring/#list-repositories-being-starred
 export function getStarredRepos (page) {
-  return axios.get(`/users/${username}/starred?&page=${page}&per_page=100`)
+  return axios.get(`/users/${window._gitstars.user.login}/starred?&page=${page}&per_page=100`)
 }
 
 // https://developer.github.com/v3/repos/contents/#get-the-readme
@@ -81,7 +85,7 @@ export function getRenderedReadme (data) {
 export function saveGitstarsGist (id, labels) {
   return axios.patch(`/gists/${id}`, {
     files: {
-      [filename]: {
+      [window._gitstars.filename]: {
         content: JSON.stringify(labels)
       }
     }

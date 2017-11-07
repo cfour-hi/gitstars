@@ -11,7 +11,7 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
-import { getUserInfo, getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
+import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
 
 const GITSTARS_GIST_ID = 'gitstarsGistId'
 
@@ -20,7 +20,7 @@ export default {
   components: { LayoutSidebar, LayoutMain },
   data () {
     return {
-      user: {},
+      user: window._gitstars.user,
       starredRepos: [],
       loadStarredReposCompleted: false,
       labels: [],
@@ -59,8 +59,6 @@ export default {
     }
   },
   created () {
-    getUserInfo().then(response => (this.user = response))
-
     const gitstarsGistId = window.localStorage.getItem(GITSTARS_GIST_ID)
 
     new Promise((resolve, reject) => {
@@ -122,11 +120,12 @@ export default {
       const loadingNotify = this.$notify.info({
         iconClass: 'fa fa-cog fa-spin fa-fw',
         message: '正在执行，请稍后...',
-        showClose: false
+        showClose: false,
+        position: 'bottom-right'
       })
       return saveGitstarsGist(this.gistId, this.labels).then(() => {
         loadingNotify.close()
-        this.$notify.success({ message, showClose: false })
+        this.$notify.success({ message, showClose: false, position: 'bottom-right' })
       })
     },
     handleToggleLabel (name) {
