@@ -173,7 +173,7 @@ export default {
       const idIndex = repos.findIndex(repoId => repoId === id)
       repos.splice(idIndex, 1)
 
-      this._saveLabelGist(`${repo.owner.login} / ${repo.name} 仓库删除 ${name} 标签`).catch(() => {
+      this._saveGitstarsGist(`${repo.owner.login} / ${repo.name} 仓库删除 ${name} 标签`).catch(() => {
         _labels.splice(labelIndex, 0, name)
         repos.splice(idIndex, 0, id)
       })
