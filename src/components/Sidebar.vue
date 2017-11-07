@@ -177,6 +177,7 @@ export default {
     },
     handleConfirmDeleteLabel (index) {
       this.dragLabels.splice(index, 1)
+      document.body.click()
     },
     handleCancelDeleteLabel () {
       document.body.click()

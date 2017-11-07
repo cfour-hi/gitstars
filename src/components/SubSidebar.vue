@@ -73,6 +73,7 @@ export default {
     },
     handleConfirmDeleteLabel (name, id) {
       this.$emit('deleteRepoLabel', { id, name })
+      document.body.click()
     },
     handleCancelDeleteLabel () {
       document.body.click()
