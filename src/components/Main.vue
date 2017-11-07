@@ -92,7 +92,7 @@ export default {
     },
     handleSaveRepoLabel () {
       const labelName = this.labelName.trim()
-      if (!labelName) return this.$notify.info({ message: '标签名称不能为空', showClose: false, position: 'bottom-right' })
+      if (!labelName) return this.$notify.warning({ message: '标签名称不能为空', showClose: false, position: 'bottom-right' })
       const { id } = this.currentRepo
       this.$emit('addRepoLabel', { id, name: labelName })
       this.labelName = ''

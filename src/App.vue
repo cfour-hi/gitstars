@@ -13,7 +13,7 @@ import LayoutMain from './components/Main'
 
 import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
 
-const GITSTARS_GIST_ID = 'gitstarsGistId'
+const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
 export default {
   name: 'app',
@@ -32,7 +32,7 @@ export default {
     unlabeledRepos () {
       let labeledReposId = []
       for (const { repos } of this.labels) {
-        labeledReposId = labeledReposId.concat(repos)
+        labeledReposId = [...labeledReposId, ...repos]
       }
       labeledReposId = new Set(labeledReposId)
       const unlabeledRepos = []
@@ -61,38 +61,45 @@ export default {
   created () {
     const gitstarsGistId = window.localStorage.getItem(GITSTARS_GIST_ID)
 
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
       if (gitstarsGistId) {
         this.gistId = gitstarsGistId
-        axios.all([this._getStarredRepos(), getGitstarsGist(gitstarsGistId)])
-          .then(axios.spread((repos, { files = {} } = {}) => {
-            const { content = '[]' } = files[Object.keys(files)[0]]
-            this.labels = JSON.parse(content)
-            resolve(this.labels)
-          }))
+        let labels = window.localStorage.getItem(gitstarsGistId)
+        if (!labels) {
+          const { files } = await getGitstarsGist(gitstarsGistId)
+          const { [window._gitstars.filename]: file = {} } = files
+          const { content = '[]' } = file
+          labels = content
+        }
+        this.labels = JSON.parse(labels)
+
+        await this._getStarredRepos()
+        resolve(this.labels)
       } else {
-        axios.all([this._getStarredRepos(), getUserGists()])
-          .then(axios.spread(async (repos, gists = []) => {
-            for (const { files = {}, description, id } of gists) {
-              if (description === window._gitstars.description) {
-                this.gistId = id
-                window.localStorage.setItem(GITSTARS_GIST_ID, id)
-                const { raw_url } = files[Object.keys(files)[0]]
-                this.labels = await axios.get(raw_url)
-                break
-              }
+        axios.spread(async () => {
+          const [, gists] = [...await axios.all([this._getStarredRepos(), getUserGists()])]
+
+          for (const { files = {}, description, id } of gists) {
+            if (description === window._gitstars.description) {
+              this.gistId = id
+              const { [window._gitstars.filename]: file = {} } = files
+              const { raw_url } = file
+              this.labels = await axios.get(raw_url)
+              break
             }
-            if (!this.gistId) {
-              createGitstarsGist().then(({ id }) => {
-                this.gistId = id
-                window.localStorage.setItem(GITSTARS_GIST_ID, id)
-                this.labels = []
-              })
-            }
-            resolve(this.labels)
-          }))
+          }
+          if (!this.gistId) {
+            const { id } = await createGitstarsGist()
+            this.gistId = id
+            this.labels = []
+          }
+          window.localStorage.setItem(GITSTARS_GIST_ID, this.gistId)
+          resolve(this.labels)
+        })()
       }
     }).then((labels = []) => {
+      window.localStorage.setItem(this.gistId, JSON.stringify(labels))
+
       for (const { id, _labels } of this.starredRepos) {
         for (const { name, repos } of labels) {
           for (const repoId of repos) {
@@ -109,7 +116,7 @@ export default {
         do {
           repos = await getStarredRepos(page++)
           repos.forEach(repo => (repo._labels = []))
-          this.starredRepos = this.starredRepos.concat(repos)
+          this.starredRepos = [...this.starredRepos, ...repos]
         } while (repos.length === 100)
 
         this.loadStarredReposCompleted = true
@@ -124,6 +131,7 @@ export default {
         position: 'bottom-right'
       })
       return saveGitstarsGist(this.gistId, this.labels).then(() => {
+        window.localStorage.setItem(this.gistId, JSON.stringify(this.labels))
         loadingNotify.close()
         this.$notify.success({ message, showClose: false, position: 'bottom-right' })
       })
