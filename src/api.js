@@ -34,7 +34,7 @@ export function getGitstarsAccessToken (params) {
   // return axios.post('https://github.com/login/oauth/access_token', { params })
 }
 
-// https://developer.github.com/v3/users/#get-a-single-user
+// https://developer.github.com/v3/users/#get-the-authenticated-user
 export function getUserInfo () {
   return axios.get(`/user`)
 }

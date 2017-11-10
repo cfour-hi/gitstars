@@ -2,5 +2,5 @@ export default {
   clientId: '75cf00b02deb33e63424',
   clientSecret: '6fa564cbd46f6bdfa1fb81ddce5503dcbe4ab4c4',
   filename: 'gitstars.json',
-  description: 'github stars manager'
+  description: `github stars manager for ${process.env.NODE_ENV}`
 }
