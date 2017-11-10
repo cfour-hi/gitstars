@@ -27,8 +27,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   externals: {
     vue: 'Vue',
-    axios: 'axios',
-    'element-ui': 'ELEMENT'
+    axios: 'axios'
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
