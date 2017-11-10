@@ -61,6 +61,10 @@ a:hover {
   font-family: FontAwesome !important;
 }
 
+.el-notification__icon.fa-cog::before {
+  content: '\f013';
+}
+
 .el-notification__title {
   line-height: 1.8;
 }
