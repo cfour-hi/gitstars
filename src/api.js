@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { Notification } from 'element-ui'
 
+import config from './config'
+
 axios.defaults.baseURL = 'https://api.github.com'
 
 axios.interceptors.request.use(config => {
@@ -25,6 +27,8 @@ axios.interceptors.response.use(({ data }) => {
   return Promise.reject(err)
 })
 
+const { filename, description } = config
+
 export function getConfig () {
   const { protocol, host } = window.location
   const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
@@ -39,10 +43,10 @@ export function getUserInfo () {
 // https://developer.github.com/v3/gists/#create-a-gist
 export function createGitstarsGist () {
   return axios.post('/gists', {
-    description: window._gitstars.description,
+    description,
     public: true,
     files: {
-      [window._gitstars.filename]: {
+      [filename]: {
         content: JSON.stringify([])
       }
     }
@@ -85,7 +89,7 @@ export function getRenderedReadme (data) {
 export function saveGitstarsGist (id, labels) {
   return axios.patch(`/gists/${id}`, {
     files: {
-      [window._gitstars.filename]: {
+      [filename]: {
         content: JSON.stringify(labels)
       }
     }

@@ -26,18 +26,16 @@ new Promise(async (resolve, reject) => {
   const gitstars = window.localStorage.getItem(GITSTARS)
   if (gitstars) {
     window._gitstars = JSON.parse(gitstars)
-    return resolve(window._gitstars)
+    return resolve()
   }
 
-  const { access, token, filename, description } = await getConfig()
-  const accessToken = `${access}${token}`
-  window._gitstars = { filename, description, accessToken }
+  const { access, token } = await getConfig()
+  window._gitstars = { accessToken: `${access}${token}` }
   window._gitstars.user = await getUserInfo() // 用户信息依赖 accessToken
 
-  resolve(window._gitstars)
-}).then(gitstars => {
-  window.localStorage.setItem(GITSTARS, JSON.stringify(gitstars))
-
+  window.localStorage.setItem(GITSTARS, JSON.stringify(window._gitstars))
+  resolve()
+}).then(() => {
   const App = () => import('./App')
   new Vue({
     el: '#app',

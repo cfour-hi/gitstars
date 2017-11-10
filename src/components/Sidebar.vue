@@ -25,7 +25,7 @@
     <div class="label-nav">
       <header class="nav-caption">
         <h3 class="nav-caption__title">标签</h3>
-        <div class="nav-caption__operate-btn" :class="{ disabled: isEditLabel }" @click="handleAddNewLabel">
+        <div class="nav-caption__operate-btn" :class="{ disabled: isEditLabel || labelNameFormVisible }" @click="handleAddNewLabel">
           <i class="fa fa-plus-square" aria-hidden="true"></i>
           <span>添加</span>
         </div>
@@ -127,7 +127,7 @@ export default {
       this.$emit('toggleLabel', id)
     },
     handleAddNewLabel () {
-      if (this.isEditLabel) return
+      if (this.isEditLabel || this.labelNameFormVisible) return
 
       this.labelNameFormVisible = true
       this.$nextTick(() => this.$refs.labelFormNameInput.focus())
@@ -307,7 +307,7 @@ function tranformLabels (labels = {}) {
   cursor: pointer;
 }
 
-.nav-item__label .fa-tag {
+.nav-item__label .fa {
   flex: 0 0 15px;
   margin-top: 3px;
   margin-right: 5px;

@@ -12,6 +12,7 @@ import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 
 import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
+import config from './config'
 
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 let gitstarsGistId = ''
@@ -66,7 +67,7 @@ export default {
         let labels = window.localStorage.getItem(gitstarsGistId)
         if (!labels) {
           const { files } = await getGitstarsGist(gitstarsGistId)
-          const { [window._gitstars.filename]: file = {} } = files
+          const { [config.filename]: file = {} } = files
           const { content = '[]' } = file
           labels = content
         }
@@ -79,9 +80,9 @@ export default {
           const [, gists] = [...await axios.all([loadStarredRepos.call(this), getUserGists()])]
 
           for (const { files = {}, description, id } of gists) {
-            if (description === window._gitstars.description) {
+            if (description === config.description) {
               gitstarsGistId = id
-              const { [window._gitstars.filename]: file = {} } = files
+              const { [config.filename]: file = {} } = files
               const { raw_url } = file
               this.labels = await axios.get(raw_url)
               break
