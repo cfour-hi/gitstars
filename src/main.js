@@ -32,7 +32,7 @@ new Promise(async (resolve, reject) => {
   const { access, token, filename, description } = await getConfig()
   const accessToken = `${access}${token}`
   window._gitstars = { filename, description, accessToken }
-  window._gitstars.user = await getUserInfo()
+  window._gitstars.user = await getUserInfo() // 用户信息依赖 accessToken
 
   resolve(window._gitstars)
 }).then(gitstars => {

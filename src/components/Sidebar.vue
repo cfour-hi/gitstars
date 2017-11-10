@@ -7,14 +7,14 @@
       </a>
     </header>
     <ul class="nav-label">
-      <li class="nav-item" @click="handleToggleLabel('_all$')">
+      <li class="nav-item" @click="handleToggleLabel(0)">
         <label class="nav-item__label">
           <i class="fa fa-fw fa-bars" aria-hidden="true"></i>
           <span>全部</span>
         </label>
         <span class="nav-item-badge">{{starredReposLen}}</span>
       </li>
-      <li class="nav-item" @click="handleToggleLabel('_unlabeled$')">
+      <li class="nav-item" @click="handleToggleLabel(-1)">
         <label class="nav-item__label">
           <i class="fa fa-fw fa-star-o" aria-hidden="true"></i>
           <span>未标签</span>
@@ -47,20 +47,20 @@
       <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
       <draggable :list="dragLabels" :options="dragOptions">
         <transition-group name="label-list" tag="ul" class="nav-label label-list">
-          <li v-for="({name, repos, _isEdit, _ref}, index) of dragLabels" :key="index" class="nav-item" @click="handleToggleLabel(name)">
-            <label class="nav-item__label slo" @dblclick="handleEditLabelName(index)">
+          <li v-for="(label, index) of dragLabels" :key="label.id" class="nav-item" @click="handleToggleLabel(label.id)">
+            <label class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
               <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
-              <span v-show="!_isEdit" class="nav-item__name slo">{{name}}</span>
-              <input v-show="_isEdit" :ref="_ref" type="text" :value="name" class="nav-item__input--name" @blur="handleChangeLabelName(index)" @keyup.enter="handleChangeLabelName(index)">
+              <span v-show="!label._isEdit" class="nav-item__name slo">{{label.name}}</span>
+              <input v-show="label._isEdit" :ref="label._ref" type="text" :value="label.name" class="nav-item__input--name" @blur="handleChangeLabelNameByBlur(label)" @keyup.enter="handleChangeLabelNameByEnter(label)" @keyup.esc="handleCancelEditLabelName(label)">
             </label>
             <el-popover placement="right" title="Are you sure?">
               <i v-show="isEditLabel" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel"></i>
               <footer class="popover-footer">
                 <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-                <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(index)">Yes</el-button>
+                <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(label.id, index)">Yes</el-button>
               </footer>
             </el-popover>
-            <span v-show="!isEditLabel" class="nav-item-badge">{{repos.length}}</span>
+            <span v-show="!isEditLabel" class="nav-item-badge">{{label.repos.length}}</span>
           </li>
         </transition-group>
       </draggable>
@@ -79,8 +79,12 @@
 <script>
 import draggable from 'vuedraggable'
 
-const SAVE = 'save'
-const CANCEL = 'cancel'
+import constants from '../constants'
+
+const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
+const classSave = 'save'
+const classCancel = 'cancel'
+let dragLabelsClone = []
 
 export default {
   name: 'sidebar',
@@ -96,8 +100,7 @@ export default {
       labelName: '',
       saveOrCancel: '',
       isEditLabel: false,
-      dragLabels: this._tranformLabels(),
-      dragLabelsClone: []
+      dragLabels: tranformLabels(this.labels)
     }
   },
   computed: {
@@ -111,22 +114,17 @@ export default {
     labels: {
       deep: true,
       handler (newVal) {
-        this.dragLabels = this._tranformLabels(newVal)
+        this.dragLabels = tranformLabels(newVal)
       }
     }
   },
+  destroyed () {
+    dragLabelsClone = []
+  },
   methods: {
-    _tranformLabels (labels = this.labels) {
-      const dragLabels = JSON.parse(JSON.stringify(labels))
-      dragLabels.forEach((label, index) => {
-        label._isEdit = false
-        label._ref = `labelNameEditInput${index}`
-      })
-      return dragLabels
-    },
-    handleToggleLabel (name) {
+    handleToggleLabel (id) {
       if (this.isEditLabel) return
-      this.$emit('toggleLabel', name)
+      this.$emit('toggleLabel', id)
     },
     handleAddNewLabel () {
       if (this.isEditLabel) return
@@ -135,13 +133,13 @@ export default {
       this.$nextTick(() => this.$refs.labelFormNameInput.focus())
     },
     handleInputLabelName () {
-      this.saveOrCancel = this.labelName.trim().length ? SAVE : CANCEL
+      this.saveOrCancel = this.labelName.trim().length ? classSave : classCancel
     },
     handleAddLabel () {
       let message = ''
       const labelName = this.labelName.trim()
-      if (!labelName) message = '标签名称不能为空'
-      if (this.labels.find(({ name }) => name === labelName)) message = '已存在此标签'
+      if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (this.labels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
       if (message) {
         this.$notify.warning({ message, showClose: false, position: 'bottom-right' })
         return this.$refs.labelFormNameInput.focus()
@@ -159,24 +157,61 @@ export default {
       if (this.labelNameFormVisible) return
 
       this.isEditLabel = true
-      this.dragLabelsClone = JSON.parse(JSON.stringify(this.dragLabels))
+      dragLabelsClone = JSON.parse(JSON.stringify(this.dragLabels))
     },
-    handleEditLabelName (index) {
+    handleEditLabelName (label) {
       if (!this.isEditLabel) return
 
       this.dragLabels.forEach(label => (label._isEdit = false))
-      this.dragLabels[index]._isEdit = true
-      this.$nextTick(() => this.$refs[`labelNameEditInput${index}`][0].focus())
+      label._isEdit = true
+      label._preName = label.name
+      this.$nextTick(() => this.$refs[label._ref][0].focus())
     },
-    handleChangeLabelName (index) {
-      this.dragLabels[index].name = this.$refs[`labelNameEditInput${index}`][0].value.trim()
-      this.dragLabels[index]._isEdit = false
+    handleChangeLabelNameByBlur (label) {
+      const $input = this.$refs[label._ref][0]
+      const newLabelName = $input.value.trim()
+      if (!newLabelName) {
+        label.name = label._preName
+        label._isEdit = false
+        return
+      }
+
+      if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) {
+        this.$notify.warning({ message: LABEL_NAME_ALREADY_EXIST, showClose: false, position: 'bottom-right' })
+        return $input.focus()
+      }
+
+      label.name = newLabelName
+      label._preName = ''
+      label._isEdit = false
+    },
+    handleChangeLabelNameByEnter (label) {
+      let message = ''
+      const $input = this.$refs[label._ref][0]
+      const newLabelName = $input.value.trim()
+      if (!newLabelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) message = LABEL_NAME_ALREADY_EXIST
+
+      if (message) {
+        this.$notify.warning({ message, showClose: false, position: 'bottom-right' })
+        return $input.focus()
+      }
+
+      label.name = newLabelName
+      label._preName = ''
+      label._isEdit = false
+    },
+    handleCancelEditLabelName (label) {
+      label.name = label._preName
+      label._preName = ''
+      label._isEdit = false
     },
     handleDeleteLabel () {
       document.body.click()
     },
-    handleConfirmDeleteLabel (index) {
+    handleConfirmDeleteLabel (labelId, index) {
       this.dragLabels.splice(index, 1)
+      this.$emit('deleteLabel', labelId)
       document.body.click()
     },
     handleCancelDeleteLabel () {
@@ -186,16 +221,27 @@ export default {
       this.isEditLabel = false
 
       let isChanged = false
-      for (const [index, { name }] of this.dragLabelsClone.entries()) {
-        if (!this.dragLabels[index] || name !== this.dragLabels[index].name) {
+      for (const [index, { id, name }] of dragLabelsClone.entries()) {
+        const label = this.dragLabels[index]
+        if (!label || id !== label.id || name !== label.name) {
           isChanged = true
           break
         }
       }
-      const labels = this.dragLabels.map(({ name, repos }) => ({ name, repos }))
+      const labels = this.dragLabels.map(({ id, name, repos }) => ({ id, name, repos }))
       if (isChanged) this.$emit('completeEditLabels', labels)
     }
   }
+}
+
+function tranformLabels (labels = {}) {
+  const dragLabels = JSON.parse(JSON.stringify(labels))
+  dragLabels.forEach((label, index) => {
+    label._isEdit = false
+    label._ref = `labelNameEditInput${label.id}`
+    label._preName = ''
+  })
+  return dragLabels
 }
 </script>
 
