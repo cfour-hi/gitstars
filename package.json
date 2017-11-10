@@ -16,6 +16,7 @@
     "font-awesome": "4.7.0",
     "github-markdown-css": "2.9.0",
     "normalize.css": "7.0.0",
+    "sortablejs": "1.6.0",
     "vue": "2.5.2",
     "vuedraggable": "2.14.1"
   },
