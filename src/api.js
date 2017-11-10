@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Notification } from 'element-ui'
 
-import config from '../config'
+import config from './config'
 
 axios.defaults.baseURL = 'https://api.github.com'
 
