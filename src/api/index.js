@@ -9,7 +9,7 @@ axios.interceptors.request.use(config => {
   if (config.url.includes('http')) return config
 
   config.url += config.url.includes('?') ? '&' : '?'
-  config.url += `access_token=${window._gitstarsAccessToken}`
+  config.url += `access_token=${window._gitstars.accessToken}`
   return config
 }, err => {
   return Promise.reject(err)
@@ -59,12 +59,12 @@ export function getGitstarsGist (id) {
 
 // https://developer.github.com/v3/gists/#list-a-users-gists
 export function getUserGists () {
-  return axios.get(`/users/${window._gitstarsUser.login}/gists`)
+  return axios.get(`/users/${window._gitstars.user.login}/gists`)
 }
 
 // https://developer.github.com/v3/activity/starring/#list-repositories-being-starred
 export function getStarredRepos (page) {
-  return axios.get(`/users/${window._gitstarsUser.login}/starred?&page=${page}&per_page=100`)
+  return axios.get(`/users/${window._gitstars.user.login}/starred?&page=${page}&per_page=100`)
 }
 
 // https://developer.github.com/v3/repos/contents/#get-the-readme

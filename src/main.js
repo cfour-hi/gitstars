@@ -55,11 +55,11 @@ new Promise(async (resolve, reject) => {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`
   }
 }).then(async accessToken => {
-  window._gitstarsAccessToken = accessToken
+  window._gitstars = { accessToken: accessToken }
 
   const gitstarsUser = window.localStorage.getItem(GITSTARS_USER)
-  window._gitstarsUser = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
-  if (!gitstarsUser) window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstarsUser))
+  window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
+  if (!gitstarsUser) window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
 
   const App = () => import('./App')
   new Vue({

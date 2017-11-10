@@ -6,8 +6,8 @@
       <div class="content">
         <section v-show="repoReadme" class="repo-readme">
           <header class="repo-readme__header">
-            <h3 v-if="currentRepo" class="repo-title">{{currentRepo.owner.login}} / {{currentRepo.name}}</h3>
-            <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="repo-label-input" @select="handleSelectLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel"></el-autocomplete>
+            <h3 v-if="Object.keys(currentRepo).length" class="repo-title">{{currentRepo.owner.login}} / {{currentRepo.name}}</h3>
+            <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="repo-label-input" @select="handleSelectRepoLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel" select-when-unmatched></el-autocomplete>
             <el-button v-show="!isInputLabelName" size="small" @click="handleAddRepoLabel">
               <i class="fa fa-plus-square" aria-hidden="true"></i>
               <span>添加标签</span>
@@ -35,6 +35,9 @@ import LayoutHeader from './Header'
 import SubSidebar from './SubSidebar'
 
 import { getRepoReadme, getRenderedReadme } from '../api'
+import constants from '../constants'
+
+const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 
 export default {
   name: 'main',
@@ -50,7 +53,7 @@ export default {
       repoReadme: '',
       searchValue: '',
       labelName: '',
-      currentRepo: '',
+      currentRepo: {},
       isLoadingRepoReadme: false,
       isSelectedRepo: false,
       isInputLabelName: false
@@ -64,21 +67,21 @@ export default {
       })
     },
     currentRepoUnlabeledLabels () {
-      return this.labels.filter(({ name }) => !this.currentRepo._labels.includes(name)).map(({ name }) => name)
+      return this.labels.filter(label => !this.currentRepo._labels.find(({ id }) => id === label.id)).map(({ name }) => name)
     }
   },
   methods: {
-    async handleToggleRepo ({ id, login, name } = {}) {
-      this.currentRepo = this.currentLabelRepos.find(repo => repo.id === id)
+    async handleToggleRepo ({ login, repoId, repoName } = {}) {
+      this.currentRepo = this.currentLabelRepos.find(({ id }) => id === repoId)
       this.isSelectedRepo = true
       this.isLoadingRepoReadme = true
       this.repoReadme = ''
-      const { content } = await getRepoReadme(login, name)
+      const { content } = await getRepoReadme(login, repoName)
       this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content)))) // 包含中文内容的 base64 解码
       this.isLoadingRepoReadme = false
     },
-    handleToggleLabel (name) {
-      this.$emit('toggleLabel', name)
+    handleToggleLabel (id) {
+      this.$emit('toggleLabel', id)
     },
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
@@ -91,10 +94,17 @@ export default {
       this.isInputLabelName = false
     },
     handleSaveRepoLabel () {
+      let message = ''
+
       const labelName = this.labelName.trim()
-      if (!labelName) return this.$notify.info({ message: '标签名称不能为空', showClose: false, position: 'bottom-right' })
-      const { id } = this.currentRepo
-      this.$emit('addRepoLabel', { id, name: labelName })
+      if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
+
+      const { id, _labels } = this.currentRepo
+      if (_labels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
+
+      if (message) return this.$notify.warning({ message, showClose: false, position: 'bottom-right' })
+
+      this.$emit('addRepoLabel', { labelName, repoId: id })
       this.labelName = ''
       this.isInputLabelName = false
     },
@@ -104,7 +114,7 @@ export default {
     handleFetchLabelSuggestions (inputStr, cb) {
       cb(this.currentRepoUnlabeledLabels.filter(name => name.includes(inputStr)).map(name => ({ value: name })))
     },
-    handleSelectLabel ({ value }) {
+    handleSelectRepoLabel ({ value }) {
       this.labelName = value
       this.handleSaveRepoLabel()
     }
@@ -173,7 +183,7 @@ export default {
 
 .readme {
   font-size: 28px;
-  margin: .5em;
+  margin: 0.5em;
   font-weight: 700;
 }
 

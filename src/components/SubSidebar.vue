@@ -10,13 +10,13 @@
           </header>
           <p class="repo-desc">{{repo.description}}</p>
           <ul v-if="repo._labels && repo._labels.length" class="label-list">
-            <li v-for="(label, index) in repo._labels" :key="label" class="label-item" @click.stop="handleToggleLabel(label)">
-              <el-tag size="small" closable>{{label}}</el-tag>
+            <li v-for="(label, index) of repo._labels" :key="label.id" class="label-item" @click.stop="handleToggleLabel(label.id)">
+              <el-tag size="small" closable>{{label.name}}</el-tag>
               <el-popover placement="right" title="Are you sure?">
                 <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
                 <footer class="popover-footer">
                   <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-                  <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(label, repo.id)">Yes</el-button>
+                  <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(repo.id, label.id)">Yes</el-button>
                 </footer>
               </el-popover>
             </li>
@@ -55,24 +55,25 @@ export default {
   },
   data () {
     return {
-      activeRepoId: ''
+      activeRepoId: 0
     }
   },
   methods: {
     handleToggleRepo ({ id, owner, name }) {
       if (this.activeRepoId === id) return
+
       this.activeRepoId = id
       const { login } = owner
-      this.$emit('toggleRepo', { id, login, name })
+      this.$emit('toggleRepo', { login, repoId: id, repoName: name })
     },
-    handleToggleLabel (name) {
-      this.$emit('toggleLabel', name)
+    handleToggleLabel (id) {
+      this.$emit('toggleLabel', id)
     },
     handleDeleteLabel () {
       document.body.click()
     },
-    handleConfirmDeleteLabel (name, id) {
-      this.$emit('deleteRepoLabel', { id, name })
+    handleConfirmDeleteLabel (repoId, labelId) {
+      this.$emit('deleteRepoLabel', { repoId, labelId })
       document.body.click()
     },
     handleCancelDeleteLabel () {
