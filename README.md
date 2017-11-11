@@ -36,13 +36,13 @@ gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router
 
 你可能会好奇，管理数据保存在哪？请看下图：
 
-![](https://sz-btfs-v2-yun-ftn.weiyun.com/ftn_handler/ef2a3e09dff51b2bd99411b08463fd2596e601d181daa86bd0b724213c75c6f5e2ccfdd5dc79e9b15c89340db46ee29149bf70178a38d0dab2592e0ad14dc29d/gitstars-gists.png?fname=gitstars-gists.png&from=30013&version=3.3.3.3&uin=287531381)
+![](https://thumbnail10.baidupcs.com/thumbnail/6c1e499f92e24b0db35fe6eea8f327bd?fid=3679391295-250528-1111312898115102&time=1510408800&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-%2fMaEWSFompGF6%2bimGxD5Ju2aCjg%3d&expires=8h&chkbd=0&chkv=0&dp-logid=7303824190125178461&dp-callid=0&size=c1440_u900&quality=90&vuk=3679391295&ft=image)
 
 管理数据就是一份 JSON 文件，增删改查都是对这份 JSON 文件的操作，除此之外，没有任何其它需要关心的。
 
 但是，每次使用从 Github API 获取管理数据相对较慢，而且从 Github API 获取的数据都会有 60 秒的缓存（可查看 Response Header Cache-Control 字段），也就是说你修改了管理数据后刷新页面会发现依然是修改之前的数据，为此我有邮件询问 Github 如何取消缓存，回复是无法取消...
 
-![](https://sz-btfs-v2-yun-ftn.weiyun.com/ftn_handler/257883762a75dcfdc555a8f8caa3bd51c160a07e5ff4d1d25e468f7b6e10a7f7c69936827b8bf9f578abda2fa59232b3b535a1136d5ed0f6323ae646dee01f6d/github-api-response-cache-control.png?fname=github-api-response-cache-control.png&from=30013&version=3.3.3.3&uin=287531381)
+![](https://thumbnail10.baidupcs.com/thumbnail/66ab52db39901376a7cd4d1dbef03a3a?fid=3679391295-250528-690087334563810&time=1510405200&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-nKkyFxWAHB7Q%2bsO7AQJek%2f3y5pE%3d&expires=8h&chkbd=0&chkv=0&dp-logid=7303779352572127561&dp-callid=0&size=c1440_u900&quality=90&vuk=3679391295&ft=image)
 
 因此为了解决此处体验问题，使我想到一个就算没有上述问题也应该做的一项优化：**把管理数据同步保存在 localStorage 内**
 
