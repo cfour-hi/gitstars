@@ -14,6 +14,8 @@ gitstars 由此诞生 🎉
 
 欢迎进入 [https://monine.github.io/gitstars/](https://monine.github.io/gitstars/) 体验畅玩，更欢迎体验之后在 [Issues](https://github.com/Monine/gitstars/issues) 提供建议。
 
+*感谢 [imsun](https://github.com/imsun) 提供的 access token 获取服务*
+
 gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router 和 vuex 的立足之地，UI 层按需使用 Element-UI v2.0.1，HTTP 使用 axios v0.17.0，所有数据通过 Github API v3 获取，界面风格模仿 [Astral](https://app.astralapp.com)。
 
 你可能会好奇，管理数据保存在哪？请看下图：
@@ -30,6 +32,6 @@ gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router
 
 这很有必要，gitstars 做到了，不仅是你的管理数据，其它的一些不变的数据也同样会保存在 localStorage 内，避免每次打开使用都从 Github API 获取这些内容，这也提升了页面内容的加载速度。
 
-## 单独部署
+## LICENSE
 
-*感谢 [imsun](https://github.com/imsun) 提供 access token 服务*
+MIT

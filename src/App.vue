@@ -79,7 +79,7 @@ export default {
         axios.spread(async () => {
           const [, gists] = [...await axios.all([loadStarredRepos.call(this), getUserGists()])]
 
-          for (const { files = {}, description, id } of gists) {
+          for (const { id, description, files = {} } of gists) {
             if (description === config.description) {
               gitstarsGistId = id
               const { [config.filename]: file = {} } = files
@@ -177,10 +177,11 @@ export default {
       const repoIndex = repos.findIndex(id => id === repoId)
       repos.splice(repoIndex, 1)
 
-      saveGitstarsLabels.call(this, `${repo.owner.login} / ${repo.name} 仓库删除 ${label.name} 标签`).catch(() => {
-        _labels.splice(labelIndex, 0, label)
-        repos.splice(repoIndex, 0, repoId)
-      })
+      saveGitstarsLabels.call(this, `${repo.owner.login} / ${repo.name} 仓库删除 ${label.name} 标签`)
+        .catch(() => {
+          _labels.splice(labelIndex, 0, label)
+          repos.splice(repoIndex, 0, repoId)
+        })
     }
   }
 }
