@@ -18,7 +18,7 @@ Gitstars 由此诞生 🎉
 
 欢迎进入 [https://monine.github.io/gitstars/](https://monine.github.io/gitstars/) 体验畅玩，更欢迎体验之后在 [Issues](https://github.com/Monine/gitstars/issues) 提供建议。
 
-![](http://oh8wftuto.bkt.clouddn.com/gitstars-home-page.jpg)
+![github-stars-manager](http://oh8wftuto.bkt.clouddn.com/github-stars-manager.jpg)
 
 *感谢 [imsun](https://github.com/imsun) 提供获取 access token 服务*
 
