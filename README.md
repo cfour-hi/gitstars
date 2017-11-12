@@ -10,13 +10,15 @@ Gitstars 由此诞生 🎉
 
 # Gitstars
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 [![GitHub license](https://img.shields.io/github/license/Monine/gitstars.svg)](https://github.com/Monine/gitstars/blob/master/LICENSE)
 
 > 每个程序员都该拥有的 Github Stars Repositories Manager
 
 欢迎进入 [https://monine.github.io/gitstars/](https://monine.github.io/gitstars/) 体验畅玩，更欢迎体验之后在 [Issues](https://github.com/Monine/gitstars/issues) 提供建议。
 
-![](http://oh8wftuto.bkt.clouddn.com/gitstars-index-page.jpg)
+![](http://oh8wftuto.bkt.clouddn.com/gitstars-home-page.jpg)
 
 *感谢 [imsun](https://github.com/imsun) 提供获取 access token 服务*
 
