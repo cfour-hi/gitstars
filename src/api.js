@@ -29,10 +29,9 @@ axios.interceptors.response.use(({ data }) => {
 
 const { filename, description } = config
 
-export function getConfig () {
-  const { protocol, host } = window.location
-  const pathname = process.env.NODE_ENV === 'production' ? '/gitstars/' : '/'
-  return axios.get(`${protocol}//${host}${pathname}assets/config.json`)
+export function getGitstarsAccessToken (params) {
+  return axios.post('https://gh-oauth.imsun.net', params)
+  // return axios.post('https://github.com/login/oauth/access_token', { params })
 }
 
 // https://developer.github.com/v3/users/#get-the-authenticated-user

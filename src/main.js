@@ -3,7 +3,9 @@
 import Vue from 'vue'
 import { Tag, Input, Button, Popover, Autocomplete, Notification } from 'element-ui'
 
-import { getConfig, getUserInfo } from './api'
+import { parseURLSearch } from './util'
+import { getGitstarsAccessToken, getUserInfo } from './api'
+import config from './config'
 
 Vue.config.productionTip = false
 Vue.use(Tag)
@@ -19,23 +21,46 @@ if (process.env.NODE_ENV === 'development') {
   require('github-markdown-css')
 }
 
-const GITSTARS = 'gitstars'
+const GITSTARS_ACCESS_TOKEN = 'gitstars_access_token'
+const GITSTARS_CODE = 'gitstars_code'
+const GITSTARS_USER = 'gitstars_user'
+const { clientId, clientSecret } = config
 
 /* eslint-disable no-new */
 new Promise(async (resolve, reject) => {
-  const gitstars = window.localStorage.getItem(GITSTARS)
-  if (gitstars) {
-    window._gitstars = JSON.parse(gitstars)
-    return resolve()
+  const accessToken = window.localStorage.getItem(GITSTARS_ACCESS_TOKEN)
+  if (accessToken) return resolve(accessToken)
+
+  const storageCode = window.localStorage.getItem(GITSTARS_CODE)
+  const { code } = parseURLSearch()
+  const gitstarsCode = storageCode || code
+
+  if (gitstarsCode) {
+    if (!storageCode) window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
+
+    if (code) {
+      let href = window.location.href.replace(/code=[^&]+/, '')
+      if (href[href.length - 1] === '?') href = href.slice(0, -1)
+      window.history.replaceState({}, null, `${href}`)
+    }
+
+    const { access_token } = await getGitstarsAccessToken({
+      code: gitstarsCode,
+      client_id: clientId,
+      client_secret: clientSecret
+    })
+    window.localStorage.setItem(GITSTARS_ACCESS_TOKEN, access_token)
+    resolve(access_token)
+  } else {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`
   }
+}).then(async accessToken => {
+  window._gitstars = { accessToken: accessToken }
 
-  const { access, token } = await getConfig()
-  window._gitstars = { accessToken: `${access}${token}` }
-  window._gitstars.user = await getUserInfo() // 用户信息依赖 accessToken
+  const gitstarsUser = window.localStorage.getItem(GITSTARS_USER)
+  window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
+  if (!gitstarsUser) window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
 
-  window.localStorage.setItem(GITSTARS, JSON.stringify(window._gitstars))
-  resolve()
-}).then(() => {
   const App = () => import('./App')
   new Vue({
     el: '#app',
