@@ -11,7 +11,6 @@ Gitstars 由此诞生 🎉
 # Gitstars
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
 [![GitHub license](https://img.shields.io/github/license/Monine/gitstars.svg)](https://github.com/Monine/gitstars/blob/master/LICENSE)
 
 > 每个程序员都该拥有的 Github Stars Repositories Manager
