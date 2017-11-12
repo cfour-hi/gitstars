@@ -6,17 +6,21 @@ Star is easy，可随着 Stars Repositories 增长和时间流逝，在需要使
 
 之前有使用过市面上的一些 Github Stars Repositories Manager，比如 [Astral](https://app.astralapp.com)，虽说能用，但总觉得不顺手、不好用。
 
-gitstars 由此诞生 🎉
+Gitstars 由此诞生 🎉
 
-# gitstars
+# Gitstars
+
+[![GitHub license](https://img.shields.io/github/license/Monine/gitstars.svg)](https://github.com/Monine/gitstars/blob/master/LICENSE)
 
 > 每个程序员都该拥有的 Github Stars Repositories Manager
 
 欢迎进入 [https://monine.github.io/gitstars/](https://monine.github.io/gitstars/) 体验畅玩，更欢迎体验之后在 [Issues](https://github.com/Monine/gitstars/issues) 提供建议。
 
+![](http://oh8wftuto.bkt.clouddn.com/gitstars-index-page.jpg)
+
 *感谢 [imsun](https://github.com/imsun) 提供获取 access token 服务*
 
-gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router 和 vuex 的立足之地，UI 层按需使用 Element-UI v2.0.1，HTTP 使用 axios v0.17.0，所有数据通过 Github API v3 获取，界面风格模仿 [Astral](https://app.astralapp.com)。
+Gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router 和 vuex 的立足之地，UI 层按需使用 Element-UI v2.0.1，HTTP 使用 axios v0.17.0，所有数据通过 Github API v3 获取，界面风格模仿 [Astral](https://app.astralapp.com)。
 
 你可能会好奇，管理数据保存在哪？请看下图：
 
@@ -30,7 +34,7 @@ gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router
 
 因此为了解决此处体验问题，使我想到一个就算没有上述问题也应该做的一项优化：**把管理数据同步保存在 localStorage 内**
 
-这很有必要，gitstars 做到了，不仅是你的管理数据，其它的一些不变的数据也同样会保存在 localStorage 内，避免每次打开使用都从 Github API 获取这些内容，这也提升了页面内容的加载速度。
+这很有必要，Gitstars 做到了，不仅是你的管理数据，其它的一些不变的数据也同样会保存在 localStorage 内，避免每次打开使用都从 Github API 获取这些内容，这也提升了页面内容的加载速度。
 
 ## LICENSE
 
