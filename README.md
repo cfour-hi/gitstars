@@ -14,7 +14,7 @@ gitstars 由此诞生 🎉
 
 欢迎进入 [https://monine.github.io/gitstars/](https://monine.github.io/gitstars/) 体验畅玩，更欢迎体验之后在 [Issues](https://github.com/Monine/gitstars/issues) 提供建议。
 
-*感谢 [imsun](https://github.com/imsun) 提供的 access token 获取服务*
+*感谢 [imsun](https://github.com/imsun) 提供获取 access token 服务*
 
 gitstars 使用 Vue v2.5.2 开发，因为简单，所以也就没有 vue-router 和 vuex 的立足之地，UI 层按需使用 Element-UI v2.0.1，HTTP 使用 axios v0.17.0，所有数据通过 Github API v3 获取，界面风格模仿 [Astral](https://app.astralapp.com)。
 
