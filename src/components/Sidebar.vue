@@ -45,7 +45,7 @@
         </form>
       </transition>
       <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
-      <draggable :list="dragLabels" :options="dragOptions">
+      <draggable :list="dragLabels" :options="dragOptions" class="draggable-labels">
         <transition-group name="label-list" tag="ul" class="nav-label label-list">
           <li v-for="(label, index) of dragLabels" :key="label.id" class="nav-item" @click="handleToggleLabel(label.id)">
             <label class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
@@ -333,6 +333,10 @@ function tranformLabels (labels = {}) {
   padding: 5px;
   color: #919191;
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.draggable-labels {
+  overflow: auto;
 }
 
 .nav-item-badge {
