@@ -7,19 +7,12 @@
       </a>
     </header>
     <ul class="nav-label">
-      <li class="nav-item" @click="handleToggleLabel(0)">
+      <li v-for="{ id, name, icon } of defaultLabels" :key="id" :class="{ active: id === activeLabelId }" class="nav-item" @click="handleToggleLabel(id)">
         <label class="nav-item__label">
-          <i class="fa fa-fw fa-bars" aria-hidden="true"></i>
-          <span>全部</span>
+          <i :class="icon" class="fa fa-fw" aria-hidden="true"></i>
+          <span>{{name}}</span>
         </label>
-        <span class="nav-item-badge">{{starredReposLen}}</span>
-      </li>
-      <li class="nav-item" @click="handleToggleLabel(-1)">
-        <label class="nav-item__label">
-          <i class="fa fa-fw fa-star-o" aria-hidden="true"></i>
-          <span>未标签</span>
-        </label>
-        <span class="nav-item-badge">{{unlabeledReposLen}}</span>
+        <span class="nav-item-badge">{{id ? unlabeledReposLen : starredReposLen}}</span>
       </li>
     </ul>
     <div class="label-nav">
@@ -47,7 +40,7 @@
       <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
       <draggable :list="dragLabels" :options="dragOptions" class="draggable-labels">
         <transition-group name="label-list" tag="ul" class="nav-label label-list">
-          <li v-for="(label, index) of dragLabels" :key="label.id" class="nav-item" @click="handleToggleLabel(label.id)">
+          <li v-for="(label, index) of dragLabels" :key="label.id" :class="{ active: label.id === activeLabelId }" class="nav-item" @click="handleToggleLabel(label.id)">
             <label class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
               <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
               <span v-show="!label._isEdit" class="nav-item__name slo">{{label.name}}</span>
@@ -96,6 +89,11 @@ export default {
   },
   data () {
     return {
+      defaultLabels: [
+        { id: 0, name: '全部', icon: 'fa-bars' },
+        { id: -1, name: '未标签', icon: 'fa-star-o' }
+      ],
+      activeLabelId: 0,
       labelNameFormVisible: false,
       labelName: '',
       saveOrCancel: '',
@@ -124,6 +122,7 @@ export default {
   methods: {
     handleToggleLabel (id) {
       if (this.isEditLabel) return
+      this.activeLabelId = id
       this.$emit('toggleLabel', id)
     },
     handleAddNewLabel () {
@@ -279,6 +278,7 @@ function tranformLabels (labels = {}) {
   flex: none;
   height: 40px;
   padding: 0 15px;
+  border-left: 3px solid transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
   transition: all 0.3s;
@@ -290,8 +290,14 @@ function tranformLabels (labels = {}) {
 }
 
 .nav-item:active,
+.nav-item.active,
 .nav-caption__operate-btn:active {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.active {
+  border-left: 3px solid #108ee9;
+  border-bottom-color: transparent;
 }
 
 .nav-item.sortable-chosen {
