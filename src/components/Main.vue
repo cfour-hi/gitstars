@@ -114,7 +114,8 @@ export default {
       this.$emit('deleteRepoLabel', payload)
     },
     handleFetchLabelSuggestions (inputStr, cb) {
-      cb(this.currentRepoUnlabeledLabels.filter(name => name.includes(inputStr)).map(name => ({ value: name })))
+      inputStr = inputStr.toLowerCase()
+      cb(this.currentRepoUnlabeledLabels.filter(name => name.toLowerCase().includes(inputStr)).map(name => ({ value: name })))
     },
     handleSelectRepoLabel ({ value }) {
       this.labelName = value
