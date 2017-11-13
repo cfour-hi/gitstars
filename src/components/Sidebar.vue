@@ -7,12 +7,12 @@
       </a>
     </header>
     <ul class="nav-label">
-      <li v-for="{ id, name, icon } of defaultLabels" :key="id" :class="{ active: id === activeLabelId }" class="nav-item" @click="handleToggleLabel(id)">
+      <li v-for="label of defaultLabels" :key="label.id" :class="{ active: label.id === currentLabel.id }" class="nav-item" @click="handleToggleLabel(label)">
         <label class="nav-item__label">
-          <i :class="icon" class="fa fa-fw" aria-hidden="true"></i>
-          <span>{{name}}</span>
+          <i :class="label.icon" class="fa fa-fw" aria-hidden="true"></i>
+          <span>{{label.name}}</span>
         </label>
-        <span class="nav-item-badge">{{id ? unlabeledReposLen : starredReposLen}}</span>
+        <span class="nav-item-badge">{{label.id ? unlabeledReposLen : starredReposLen}}</span>
       </li>
     </ul>
     <div class="label-nav">
@@ -40,7 +40,7 @@
       <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
       <draggable :list="dragLabels" :options="dragOptions" class="draggable-labels">
         <transition-group name="label-list" tag="ul" class="nav-label label-list">
-          <li v-for="(label, index) of dragLabels" :key="label.id" :class="{ active: label.id === activeLabelId }" class="nav-item" @click="handleToggleLabel(label.id)">
+          <li v-for="(label, index) of dragLabels" :key="label.id" :class="{ active: label.id === currentLabel.id }" class="nav-item" @click="handleToggleLabel(label)">
             <label class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
               <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
               <span v-show="!label._isEdit" class="nav-item__name slo">{{label.name}}</span>
@@ -85,7 +85,8 @@ export default {
   props: {
     starredReposLen: { type: Number, default: 0 },
     unlabeledReposLen: { type: Number, default: 0 },
-    labels: { type: Array, default: [] }
+    labels: { type: Array, default: [] },
+    currentLabel: { type: Object, default: {} }
   },
   data () {
     return {
@@ -93,7 +94,6 @@ export default {
         { id: 0, name: '全部', icon: 'fa-bars' },
         { id: -1, name: '未标签', icon: 'fa-star-o' }
       ],
-      activeLabelId: 0,
       labelNameFormVisible: false,
       labelName: '',
       saveOrCancel: '',
@@ -116,14 +116,16 @@ export default {
       }
     }
   },
+  created () {
+    this.$emit('toggleLabel', this.defaultLabels[0])
+  },
   destroyed () {
     dragLabelsClone = []
   },
   methods: {
-    handleToggleLabel (id) {
+    handleToggleLabel (label) {
       if (this.isEditLabel) return
-      this.activeLabelId = id
-      this.$emit('toggleLabel', id)
+      this.$emit('toggleLabel', label)
     },
     handleAddNewLabel () {
       if (this.isEditLabel || this.labelNameFormVisible) return
@@ -346,6 +348,11 @@ function tranformLabels (labels = {}) {
 
 .draggable-labels {
   overflow: auto;
+}
+
+.draggable-labels::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .nav-item-badge {

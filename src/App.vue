@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @editLabels="handleEditLabels" @deleteLabel="handleDeleteLabel" @changeLabelName="handleChangeLabelName" @completeEditLabels="handleCompleteEditLabels"></layout-sidebar>
-    <layout-main :user="user" :repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
+    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" :current-label="currentLabel" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @editLabels="handleEditLabels" @deleteLabel="handleDeleteLabel" @changeLabelName="handleChangeLabelName" @completeEditLabels="handleCompleteEditLabels"></layout-sidebar>
+    <layout-main :user="user" :repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" :current-label="currentLabel" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
   </div>
 </template>
 
@@ -27,7 +27,7 @@ export default {
       starredRepos: [],
       loadStarredReposCompleted: false,
       labels: [],
-      currentLabelId: 0
+      currentLabel: {}
     }
   },
   computed: {
@@ -47,15 +47,16 @@ export default {
       return unlabeledRepos
     },
     currentLabelRepos () {
-      if (!this.currentLabelId) return this.starredRepos
-      if (this.currentLabelId === -1) return this.unlabeledRepos
+      const { id } = this.currentLabel
+
+      if (!id) return this.starredRepos
+      if (id === -1) return this.unlabeledRepos
 
       const currentLabelRepos = []
-      const { repos } = this.labels.find(({ id }) => id === this.currentLabelId)
+      const { repos } = this.labels.find(label => label.id === id)
 
       for (const repo of this.starredRepos) {
-        const { id } = repo
-        if (repos.includes(id)) currentLabelRepos.push(repo)
+        if (repos.includes(repo.id)) currentLabelRepos.push(repo)
       }
       return currentLabelRepos
     }
@@ -116,8 +117,8 @@ export default {
     starredReposClone = []
   },
   methods: {
-    handleToggleLabel (id = 0) {
-      this.currentLabelId = id
+    handleToggleLabel (label) {
+      this.currentLabel = label
     },
     handleSaveNewLabel (name) {
       this.labels.push({ name, id: Date.now(), repos: [] })

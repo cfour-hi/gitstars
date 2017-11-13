@@ -1,6 +1,10 @@
 <template>
   <nav id="subsidebar">
-    <div v-if="loadStarredReposCompleted">
+    <template v-if="loadStarredReposCompleted">
+      <label class="search-label">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <input v-model="searchValue" :placeholder="`开发者 | 仓库名 @${currentLabel.name}`" type="text" class="search-input" @input="handleChangeSearchValue">
+      </label>
       <ul v-show="repos.length" class="repo-list">
         <li v-for="repo in repos" :key="repo.id" :class="{ active: repo.id === activeRepoId }" class="repo-item" @click="handleToggleRepo(repo)">
           <header>
@@ -10,7 +14,7 @@
           </header>
           <p class="repo-desc">{{repo.description}}</p>
           <ul v-if="repo._labels && repo._labels.length" class="label-list">
-            <li v-for="(label, index) of repo._labels" :key="label.id" class="label-item" @click.stop="handleToggleLabel(label.id)">
+            <li v-for="(label, index) of repo._labels" :key="label.id" class="label-item" @click.stop="handleToggleLabel(label)">
               <el-tag size="small" closable>{{label.name}}</el-tag>
               <el-popover placement="right" title="Are you sure?">
                 <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
@@ -38,7 +42,7 @@
           <i class="fa fa-hand-o-up fa-lg" aria-hidden="true"></i>
         </p>
       </div>
-    </div>
+    </template>
     <div v-else class="loader vc-p">
       <i class="fa fa-cog fa-spin fa-2x"></i>
       <p>正在获取 starred 仓库</p>
@@ -51,14 +55,19 @@ export default {
   name: 'sub-sidebar',
   props: {
     repos: { type: Array, default: [] },
-    loadStarredReposCompleted: { type: Boolean, default: false }
+    loadStarredReposCompleted: { type: Boolean, default: false },
+    currentLabel: { type: Object, default: {} }
   },
   data () {
     return {
-      activeRepoId: 0
+      activeRepoId: 0,
+      searchValue: ''
     }
   },
   methods: {
+    handleChangeSearchValue () {
+      this.$emit('changeSearchValue', this.searchValue)
+    },
     handleToggleRepo ({ id, owner, name }) {
       if (this.activeRepoId === id) return
 
@@ -66,8 +75,8 @@ export default {
       const { login } = owner
       this.$emit('toggleRepo', { login, repoId: id, repoName: name })
     },
-    handleToggleLabel (id) {
-      this.$emit('toggleLabel', id)
+    handleToggleLabel (label) {
+      this.$emit('toggleLabel', label)
     },
     handleDeleteLabel () {
       document.body.click()
@@ -85,19 +94,51 @@ export default {
 
 <style scoped>
 #subsidebar {
-  overflow: auto;
   position: absolute;
+  display: flex;
+  flex-direction: column;
   width: 399px;
   height: 100%;
   border-right: 1px solid #e9e9e9;
   background-color: #fbfbfb;
 }
 
+.search-label {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 44px;
+  border-bottom: 1px solid #e9e9e9;
+  background-color: #f5f5f5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-input {
+  width: 320px;
+  height: 30px;
+  padding: 0 12px 0 34px;
+  border: 1px solid #d9d9d9;
+  border-radius: 15px;
+  font-size: 12px;
+  color: #5a5a5a;
+  outline: none;
+  background-color: #fcfcfc;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.fa-search {
+  position: absolute;
+  left: 28px;
+  color: #d9d9d9;
+}
+
 .repo-list {
+  overflow: auto;
+  flex: auto;
   padding: 0;
   margin: 0;
   list-style: none;
-  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .repo-item {

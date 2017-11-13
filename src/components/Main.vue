@@ -1,8 +1,8 @@
 <template>
   <main id="main">
-    <layout-header :user="user" @changeSearchValue="handleChangeSearchValue"></layout-header>
+    <layout-header :user="user"></layout-header>
     <div class="main-body">
-      <sub-sidebar :repos="filteredRepos" :load-starred-repos-completed="loadStarredReposCompleted" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
+      <sub-sidebar :repos="filteredRepos" :load-starred-repos-completed="loadStarredReposCompleted" :current-label="currentLabel" @changeSearchValue="handleChangeSearchValue" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
       <div class="content">
         <section v-show="repoReadme" class="repo-readme">
           <header class="repo-readme__header">
@@ -48,7 +48,8 @@ export default {
     user: { type: Object, default: {} },
     repos: { type: Array, default: [] },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    labels: { type: Array, default: [] }
+    labels: { type: Array, default: [] },
+    currentLabel: { type: Object, default: {} }
   },
   data () {
     return {
@@ -82,8 +83,8 @@ export default {
       this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content)))) // 包含中文内容的 base64 解码
       this.isLoadingRepoReadme = false
     },
-    handleToggleLabel (id) {
-      this.$emit('toggleLabel', id)
+    handleToggleLabel (label) {
+      this.$emit('toggleLabel', label)
     },
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
