@@ -6,7 +6,9 @@
       <div class="content">
         <section v-show="repoReadme" class="repo-readme">
           <header class="repo-readme__header">
-            <h3 v-if="Object.keys(currentRepo).length" class="repo-title">{{currentRepo.owner.login}} / {{currentRepo.name}}</h3>
+            <h3 v-if="Object.keys(currentRepo).length" class="repo-title">
+              <a :href="currentRepo.html_url" target="_blank">{{currentRepo.owner.login}} / {{currentRepo.name}}</a>
+            </h3>
             <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="repo-label-input" @select="handleSelectRepoLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel" select-when-unmatched></el-autocomplete>
             <el-button v-show="!isInputLabelName" size="small" @click="handleAddRepoLabel">
               <i class="fa fa-plus-square" aria-hidden="true"></i>
