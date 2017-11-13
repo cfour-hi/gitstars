@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @deleteLabel="handleDeleteLabel" @completeEditLabels="handleCompleteEditLabels"></layout-sidebar>
-    <layout-main :user="user" :current-label-repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
+    <layout-sidebar :starred-repos-len="starredRepos.length" :unlabeled-repos-len="unlabeledRepos.length" :labels="labels" @toggleLabel="handleToggleLabel" @saveNewLabel="handleSaveNewLabel" @editLabels="handleEditLabels" @deleteLabel="handleDeleteLabel" @changeLabelName="handleChangeLabelName" @completeEditLabels="handleCompleteEditLabels"></layout-sidebar>
+    <layout-main :user="user" :repos="currentLabelRepos" :load-starred-repos-completed="loadStarredReposCompleted" :labels="labels" @toggleLabel="handleToggleLabel" @addRepoLabel="handleAddRepoLabel" @deleteRepoLabel="handleDeleteRepoLabel"></layout-main>
   </div>
 </template>
 
@@ -16,6 +16,7 @@ import config from './config'
 
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 let gitstarsGistId = ''
+let starredReposClone = []
 
 export default {
   name: 'app',
@@ -112,6 +113,7 @@ export default {
   },
   destroyed () {
     gitstarsGistId = ''
+    starredReposClone = []
   },
   methods: {
     handleToggleLabel (id = 0) {
@@ -121,16 +123,28 @@ export default {
       this.labels.push({ name, id: Date.now(), repos: [] })
       saveGitstarsLabels.call(this, `添加 ${name} 标签`).catch(() => this.labels.pop())
     },
+    handleEditLabels () {
+      starredReposClone = JSON.parse(JSON.stringify(this.starredRepos))
+    },
     handleDeleteLabel (labelId) {
       this.starredRepos.forEach(({ _labels }) => {
         const index = _labels.findIndex(({ id }) => id === labelId)
         if (index > -1) _labels.splice(index, 1)
       })
     },
+    handleChangeLabelName ({ labelId, labelName }) {
+      this.starredRepos.forEach(({ _labels }) => {
+        const label = _labels.find(({ id }) => id === labelId)
+        if (label) label.name = labelName
+      })
+    },
     handleCompleteEditLabels (newLabels = []) {
       const oldLabels = this.labels
       this.labels = newLabels
-      saveGitstarsLabels.call(this, `编辑标签完成`).catch(() => (this.labels = oldLabels))
+      saveGitstarsLabels.call(this, `编辑标签完成`).catch(() => {
+        this.labels = oldLabels
+        this.starredRepos = starredReposClone
+      })
     },
     handleAddRepoLabel ({ repoId, labelName }) {
       let label = {}

@@ -157,6 +157,7 @@ export default {
 
       this.isEditLabel = true
       dragLabelsClone = JSON.parse(JSON.stringify(this.dragLabels))
+      this.$emit('editLabels')
     },
     handleEditLabelName (label) {
       if (!this.isEditLabel) return
@@ -183,6 +184,7 @@ export default {
       label.name = newLabelName
       label._preName = ''
       label._isEdit = false
+      this.$emit('changeLabelName', { labelId: label.id, labelName: newLabelName })
     },
     handleChangeLabelNameByEnter (label) {
       let message = ''
@@ -199,6 +201,7 @@ export default {
       label.name = newLabelName
       label._preName = ''
       label._isEdit = false
+      this.$emit('changeLabelName', { labelId: label.id, labelName: newLabelName })
     },
     handleCancelEditLabelName (label) {
       label.name = label._preName

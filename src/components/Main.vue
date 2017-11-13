@@ -46,7 +46,7 @@ export default {
   components: { LayoutHeader, SubSidebar },
   props: {
     user: { type: Object, default: {} },
-    currentLabelRepos: { type: Array, default: [] },
+    repos: { type: Array, default: [] },
     loadStarredReposCompleted: { type: Boolean, default: false },
     labels: { type: Array, default: [] }
   },
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     filteredRepos () {
-      return this.currentLabelRepos.filter(({ owner = {}, name = '' } = {}) => {
+      return this.repos.filter(({ owner = {}, name = '' } = {}) => {
         const { login = '' } = owner
         return (login.toLowerCase().includes(this.searchValue) || name.toLowerCase().includes(this.searchValue))
       })
@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     async handleToggleRepo ({ login, repoId, repoName } = {}) {
-      this.currentRepo = this.currentLabelRepos.find(({ id }) => id === repoId)
+      this.currentRepo = this.repos.find(({ id }) => id === repoId)
       this.isSelectedRepo = true
       this.isLoadingRepoReadme = true
       this.repoReadme = ''
