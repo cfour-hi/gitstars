@@ -42,7 +42,7 @@ a:hover {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: #d9d9d9;
+  background-color: #bfbfbf;
 }
 
 .el-notification {
@@ -77,4 +77,9 @@ a:hover {
 .popover-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.el-autocomplete-suggestion.el-popper .popper__arrow {
+  left: 50% !important;
+  margin-left: -3px;
 }

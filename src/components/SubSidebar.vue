@@ -141,6 +141,10 @@ export default {
   list-style: none;
 }
 
+.repo-list::-webkit-scrollbar-thumb {
+  background-color: #e9e9e9;
+}
+
 .repo-item {
   padding: 15px;
   border-bottom: 1px solid #e9e9e9;

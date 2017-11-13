@@ -7,13 +7,14 @@
         <section v-show="repoReadme" class="repo-readme">
           <header class="repo-readme__header">
             <h3 v-if="Object.keys(currentRepo).length" class="repo-title">
-              <a :href="currentRepo.html_url" target="_blank">{{currentRepo.owner.login}} / {{currentRepo.name}}</a>
+              <a :href="currentRepo.html_url" target="_blank">
+                <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
+              </a>
+              {{currentRepo.owner.login}} / {{currentRepo.name}}
             </h3>
-            <el-autocomplete v-show="isInputLabelName" v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="标签名称" class="repo-label-input" @select="handleSelectRepoLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel" select-when-unmatched></el-autocomplete>
-            <el-button v-show="!isInputLabelName" size="small" @click="handleAddRepoLabel">
-              <i class="fa fa-plus-square" aria-hidden="true"></i>
-              <span>添加标签</span>
-            </el-button>
+            <el-autocomplete v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="添加标签" class="repo-label-input" @select="handleSelectRepoLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel($event)" select-when-unmatched>
+              <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
+            </el-autocomplete>
           </header>
           <article v-html="repoReadme" class="markdown-body"></article>
         </section>
@@ -58,8 +59,7 @@ export default {
       labelName: '',
       currentRepo: {},
       isLoadingRepoReadme: false,
-      isSelectedRepo: false,
-      isInputLabelName: false
+      isSelectedRepo: false
     }
   },
   computed: {
@@ -89,16 +89,10 @@ export default {
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
     },
-    handleAddRepoLabel () {
-      this.isInputLabelName = true
-      this.$nextTick(() => this.$refs.repoLabelNameInput.$refs.input.focus())
-    },
-    handleRepoLabelInputBlur () {
-      this.isInputLabelName = false
-    },
-    handleSaveRepoLabel () {
-      let message = ''
+    handleSaveRepoLabel (event) {
+      if (event) return
 
+      let message = ''
       const labelName = this.labelName.trim()
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
 
@@ -109,7 +103,6 @@ export default {
 
       this.$emit('addRepoLabel', { labelName, repoId: id })
       this.labelName = ''
-      this.isInputLabelName = false
     },
     handleDeleteRepoLabel (payload) {
       this.$emit('deleteRepoLabel', payload)
@@ -160,12 +153,9 @@ export default {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+.repo-readme__header .fa-github,
 .repo-title {
   color: #5a5a5a;
-}
-
-.repo-label-input {
-  width: 95px;
 }
 
 .markdown-body {
@@ -174,6 +164,10 @@ export default {
   padding: 20px;
   font-size: 14px;
   color: #5a5a5a;
+}
+
+.markdown-body::-webkit-scrollbar {
+  width: 8px;
 }
 
 .waiting {
@@ -200,9 +194,5 @@ export default {
 .markdown-body a:hover {
   color: #0366d6;
   text-decoration: none;
-}
-
-.repo-readme__header .repo-label-input .el-input__inner {
-  text-align: center;
 }
 </style>
