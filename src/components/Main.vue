@@ -12,8 +12,9 @@
               </a>
               {{currentRepo.owner.login}} / {{currentRepo.name}}
             </h3>
-            <el-autocomplete v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="添加标签" class="repo-label-input" @select="handleSelectRepoLabel" @blur="handleRepoLabelInputBlur" @keyup.enter.native="handleSaveRepoLabel($event)" select-when-unmatched>
+            <el-autocomplete v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="新增标签" class="repo-label-input" @select="handleAddRepoLabel" select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
+              <el-button slot="append" @click="handleAddRepoLabel">添加</el-button>
             </el-autocomplete>
           </header>
           <article v-html="repoReadme" class="markdown-body"></article>
@@ -89,9 +90,14 @@ export default {
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
     },
-    handleSaveRepoLabel (event) {
-      if (event) return
-
+    handleDeleteRepoLabel (payload) {
+      this.$emit('deleteRepoLabel', payload)
+    },
+    handleFetchLabelSuggestions (inputStr, cb) {
+      inputStr = inputStr.toLowerCase()
+      cb(this.currentRepoUnlabeledLabels.filter(name => name.toLowerCase().includes(inputStr)).map(name => ({ value: name })))
+    },
+    handleAddRepoLabel () {
       let message = ''
       const labelName = this.labelName.trim()
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
@@ -103,17 +109,6 @@ export default {
 
       this.$emit('addRepoLabel', { labelName, repoId: id })
       this.labelName = ''
-    },
-    handleDeleteRepoLabel (payload) {
-      this.$emit('deleteRepoLabel', payload)
-    },
-    handleFetchLabelSuggestions (inputStr, cb) {
-      inputStr = inputStr.toLowerCase()
-      cb(this.currentRepoUnlabeledLabels.filter(name => name.toLowerCase().includes(inputStr)).map(name => ({ value: name })))
-    },
-    handleSelectRepoLabel ({ value }) {
-      this.labelName = value
-      this.handleSaveRepoLabel()
     }
   }
 }

@@ -205,6 +205,7 @@ async function saveGitstarsLabels (message) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
     message: '正在执行，请稍后...',
+    duration: 0,
     showClose: false,
     position: 'bottom-right'
   })
