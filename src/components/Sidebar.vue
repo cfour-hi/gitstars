@@ -30,10 +30,10 @@
       </header>
       <transition name="slide-down">
         <form v-show="labelNameFormVisible" class="label-form" onsubmit="return false">
-          <input v-model="labelName" ref="labelFormNameInput" type="text" class="label-form__input--name" placeholder="标签名称" @input="handleInputLabelName" @focus="handleInputLabelName" @blur="handleInputLabelName" @keyup.enter.prevent="handleAddLabel" @keyup.esc="handleCancelAddLabel">
-          <div class="label-form__operate" :class="saveOrCancel" @mouseleave="saveOrCancel = ''">
-            <button type="button" class="label-form__operate-btn save" @mouseenter="saveOrCancel = 'save'" @click="handleAddLabel">SAVE</button>
-            <button type="button" class="label-form__operate-btn cancel" @mouseenter="saveOrCancel = 'cancel'" @click="handleCancelAddLabel">CANCEL</button>
+          <input v-model="labelName" :class="labelNameInputState" ref="labelFormNameInput" type="text" class="label-form__input--name" placeholder="标签名称" @input="handleInputLabelName" @focus="handleFocusLabelName" @blur="handleBlurLabelName" @keyup.enter.prevent="handleAddLabel" @keyup.esc="handleCancelAddLabel">
+          <div class="label-form__operate" :class="labelNameBtnState">
+            <button type="button" class="label-form__operate-btn save" @click="handleAddLabel">SAVE</button>
+            <button type="button" class="label-form__operate-btn cancel" @click="handleCancelAddLabel">CANCEL</button>
           </div>
         </form>
       </transition>
@@ -75,8 +75,10 @@ import draggable from 'vuedraggable'
 import constants from '../constants'
 
 const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
-const classSave = 'save'
-const classCancel = 'cancel'
+const SAVE = 'save'
+const CANCEL = 'cancel'
+const FOCUS = 'focus'
+const BLUR = 'blur'
 let dragLabelsClone = []
 
 export default {
@@ -96,7 +98,8 @@ export default {
       ],
       labelNameFormVisible: false,
       labelName: '',
-      saveOrCancel: '',
+      labelNameInputState: FOCUS,
+      labelNameBtnState: CANCEL,
       isEditLabel: false,
       dragLabels: tranformLabels(this.labels)
     }
@@ -134,7 +137,13 @@ export default {
       this.$nextTick(() => this.$refs.labelFormNameInput.focus())
     },
     handleInputLabelName () {
-      this.saveOrCancel = this.labelName.trim().length ? classSave : classCancel
+      this.labelNameBtnState = this.labelName.trim().length ? SAVE : CANCEL
+    },
+    handleFocusLabelName () {
+      this.labelNameInputState = FOCUS
+    },
+    handleBlurLabelName () {
+      this.labelNameInputState = BLUR
     },
     handleAddLabel () {
       let message = ''
@@ -152,6 +161,7 @@ export default {
     },
     handleCancelAddLabel () {
       this.labelNameFormVisible = false
+      this.labelNameBtnState = CANCEL
       this.labelName = ''
     },
     handleEditLabels () {
@@ -452,11 +462,16 @@ function tranformLabels (labels = {}) {
   line-height: 1.5;
   outline: none;
   background-color: rgba(255, 255, 255, 0.1);
+  transition: color 0.3s, background-color 0.3s;
 }
 
 .label-form__input--name:focus {
   color: #28343d;
   background-color: #fff;
+}
+
+.label-form__input--name.blur {
+  color: #d9d9d9;
 }
 
 .label-form__operate {
@@ -471,6 +486,7 @@ function tranformLabels (labels = {}) {
   width: 100%;
   height: 100%;
   border: none;
+  border-radius: 0;
   text-align: center;
   color: #fff;
   cursor: pointer;
@@ -480,7 +496,6 @@ function tranformLabels (labels = {}) {
 }
 
 .label-form__operate-btn.save {
-  margin-left: -50%;
   background-color: #3dbd7d;
 }
 
@@ -497,7 +512,6 @@ function tranformLabels (labels = {}) {
 }
 
 .label-form__operate-btn.cancel {
-  margin-left: 50%;
   background-color: #697178;
 }
 
