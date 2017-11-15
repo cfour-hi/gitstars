@@ -38,7 +38,7 @@
         </form>
       </transition>
       <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
-      <draggable :list="dragLabels" :options="dragOptions" class="draggable-labels">
+      <draggable :list="dragLabels" :options="dragOptions" :class="{ edit: isEditLabel }" class="draggable-labels">
         <transition-group name="label-list" tag="ul" class="nav-label label-list">
           <li v-for="(label, index) of dragLabels" :key="label.id" :class="{ active: label.id === currentLabel.id }" class="nav-item" @click="handleToggleLabel(label)">
             <label class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
@@ -273,7 +273,6 @@ function tranformLabels (labels = {}) {
   margin: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   list-style: none;
-  cursor: pointer;
 }
 
 .nav-item {
@@ -286,6 +285,7 @@ function tranformLabels (labels = {}) {
   border-left: 3px solid transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
+  cursor: pointer;
   transition: all 0.3s;
 }
 
@@ -294,14 +294,13 @@ function tranformLabels (labels = {}) {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.nav-item:active,
 .nav-item.active,
 .nav-caption__operate-btn:active {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item.active {
-  border-left: 3px solid #108ee9;
+  border-left-color: #108ee9;
   border-bottom-color: transparent;
 }
 
@@ -315,7 +314,7 @@ function tranformLabels (labels = {}) {
   flex: auto;
   padding-right: 10px;
   line-height: 40px;
-  cursor: pointer;
+  cursor: inherit;
 }
 
 .nav-item__label .fa {
@@ -353,6 +352,16 @@ function tranformLabels (labels = {}) {
 .draggable-labels::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+.draggable-labels.edit .nav-item {
+  cursor: move;
+}
+
+.draggable-labels.edit .nav-item.active {
+  border-left-color: transparent;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background-color: transparent;
 }
 
 .nav-item-badge {
@@ -513,6 +522,7 @@ function tranformLabels (labels = {}) {
 .fa-times-circle {
   font-size: 16px;
   transition: transform 0.1s;
+  cursor: pointer;
 }
 
 .fa-times-circle:hover {
