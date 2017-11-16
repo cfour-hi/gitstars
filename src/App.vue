@@ -17,8 +17,11 @@ import config from './config'
 const { filename, description } = config
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 let gitstarsGistId = ''
-let isLabelsFromAPI = true
+let isContentFromAPI = true
 let starredReposClone = []
+
+// 是否需要兼容更新老数据 (issue1)
+let isIssue1OldData = false
 
 export default {
   name: 'app',
@@ -64,85 +67,100 @@ export default {
   },
   created () {
     gitstarsGistId = window.localStorage.getItem(GITSTARS_GIST_ID)
+    let content = {}
 
     new Promise(async (resolve, reject) => {
       if (gitstarsGistId) {
-        let labels = window.localStorage.getItem(gitstarsGistId)
-        if (labels) {
-          isLabelsFromAPI = false
+        content = window.localStorage.getItem(gitstarsGistId)
+        if (content) {
+          isContentFromAPI = false
         } else {
           const { files } = await getGitstarsGist(gitstarsGistId)
-          labels = files[filename].content || '[]'
-          window.localStorage.setItem(gitstarsGistId, labels)
+          content = files[filename].content
+          // 未来可还原 (issue1)
+          // window.localStorage.setItem(gitstarsGistId, content)
         }
-        this.labels = JSON.parse(labels)
+        // 数据兼容 (issue1)
+        content = JSON.parse(content)
+        if (Array.isArray(content)) {
+          isIssue1OldData = true
+          content = { lastModified: Date.now(), labels: content }
+        }
+        this.labels = content.labels
 
         await loadStarredRepos.call(this)
-        resolve(this.labels)
       } else {
-        axios.spread(async () => {
+        await axios.spread(async () => {
           const [, gists] = [...await axios.all([loadStarredRepos.call(this), getUserGists()])]
 
           for (const { id, description: gistDesc, files } of gists) {
             if (gistDesc === description) {
               gitstarsGistId = id
-              this.labels = await axios.get(files[filename].raw_url)
+              content = await axios.get(files[filename].raw_url)
+
+              // 数据兼容 (issue1)
+              if (Array.isArray(content)) {
+                isIssue1OldData = true
+                content = { lastModified: Date.now(), labels: content }
+              }
+              this.labels = content.labels
               break
             }
           }
           if (!gitstarsGistId) {
-            const { id } = await createGitstarsGist()
+            const labels = []
+            content = { labels, lastModified: Date.now() }
+            const { id } = await createGitstarsGist(content)
             gitstarsGistId = id
-            this.labels = []
+            this.labels = labels
           }
           window.localStorage.setItem(GITSTARS_GIST_ID, gitstarsGistId)
-          window.localStorage.setItem(gitstarsGistId, JSON.stringify(this.labels))
-          resolve(this.labels)
+          // 未来可还原 (issue1)
+          // window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
         })()
       }
-    }).then(async (labels = []) => {
+      resolve(content)
+    }).then(async content => {
+      const { lastModified = 0, labels = [] } = content
+      window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
+
+      // 更新老数据 (issue1)
+      if (isIssue1OldData && isContentFromAPI) saveGitstarsLabels.call(this)
+
       for (const { id, _labels } of this.starredRepos) {
         for (const label of labels) {
           for (const repoId of label.repos) {
-            if (repoId === id) _labels.push({ name: label.name, id: label.id })
+            if (repoId === id) _labels.push({ id: label.id, name: label.name })
           }
         }
       }
-      if (isLabelsFromAPI) return
+      if (isContentFromAPI) return
 
       // 如果在多台电脑访问 Gitstars 管理标签
-      // localStorage 内的标签数据缓存多台电脑之间的不共享
-      // 所以当标签数据不是从 Github API 获取时
-      // 需要从 Github API 获取一次标签数据并与 localStorage 的标签数据进行合并
+      // localStorage 内的标签数据多台电脑之间不共享
+      // 所以当标签数据是从 localStorage 缓存获取时
+      // 需要再从 Github API 获取一次标签数据
+      // 然后根据 lastModified 字段确定是否使用从 Github API 获取的数据
       const { files } = await getGitstarsGist(gitstarsGistId)
-      const APILabels = JSON.parse(files[filename].content || '[]')
+      let gistContent = JSON.parse(files[filename].content)
 
-      const allLabels = [...APILabels, ...labels]
-      const newLabels = []
-      for (const label of allLabels) {
-        const currentNewLabel = newLabels.find(newLabel => newLabel.id === label.id)
-        if (currentNewLabel) {
-          currentNewLabel.repos = [...new Set([...currentNewLabel.repos, ...label.repos])]
-        } else {
-          newLabels.push(label)
-        }
+      // 数据兼容 (issue1)
+      if (Array.isArray(gistContent)) {
+        isIssue1OldData = true
+        gistContent = { lastModified: Date.now(), labels: gistContent }
       }
-      this.labels = newLabels
-      console.log(newLabels)
+      if (gistContent.lastModified < lastModified) return
 
-      for (const { id, _labels } of this.starredRepos) {
-        for (const label of newLabels) {
-          for (const repoId of label.repos) {
-            if (repoId === id) _labels.push({ name: label.name, id: label.id })
-          }
-        }
-      }
+      this.labels = gistContent.labels
+
+      if (isIssue1OldData) saveGitstarsLabels.call(this)
     })
   },
   destroyed () {
     gitstarsGistId = ''
-    isLabelsFromAPI = true
+    isContentFromAPI = true
     starredReposClone = []
+    isIssue1OldData = false
   },
   methods: {
     handleToggleLabel (label) {
@@ -232,15 +250,19 @@ export default {
 async function saveGitstarsLabels (message) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
-    message: '正在执行，请稍后...',
+    message: '正在更新，请稍后...',
     duration: 0,
     showClose: false,
     position: 'bottom-right'
   })
-  const result = await saveGitstarsGist(gitstarsGistId, this.labels)
-  window.localStorage.setItem(gitstarsGistId, JSON.stringify(this.labels))
+  const content = {
+    lastModified: Date.now(),
+    labels: this.labels
+  }
+  const result = await saveGitstarsGist(gitstarsGistId, content)
+  window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
   loadingNotify.close()
-  this.$notify.success({ message, showClose: false, position: 'bottom-right' })
+  if (message) this.$notify.success({ message, showClose: false, position: 'bottom-right' })
   return result
 }
 
