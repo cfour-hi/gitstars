@@ -14,8 +14,10 @@ import LayoutMain from './components/Main'
 import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
 import config from './config'
 
+const { filename, description } = config
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 let gitstarsGistId = ''
+let isLabelsFromAPI = true
 let starredReposClone = []
 
 export default {
@@ -40,8 +42,7 @@ export default {
       const unlabeledRepos = []
 
       for (const repo of this.starredRepos) {
-        const { id } = repo
-        if (labeledReposId.has(id)) continue
+        if (labeledReposId.has(repo.id)) continue
         unlabeledRepos.push(repo)
       }
       return unlabeledRepos
@@ -67,11 +68,12 @@ export default {
     new Promise(async (resolve, reject) => {
       if (gitstarsGistId) {
         let labels = window.localStorage.getItem(gitstarsGistId)
-        if (!labels) {
+        if (labels) {
+          isLabelsFromAPI = false
+        } else {
           const { files } = await getGitstarsGist(gitstarsGistId)
-          const { [config.filename]: file = {} } = files
-          const { content = '[]' } = file
-          labels = content
+          labels = files[filename].content || '[]'
+          window.localStorage.setItem(gitstarsGistId, labels)
         }
         this.labels = JSON.parse(labels)
 
@@ -81,12 +83,10 @@ export default {
         axios.spread(async () => {
           const [, gists] = [...await axios.all([loadStarredRepos.call(this), getUserGists()])]
 
-          for (const { id, description, files = {} } of gists) {
-            if (description === config.description) {
+          for (const { id, description: gistDesc, files } of gists) {
+            if (gistDesc === description) {
               gitstarsGistId = id
-              const { [config.filename]: file = {} } = files
-              const { raw_url } = file
-              this.labels = await axios.get(raw_url)
+              this.labels = await axios.get(files[filename].raw_url)
               break
             }
           }
@@ -96,17 +96,44 @@ export default {
             this.labels = []
           }
           window.localStorage.setItem(GITSTARS_GIST_ID, gitstarsGistId)
+          window.localStorage.setItem(gitstarsGistId, JSON.stringify(this.labels))
           resolve(this.labels)
         })()
       }
-    }).then((labels = []) => {
-      window.localStorage.setItem(gitstarsGistId, JSON.stringify(labels))
-
+    }).then(async (labels = []) => {
       for (const { id, _labels } of this.starredRepos) {
         for (const label of labels) {
-          const { name, repos } = label
-          for (const repoId of repos) {
-            if (repoId === id) _labels.push({ name, id: label.id })
+          for (const repoId of label.repos) {
+            if (repoId === id) _labels.push({ name: label.name, id: label.id })
+          }
+        }
+      }
+      if (isLabelsFromAPI) return
+
+      // 如果在多台电脑访问 Gitstars 管理标签
+      // localStorage 内的标签数据缓存多台电脑之间的不共享
+      // 所以当标签数据不是从 Github API 获取时
+      // 需要从 Github API 获取一次标签数据并与 localStorage 的标签数据进行合并
+      const { files } = await getGitstarsGist(gitstarsGistId)
+      const APILabels = JSON.parse(files[filename].content || '[]')
+
+      const allLabels = [...APILabels, ...labels]
+      const newLabels = []
+      for (const label of allLabels) {
+        const currentNewLabel = newLabels.find(newLabel => newLabel.id === label.id)
+        if (currentNewLabel) {
+          currentNewLabel.repos = [...new Set([...currentNewLabel.repos, ...label.repos])]
+        } else {
+          newLabels.push(label)
+        }
+      }
+      this.labels = newLabels
+      console.log(newLabels)
+
+      for (const { id, _labels } of this.starredRepos) {
+        for (const label of newLabels) {
+          for (const repoId of label.repos) {
+            if (repoId === id) _labels.push({ name: label.name, id: label.id })
           }
         }
       }
@@ -114,6 +141,7 @@ export default {
   },
   destroyed () {
     gitstarsGistId = ''
+    isLabelsFromAPI = true
     starredReposClone = []
   },
   methods: {
