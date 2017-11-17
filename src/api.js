@@ -40,13 +40,13 @@ export function getUserInfo () {
 }
 
 // https://developer.github.com/v3/gists/#create-a-gist
-export function createGitstarsGist () {
+export function createGitstarsGist (content) {
   return axios.post('/gists', {
     description,
     public: true,
     files: {
       [filename]: {
-        content: JSON.stringify([])
+        content: JSON.stringify(content)
       }
     }
   })
@@ -85,11 +85,11 @@ export function getRenderedReadme (data) {
 }
 
 // https://developer.github.com/v3/gists/
-export function saveGitstarsGist (id, labels) {
+export function saveGitstarsGist (id, content) {
   return axios.patch(`/gists/${id}`, {
     files: {
       [filename]: {
-        content: JSON.stringify(labels)
+        content: JSON.stringify(content)
       }
     }
   })
