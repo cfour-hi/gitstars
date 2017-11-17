@@ -13,8 +13,10 @@ import LayoutMain from './components/Main'
 
 import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
 import config from './config'
+import constants from './constants'
 
-const { filename, description } = config
+const { filename, norifyPosition } = config
+const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 let gitstarsGistId = ''
 let isContentFromAPI = true
@@ -93,8 +95,8 @@ export default {
         await axios.spread(async () => {
           const [, gists] = [...await axios.all([loadStarredRepos.call(this), getUserGists()])]
 
-          for (const { id, description: gistDesc, files } of gists) {
-            if (gistDesc === description) {
+          for (const { id, description, files } of gists) {
+            if (description === config.description) {
               gitstarsGistId = id
               content = await axios.get(files[filename].raw_url)
 
@@ -121,14 +123,22 @@ export default {
       }
       resolve(content)
     }).then(async content => {
-      const { lastModified = 0, labels = [] } = content
       window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
 
       // 更新老数据 (issue1)
-      if (isIssue1OldData && isContentFromAPI) saveGitstarsLabels.call(this)
+      if (isIssue1OldData && isContentFromAPI) {
+        saveGitstarsLabels.call(this, { content, message: UPDATE_SUCCESS })
+          .catch(() => {
+            this.$notify.warning({
+              message: UPDATE_FAILED,
+              showClose: false,
+              position: norifyPosition
+            })
+          })
+      }
 
       for (const { id, _labels } of this.starredRepos) {
-        for (const label of labels) {
+        for (const label of content.labels) {
           for (const repoId of label.repos) {
             if (repoId === id) _labels.push({ id: label.id, name: label.name })
           }
@@ -145,15 +155,29 @@ export default {
       let gistContent = JSON.parse(files[filename].content)
 
       // 数据兼容 (issue1)
+      let isIssue1OldDataFromAPI = false
       if (Array.isArray(gistContent)) {
-        isIssue1OldData = true
+        isIssue1OldDataFromAPI = true
         gistContent = { lastModified: Date.now(), labels: gistContent }
       }
-      if (gistContent.lastModified < lastModified) return
-
+      // 此时如果远程数据是老数据
+      // 就直接取远程数据
+      // 没办法，老数据无法进行 lastModified 对比
+      // 当然也不可能出现远程数据时老数据，本地数据是新数据的情况
+      if (gistContent.lastModified < content.lastModified && !isIssue1OldData) return
+      if (isIssue1OldDataFromAPI) {
+        saveGitstarsLabels.call(this, { message: UPDATE_SUCCESS, content: gistContent })
+          .catch(() => {
+            this.$notify.warning({
+              message: UPDATE_FAILED,
+              showClose: false,
+              position: norifyPosition
+            })
+          })
+      } else {
+        if (isIssue1OldData) window.localStorage.setItem(gitstarsGistId, JSON.stringify(gistContent))
+      }
       this.labels = gistContent.labels
-
-      if (isIssue1OldData) saveGitstarsLabels.call(this)
     })
   },
   destroyed () {
@@ -168,7 +192,8 @@ export default {
     },
     handleSaveNewLabel (name) {
       this.labels.push({ name, id: Date.now(), repos: [] })
-      saveGitstarsLabels.call(this, `添加 ${name} 标签`).catch(() => this.labels.pop())
+      saveGitstarsLabels.call(this, { message: `添加 ${name} 标签` })
+        .catch(() => this.labels.pop())
     },
     handleEditLabels () {
       starredReposClone = JSON.parse(JSON.stringify(this.starredRepos))
@@ -188,10 +213,11 @@ export default {
     handleCompleteEditLabels (newLabels = []) {
       const oldLabels = this.labels
       this.labels = newLabels
-      saveGitstarsLabels.call(this, `编辑标签完成`).catch(() => {
-        this.labels = oldLabels
-        this.starredRepos = starredReposClone
-      })
+      saveGitstarsLabels.call(this, { message: `编辑标签完成` })
+        .catch(() => {
+          this.labels = oldLabels
+          this.starredRepos = starredReposClone
+        })
     },
     handleAddRepoLabel ({ repoId, labelName }) {
       let label = {}
@@ -215,7 +241,7 @@ export default {
       const { _labels } = repo
       _labels.push({ id: label.id, name: labelName })
 
-      saveGitstarsLabels.call(this, `${repo.owner.login} / ${repo.name} 仓库添加 ${labelName} 标签`)
+      saveGitstarsLabels.call(this, { message: `${repo.owner.login} / ${repo.name} 仓库添加 ${labelName} 标签` })
         .catch(() => {
           repos ? repos.pop() : this.labels.pop()
           _labels.pop()
@@ -238,7 +264,7 @@ export default {
       const repoIndex = repos.findIndex(id => id === repoId)
       repos.splice(repoIndex, 1)
 
-      saveGitstarsLabels.call(this, `${repo.owner.login} / ${repo.name} 仓库删除 ${label.name} 标签`)
+      saveGitstarsLabels.call(this, { message: `${repo.owner.login} / ${repo.name} 仓库删除 ${label.name} 标签` })
         .catch(() => {
           _labels.splice(labelIndex, 0, label)
           repos.splice(repoIndex, 0, repoId)
@@ -247,22 +273,21 @@ export default {
   }
 }
 
-async function saveGitstarsLabels (message) {
+async function saveGitstarsLabels ({ message, content }) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
     message: '正在更新，请稍后...',
     duration: 0,
     showClose: false,
-    position: 'bottom-right'
+    position: norifyPosition
   })
-  const content = {
-    lastModified: Date.now(),
-    labels: this.labels
-  }
+  if (!content) content = { lastModified: Date.now(), labels: this.labels }
+
   const result = await saveGitstarsGist(gitstarsGistId, content)
   window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
   loadingNotify.close()
-  if (message) this.$notify.success({ message, showClose: false, position: 'bottom-right' })
+
+  if (message) this.$notify.success({ message, showClose: false, position: norifyPosition })
   return result
 }
 

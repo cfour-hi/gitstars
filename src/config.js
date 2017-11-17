@@ -15,5 +15,6 @@ export default {
   clientId,
   clientSecret,
   filename: 'gitstars.json',
-  description: `github stars manager for ${process.env.NODE_ENV}`
+  description: `github stars manager for ${process.env.NODE_ENV}`,
+  norifyPosition: 'bottom-right'
 }
