@@ -72,8 +72,10 @@
 <script>
 import draggable from 'vuedraggable'
 
+import config from '../config'
 import constants from '../constants'
 
+const { norifyPosition } = config
 const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 const SAVE = 'save'
 const CANCEL = 'cancel'
@@ -151,7 +153,7 @@ export default {
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
       if (this.labels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
       if (message) {
-        this.$notify.warning({ message, showClose: false, position: 'bottom-right' })
+        this.$notify.warning({ message, showClose: false, position: norifyPosition })
         return this.$refs.labelFormNameInput.focus()
       }
 
@@ -189,7 +191,7 @@ export default {
       }
 
       if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) {
-        this.$notify.warning({ message: LABEL_NAME_ALREADY_EXIST, showClose: false, position: 'bottom-right' })
+        this.$notify.warning({ message: LABEL_NAME_ALREADY_EXIST, showClose: false, position: norifyPosition })
         return $input.focus()
       }
 
@@ -206,7 +208,7 @@ export default {
       if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) message = LABEL_NAME_ALREADY_EXIST
 
       if (message) {
-        this.$notify.warning({ message, showClose: false, position: 'bottom-right' })
+        this.$notify.warning({ message, showClose: false, position: norifyPosition })
         return $input.focus()
       }
 

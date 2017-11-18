@@ -39,8 +39,10 @@ import LayoutHeader from './Header'
 import SubSidebar from './SubSidebar'
 
 import { getRepoReadme, getRenderedReadme } from '../api'
+import config from '../config'
 import constants from '../constants'
 
+const { norifyPosition } = config
 const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 
 export default {
@@ -105,7 +107,7 @@ export default {
       const { id, _labels } = this.currentRepo
       if (_labels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
 
-      if (message) return this.$notify.warning({ message, showClose: false, position: 'bottom-right' })
+      if (message) return this.$notify.warning({ message, showClose: false, position: norifyPosition })
 
       this.$emit('addRepoLabel', { labelName, repoId: id })
       this.labelName = ''
