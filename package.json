@@ -1,8 +1,8 @@
 {
   "name": "gitstars",
-  "version": "1.0.1",
-  "description": "A Vue.js project",
-  "author": "monine <bob.zhouxiang@gmail.com>",
+  "version": "1.0.2",
+  "description": "Github Stars Repositories Manager",
+  "author": "monine <monine.zhou@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
