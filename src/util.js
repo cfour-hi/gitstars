@@ -9,6 +9,5 @@ export function parseURLSearch (searchStr = window.location.search) {
     const skv = kv.split('=')
     search[skv[0]] = decodeURIComponent(skv[1])
   }
-
   return search
 }

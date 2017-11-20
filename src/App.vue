@@ -7,17 +7,22 @@
 
 <script>
 import axios from 'axios'
-
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
-
-import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist, saveGitstarsGist } from './api'
 import config from './config'
 import constants from './constants'
+import {
+  getStarredRepos,
+  getGitstarsGist,
+  getUserGists,
+  createGitstarsGist,
+  saveGitstarsGist
+} from './api'
 
 const { filename, norifyPosition } = config
 const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
+
 let gitstarsGistId = ''
 let isContentFromAPI = true
 let starredReposClone = []
@@ -34,37 +39,23 @@ export default {
       starredRepos: [],
       loadStarredReposCompleted: false,
       labels: [],
-      currentLabel: {}
+      currentLabel: { id: 0 }
     }
   },
   computed: {
     unlabeledRepos () {
-      let labeledReposId = []
-      for (const { repos } of this.labels) {
-        labeledReposId = [...labeledReposId, ...repos]
-      }
-      labeledReposId = new Set(labeledReposId)
-      const unlabeledRepos = []
-
-      for (const repo of this.starredRepos) {
-        if (labeledReposId.has(repo.id)) continue
-        unlabeledRepos.push(repo)
-      }
-      return unlabeledRepos
+      const labeledReposId = new Set(this.labels.reduce((accumRepos, { repos = [] }) => [...accumRepos, ...repos], []))
+      return this.starredRepos.filter(repo => !labeledReposId.has(repo.id))
     },
     currentLabelRepos () {
       const { id } = this.currentLabel
 
-      if (!id) return this.starredRepos
+      // 0: 全部; -1: 未标签;
+      if (id === 0) return this.starredRepos
       if (id === -1) return this.unlabeledRepos
 
-      const currentLabelRepos = []
       const { repos } = this.labels.find(label => label.id === id)
-
-      for (const repo of this.starredRepos) {
-        if (repos.includes(repo.id)) currentLabelRepos.push(repo)
-      }
-      return currentLabelRepos
+      return this.starredRepos.filter(repo => repos.includes(repo.id))
     }
   },
   created () {
@@ -109,6 +100,7 @@ export default {
               break
             }
           }
+
           if (!gitstarsGistId) {
             const labels = []
             content = { labels, lastModified: Date.now() }
@@ -137,13 +129,25 @@ export default {
           })
       }
 
-      for (const { id, _labels } of this.starredRepos) {
-        for (const label of content.labels) {
-          for (const repoId of label.repos) {
-            if (repoId === id) _labels.push({ id: label.id, name: label.name })
-          }
-        }
-      }
+      // console.time('b')
+      // this.starredRepos.forEach(({ id, _labels }) => {
+      //   content.labels.forEach(label => {
+      //     label.repos.forEach(repoId => {
+      //       if (repoId === id) _labels.push({ id: label.id, name: label.name })
+      //     })
+      //   })
+      // })
+      // console.timeEnd('b')
+
+      console.time('a')
+      content.labels.forEach(label => {
+        label.repos.forEach(repoId => {
+          const { _labels } = this.starredRepos.find(({ id }) => id === repoId) || {}
+          if (_labels) _labels.push({ id: label.id, name: label.name })
+        })
+      })
+      console.timeEnd('a')
+
       if (isContentFromAPI) return
 
       // 如果在多台电脑访问 Gitstars 管理标签
