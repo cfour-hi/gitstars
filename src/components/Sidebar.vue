@@ -169,6 +169,7 @@ export default {
 
       this.$emit('saveNewLabel', labelName)
       this.labelNameFormVisible = false
+      this.labelNameBtnState = CANCEL
       this.labelName = ''
     },
     handleCancelAddLabel () {
