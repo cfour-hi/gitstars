@@ -1,4 +1,4 @@
-export function parseURLSearch (searchStr = window.location.search) {
+export const parseURLSearch = function parseURLSearch (searchStr = window.location.search) {
   const search = {}
 
   if (!searchStr.length) return search

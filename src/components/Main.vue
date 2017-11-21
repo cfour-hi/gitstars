@@ -2,7 +2,7 @@
   <main id="main">
     <layout-header :user="user"></layout-header>
     <div class="main-body">
-      <sub-sidebar :repos="filteredRepos" :load-starred-repos-completed="loadStarredReposCompleted" :current-label="currentLabel" @changeSearchValue="handleChangeSearchValue" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
+      <sub-sidebar :repos="currentRepos" :load-starred-repos-completed="loadStarredReposCompleted" :current-label="currentLabel" @changeSearchValue="handleChangeSearchValue" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
       <div class="content">
         <section v-show="repoReadme" class="repo-readme">
           <header class="repo-readme__header">
@@ -37,7 +37,6 @@
 <script>
 import LayoutHeader from './Header'
 import SubSidebar from './SubSidebar'
-
 import { getRepoReadme, getRenderedReadme } from '../api'
 import config from '../config'
 import constants from '../constants'
@@ -66,8 +65,8 @@ export default {
     }
   },
   computed: {
-    filteredRepos () {
-      return this.repos.filter(({ owner = {}, name = '' } = {}) => {
+    currentRepos () {
+      return this.repos.filter(({ owner = {}, name = '' }) => {
         const { login = '' } = owner
         return (login.toLowerCase().includes(this.searchValue) || name.toLowerCase().includes(this.searchValue))
       })
@@ -77,12 +76,14 @@ export default {
     }
   },
   methods: {
-    async handleToggleRepo ({ login, repoId, repoName } = {}) {
-      this.currentRepo = this.repos.find(({ id }) => id === repoId)
+    async handleToggleRepo ({ id, owner, name }) {
+      this.currentRepo = this.repos.find(repo => repo.id === id)
       this.isSelectedRepo = true
       this.isLoadingRepoReadme = true
       this.repoReadme = ''
-      const { content } = await getRepoReadme(login, repoName)
+
+      const { content } = await getRepoReadme(owner.login, name)
+
       this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content)))) // 包含中文内容的 base64 解码
       this.isLoadingRepoReadme = false
     },
@@ -109,7 +110,7 @@ export default {
 
       if (message) return this.$notify.warning({ message, showClose: false, position: norifyPosition })
 
-      this.$emit('addRepoLabel', { labelName, repoId: id })
+      this.$emit('addRepoLabel', { id, name: labelName })
       this.labelName = ''
     }
   }

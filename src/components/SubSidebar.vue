@@ -68,12 +68,12 @@ export default {
     handleChangeSearchValue () {
       this.$emit('changeSearchValue', this.searchValue)
     },
-    handleToggleRepo ({ id, owner, name }) {
+    handleToggleRepo (repo) {
+      const { id } = repo
       if (this.activeRepoId === id) return
 
       this.activeRepoId = id
-      const { login } = owner
-      this.$emit('toggleRepo', { login, repoId: id, repoName: name })
+      this.$emit('toggleRepo', repo)
     },
     handleToggleLabel (label) {
       this.$emit('toggleLabel', label)

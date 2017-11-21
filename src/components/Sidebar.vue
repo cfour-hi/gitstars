@@ -50,7 +50,7 @@
               <i v-show="isEditLabel" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel"></i>
               <footer class="popover-footer">
                 <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-                <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(label.id, index)">Yes</el-button>
+                <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(label, index)">Yes</el-button>
               </footer>
             </el-popover>
             <span v-show="!isEditLabel" class="nav-item-badge">{{label.repos.length}}</span>
@@ -71,9 +71,10 @@
 
 <script>
 import draggable from 'vuedraggable'
-
 import config from '../config'
 import constants from '../constants'
+
+let dragLabelsClone = []
 
 const { norifyPosition } = config
 const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
@@ -81,7 +82,17 @@ const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
 const BLUR = 'blur'
-let dragLabelsClone = []
+
+const tranformLabels = function tranformLabels (labels = {}) {
+  const dragLabels = JSON.parse(JSON.stringify(labels))
+
+  dragLabels.forEach((label, index) => {
+    label._isEdit = false
+    label._ref = `labelNameEditInput${label.id}`
+    label._preName = ''
+  })
+  return dragLabels
+}
 
 export default {
   name: 'sidebar',
@@ -108,9 +119,7 @@ export default {
   },
   computed: {
     dragOptions () {
-      return {
-        disabled: !this.isEditLabel
-      }
+      return { disabled: !this.isEditLabel }
     }
   },
   watch: {
@@ -150,6 +159,7 @@ export default {
     handleAddLabel () {
       let message = ''
       const labelName = this.labelName.trim()
+
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
       if (this.labels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
       if (message) {
@@ -184,6 +194,7 @@ export default {
     handleChangeLabelNameByBlur (label) {
       const $input = this.$refs[label._ref][0]
       const newLabelName = $input.value.trim()
+
       if (!newLabelName) {
         label.name = label._preName
         label._isEdit = false
@@ -191,7 +202,11 @@ export default {
       }
 
       if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) {
-        this.$notify.warning({ message: LABEL_NAME_ALREADY_EXIST, showClose: false, position: norifyPosition })
+        this.$notify.warning({
+          message: LABEL_NAME_ALREADY_EXIST,
+          showClose: false,
+          position: norifyPosition
+        })
         return $input.focus()
       }
 
@@ -204,9 +219,9 @@ export default {
       let message = ''
       const $input = this.$refs[label._ref][0]
       const newLabelName = $input.value.trim()
+
       if (!newLabelName) message = LABEL_NAME_CANNOT_ENPTY
       if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) message = LABEL_NAME_ALREADY_EXIST
-
       if (message) {
         this.$notify.warning({ message, showClose: false, position: norifyPosition })
         return $input.focus()
@@ -225,9 +240,9 @@ export default {
     handleDeleteLabel () {
       document.body.click()
     },
-    handleConfirmDeleteLabel (labelId, index) {
+    handleConfirmDeleteLabel (label, index) {
       this.dragLabels.splice(index, 1)
-      this.$emit('deleteLabel', labelId)
+      this.$emit('deleteLabel', label)
       document.body.click()
     },
     handleCancelDeleteLabel () {
@@ -244,20 +259,12 @@ export default {
           break
         }
       }
+      if (!isChanged) return
+
       const labels = this.dragLabels.map(({ id, name, repos }) => ({ id, name, repos }))
-      if (isChanged) this.$emit('completeEditLabels', labels)
+      this.$emit('completeEditLabels', labels)
     }
   }
-}
-
-function tranformLabels (labels = {}) {
-  const dragLabels = JSON.parse(JSON.stringify(labels))
-  dragLabels.forEach((label, index) => {
-    label._isEdit = false
-    label._ref = `labelNameEditInput${label.id}`
-    label._preName = ''
-  })
-  return dragLabels
 }
 </script>
 

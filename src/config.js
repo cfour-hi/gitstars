@@ -7,5 +7,6 @@ export default {
   clientSecret,
   filename: 'gitstars.json',
   description: `github stars manager for ${process.env.NODE_ENV}`,
-  norifyPosition: 'bottom-right'
+  norifyPosition: 'bottom-right',
+  starredReposPerPage: 100
 }
