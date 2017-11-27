@@ -17,7 +17,7 @@
     "github-markdown-css": "2.9.0",
     "normalize.css": "7.0.0",
     "sortablejs": "1.6.0",
-    "vue": "2.5.2",
+    "vue": "2.5.8",
     "vuedraggable": "2.14.1"
   },
   "devDependencies": {
@@ -61,7 +61,7 @@
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "2.5.2",
+    "vue-template-compiler": "^2.5.8",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-middleware": "^1.12.0",

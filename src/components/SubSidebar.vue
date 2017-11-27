@@ -9,13 +9,13 @@
         <li v-for="repo in repos" :key="repo.id" :class="{ active: repo.id === activeRepoId }" class="repo-item" @click="handleToggleRepo(repo)">
           <header>
             <h3 class="repo-title">
-              <a :href="repo.html_url" target="_blank">{{repo.owner.login}} / {{repo.name}}</a>
+              <a :href="repo.html_url" target="_blank">{{ repo.owner.login }} / {{ repo.name }}</a>
             </h3>
           </header>
-          <p class="repo-desc">{{repo.description}}</p>
-          <ul v-if="repo._labels && repo._labels.length" class="label-list">
-            <li v-for="(label, index) of repo._labels" :key="label.id" class="label-item" @click.stop="handleToggleLabel(label)">
-              <el-tag size="small" closable>{{label.name}}</el-tag>
+          <p class="repo-desc">{{ repo.description }}</p>
+          <ul class="label-list">
+            <li v-for="label of repo._labels.custom" :key="label.id" class="label-item" @click.stop="handleToggleLabel(label)">
+              <el-tag size="small" closable>{{ label.name }}</el-tag>
               <el-popover placement="right" title="Are you sure?">
                 <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
                 <footer class="popover-footer">
@@ -26,8 +26,9 @@
             </li>
           </ul>
           <footer class="repo-footer">
-            <span><i class="fa fa-star" aria-hidden="true"></i>{{repo.stargazers_count}}</span>
-            <span><i class="fa fa-code-fork" aria-hidden="true"></i>{{repo.forks_count}}</span>
+            <span class="repo-star"><i class="fa fa-star" aria-hidden="true"></i>{{ repo.stargazers_count }}</span>
+            <span class="repo-fork"><i class="fa fa-code-fork" aria-hidden="true"></i>{{ repo.forks_count }}</span>
+            <span class="repo-language">{{ repo.language }}</span>
           </footer>
         </li>
       </ul>
@@ -76,7 +77,7 @@ export default {
       this.$emit('toggleRepo', repo)
     },
     handleToggleLabel (label) {
-      this.$emit('toggleLabel', label)
+      this.$emit('toggleLabel', { label, index: 0 })
     },
     handleDeleteLabel () {
       document.body.click()
@@ -221,6 +222,15 @@ export default {
 
 .repo-footer .fa {
   margin-right: 5px;
+}
+
+.repo-fork {
+  margin-left: 15px;
+}
+
+.repo-language {
+  flex: auto;
+  text-align: right;
 }
 
 .loader,

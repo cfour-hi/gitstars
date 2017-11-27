@@ -10,7 +10,7 @@
               <a :href="currentRepo.html_url" target="_blank">
                 <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
               </a>
-              {{currentRepo.owner.login}} / {{currentRepo.name}}
+              {{ currentRepo.owner.login }} / {{ currentRepo.name }}
             </h3>
             <el-autocomplete v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="新增标签" class="repo-label-input" @select="handleAddRepoLabel" select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
@@ -51,7 +51,7 @@ export default {
     user: { type: Object, default: {} },
     repos: { type: Array, default: [] },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    labels: { type: Array, default: [] },
+    customLabels: { type: Array, default: [] },
     currentLabel: { type: Object, default: {} }
   },
   data () {
@@ -72,7 +72,7 @@ export default {
       })
     },
     currentRepoUnlabeledLabels () {
-      return this.labels.filter(label => !this.currentRepo._labels.find(({ id }) => id === label.id)).map(({ name }) => name)
+      return this.customLabels.filter(label => !this.currentRepo._labels.custom.find(({ id }) => id === label.id)).map(({ name }) => name)
     }
   },
   methods: {
@@ -87,8 +87,8 @@ export default {
       this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content)))) // 包含中文内容的 base64 解码
       this.isLoadingRepoReadme = false
     },
-    handleToggleLabel (label) {
-      this.$emit('toggleLabel', label)
+    handleToggleLabel (payload) {
+      this.$emit('toggleLabel', payload)
     },
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
@@ -105,12 +105,11 @@ export default {
       const labelName = this.labelName.trim()
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
 
-      const { id, _labels } = this.currentRepo
-      if (_labels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
+      if (this.currentRepo._labels.custom.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
 
       if (message) return this.$notify.warning({ message, showClose: false, position: norifyPosition })
 
-      this.$emit('addRepoLabel', { id, name: labelName })
+      this.$emit('addRepoLabel', { id: this.currentRepo.id, name: labelName })
       this.labelName = ''
     }
   }

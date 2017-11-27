@@ -83,3 +83,59 @@ a:hover {
   left: 50% !important;
   margin-left: -3px;
 }
+
+.enlarge-enter {
+  opacity: 0.1;
+  transform: scale(0.1);
+}
+
+.enlarge-enter-active {
+  transition: all 0.15s ease-in;
+}
+
+
+.slide-up-enter,
+.slide-up-leave-active {
+  transform: translateY(100%);
+}
+
+.slide-down-enter,
+.slide-down-leave-active {
+  height: 0 !important;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active,
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.15s ease-out;
+}
+
+.slide-to-left-enter,
+.slide-to-left-leave-active {
+  opacity: 0.1;
+  transform: translateX(100%);
+}
+
+.slide-to-right-enter,
+.slide-to-right-leave-active {
+  opacity: 0.1;
+  transform: translateX(-100%);
+}
+
+.telescopic-enter,
+.telescopic-leave-active {
+  opacity: 0.1;
+  transform: scale(0.1);
+  transform-origin: 0 0 0;
+}
+
+
+.slide-to-left-enter-active,
+.slide-to-left-leave-active,
+.slide-to-right-enter-active,
+.slide-to-right-leave-active,
+.telescopic-enter-active,
+.telescopic-leave-active {
+  transition: all 0.3s;
+}

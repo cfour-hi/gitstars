@@ -1,7 +1,7 @@
 <template>
   <header id="header">
     <a :href="user.html_url" target="_blank"><img :src="user.avatar_url" class="user-avatar"></a>
-    <h1 class="user-name"><a :href="user.html_url + '?tab=repositories'" target="_blank">{{user.name}}’s Starred Repositories</a></h1>
+    <h1 class="user-name"><a :href="user.html_url + '?tab=repositories'" target="_blank">{{ user.name }}’s Starred Repositories</a></h1>
   </header>
 </template>
 
