@@ -312,6 +312,8 @@ export default {
     },
     handleToggleLabelCategory (index = 0) {
       if (this.isEditLabel) return
+
+      this.labelNameFormVisible = false
       this.$emit('toggleLabelCategory', { index })
     }
   }
