@@ -4,7 +4,7 @@
     <div class="main-body">
       <sub-sidebar :repos="currentRepos" :load-starred-repos-completed="loadStarredReposCompleted" :current-label="currentLabel" @changeSearchValue="handleChangeSearchValue" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
       <div class="content">
-        <section v-show="repoReadme" class="repo-readme">
+        <section v-show="repoReadme || isLoadingRepoReadme" class="repo-readme">
           <header class="repo-readme__header">
             <h3 v-if="Object.keys(currentRepo).length" class="repo-title">
               <a :href="currentRepo.html_url" target="_blank">
@@ -168,12 +168,14 @@ export default {
 }
 
 .waiting {
-  position: relative;
+  position: absolute;
   top: 30%;
+  left: 50%;
   font-size: 14px;
   text-align: center;
   color: #d9d9d9;
   user-select: none;
+  transform: translateX(-50%);
 }
 
 .readme {
