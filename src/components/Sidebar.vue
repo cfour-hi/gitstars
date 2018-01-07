@@ -134,14 +134,14 @@
       </transition>
     </div>
     <transition name="slide-up">
-      <ul v-show="!isEditLabel" class="label-category">
+      <ul v-show="!isEditLabel && !labelNameFormVisible" class="label-category">
         <li :style="categoryLabelSliderStyle" class="label-category__slider"></li>
         <li
           v-for="(category, index) of labelCategorys"
           :key="category"
           :class="{ active: index === labelCategoryIndex }"
           class="label-category__item"
-          @click="handleToggleLabelCategory(index)">
+          @click="$emit('toggleLabelCategory', { index })">
           {{ category }}
         </li>
       </ul>
@@ -359,12 +359,6 @@ export default {
 
       const labels = this.dragLabels.map(({ id, name, repos }) => ({ id, name, repos }))
       this.$emit('completeEditLabels', labels)
-    },
-    handleToggleLabelCategory (index = 0) {
-      if (this.isEditLabel) return
-
-      this.labelNameFormVisible = false
-      this.$emit('toggleLabelCategory', { index })
     }
   }
 }
