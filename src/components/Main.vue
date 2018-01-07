@@ -2,17 +2,35 @@
   <main id="main">
     <layout-header :user="user"></layout-header>
     <div class="main-body">
-      <sub-sidebar :repos="currentRepos" :load-starred-repos-completed="loadStarredReposCompleted" :current-label="currentLabel" @changeSearchValue="handleChangeSearchValue" @toggleRepo="handleToggleRepo" @toggleLabel="handleToggleLabel" @deleteRepoLabel="handleDeleteRepoLabel"></sub-sidebar>
+      <sub-sidebar
+        :repos="currentRepos"
+        :load-starred-repos-completed="loadStarredReposCompleted"
+        :current-label="currentLabel"
+        @changeSearchValue="handleChangeSearchValue"
+        @toggleRepo="handleToggleRepo"
+        @toggleLabel="handleToggleLabel"
+        @deleteRepoLabel="handleDeleteRepoLabel">
+      </sub-sidebar>
       <div class="content">
         <section v-show="repoReadme || isLoadingRepoReadme" class="repo-readme">
           <header class="repo-readme__header">
-            <h3 v-if="Object.keys(currentRepo).length" class="repo-title">
+            <h3 v-if="!!Object.keys(currentRepo).length" class="repo-title">
               <a :href="currentRepo.html_url" target="_blank">
                 <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
               </a>
               {{ currentRepo.owner.login }} / {{ currentRepo.name }}
+              <a v-show="!!currentRepo.homepage" :href="currentRepo.homepage" target="_blank">
+                <i class="fa fa-fw fa-lg fa-home" aria-hidden="true"></i>
+              </a>
             </h3>
-            <el-autocomplete v-model="labelName" :fetch-suggestions="handleFetchLabelSuggestions" ref="repoLabelNameInput" size="small" placeholder="新增标签" class="repo-label-input" @select="handleAddRepoLabel" select-when-unmatched>
+            <el-autocomplete
+              v-model="labelName"
+              :fetch-suggestions="handleFetchLabelSuggestions"
+              ref="repoLabelNameInput"
+              size="small" placeholder="新增标签"
+              class="repo-label-input"
+              @select="handleAddRepoLabel"
+              select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
               <el-button slot="append" @click="handleAddRepoLabel">添加</el-button>
             </el-autocomplete>
@@ -133,6 +151,7 @@ export default {
   left: 400px;
   right: 0;
   height: 100%;
+  min-width: 650px;
 }
 
 .repo-readme {
@@ -153,6 +172,14 @@ export default {
 .repo-readme__header .fa-github,
 .repo-title {
   color: #5a5a5a;
+}
+
+.repo-label-input {
+  width: 200px;
+}
+
+.repo-label-input .el-input-group__append .el-button {
+  padding: 10px;
 }
 
 .markdown-body {

@@ -7,7 +7,11 @@
       </a>
     </header>
     <ul class="nav-label">
-      <li v-for="label of defaultLabels" :key="label.id" :class="{ active: label.id === currentLabel.id }" class="nav-item" @click="handleToggleLabel(label)">
+      <li
+        v-for="label of defaultLabels"
+        :key="label.id" :class="{ active: label.id === currentLabel.id }"
+        class="nav-item"
+        @click="handleToggleLabel(label)">
         <label class="nav-item__label">
           <i :class="label.icon" class="fa fa-fw" aria-hidden="true"></i>
           <span>{{ label.name }}</span>
@@ -28,8 +32,19 @@
               <span>添加</span>
             </div>
             <transition-group name="enlarge" tag="div" class="nav-caption__group--edit-over">
-              <div v-show="isEditLabel" key="over" class="nav-caption__operate-btn nav-caption__complete-btn" @click="handleCompleteEditLabels">完成</div>
-              <div v-show="!isEditLabel" :class="{ disabled: labelNameFormVisible }" key="edit" class="nav-caption__operate-btn" @click="handleEditLabels">
+              <div
+                v-show="isEditLabel"
+                key="over"
+                class="nav-caption__operate-btn nav-caption__complete-btn"
+                @click="handleCompleteEditLabels">
+                完成
+              </div>
+              <div
+                v-show="!isEditLabel"
+                :class="{ disabled: labelNameFormVisible }"
+                key="edit"
+                class="nav-caption__operate-btn"
+                @click="handleEditLabels">
                 <i class="fa fa-cog" aria-hidden="true"></i>
                 <span>编辑</span>
             </div>
@@ -39,11 +54,22 @@
       </header>
       <transition name="slide-down">
         <form v-show="labelNameFormVisible" class="label-form" onsubmit="return false">
-          <input v-model="labelName" :class="labelNameInputState" ref="labelFormNameInput" type="text" class="label-form__input--name" placeholder="标签名称" @input="handleInputLabelName" @focus="handleFocusLabelName" @blur="handleBlurLabelName" @keyup.enter.prevent="handleAddLabel" @keyup.esc="handleCancelAddLabel">
-          <div class="label-form__operate" :class="labelNameBtnState">
-            <button type="button" class="label-form__operate-btn save" @click="handleAddLabel">SAVE</button>
-            <button type="button" class="label-form__operate-btn cancel" @click="handleCancelAddLabel">CANCEL</button>
-          </div>
+          <input
+            v-model="labelName"
+            :class="labelNameInputState"
+            ref="labelFormNameInput"
+            type="text"
+            class="label-form__input--name"
+            placeholder="标签名称"
+            @input="handleInputLabelName"
+            @focus="handleFocusLabelName"
+            @blur="handleBlurLabelName"
+            @keyup.enter.prevent="handleAddLabel"
+            @keyup.esc="handleCancelAddLabel">
+            <div class="label-form__operate" :class="labelNameBtnState">
+              <button type="button" class="label-form__operate-btn save" @click="handleAddLabel">SAVE</button>
+              <button type="button" class="label-form__operate-btn cancel" @click="handleCancelAddLabel">CANCEL</button>
+            </div>
         </form>
       </transition>
       <transition name="slide-down">
@@ -53,11 +79,23 @@
         <transition name="slide-to-left">
           <draggable v-show="labelCategoryIndex === 0" :list="dragLabels" :options="dragOptions" :class="{ edit: isEditLabel }" class="draggable-labels">
             <transition-group name="label-list" tag="ul" class="nav-label label-list">
-              <li v-for="(label, index) of dragLabels" :key="label.id" :class="{ active: label.id === currentLabel.id }" class="nav-item" @click="handleToggleLabel(label)">
+              <li
+                v-for="(label, index) of dragLabels"
+                :key="label.id"
+                :class="{ active: label.id === currentLabel.id }"
+                class="nav-item"
+                @click="handleToggleLabel(label)">
                 <div class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
                   <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
                   <span v-show="!label._isEdit" class="nav-item__name slo">{{ label.name }}</span>
-                  <input v-show="label._isEdit" :ref="label._ref" type="text" :value="label.name" class="nav-item__input--name" @blur="handleChangeLabelNameByBlur(label)" @keyup.enter="handleChangeLabelNameByEnter(label)" @keyup.esc="handleCancelEditLabelName(label)">
+                  <input
+                    v-show="label._isEdit"
+                    :ref="label._ref" type="text"
+                    :value="label.name"
+                    class="nav-item__input--name"
+                    @blur="handleChangeLabelNameByBlur(label)"
+                    @keyup.enter="handleChangeLabelNameByEnter(label)"
+                    @keyup.esc="handleCancelEditLabelName(label)">
                 </div>
                 <el-popover placement="right" title="Are you sure?">
                   <i v-show="isEditLabel" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel"></i>
@@ -73,7 +111,12 @@
         </transition>
         <transition name="slide-to-right">
           <ul v-show="labelCategoryIndex === 1" class="nav-label label-list">
-            <li v-for="label of languageLabels" :key="label.id" :class="{ active: label.id === currentLabel.id }" class="nav-item" @click="handleToggleLabel(label)">
+            <li
+              v-for="label of languageLabels"
+              :key="label.id"
+              :class="{ active: label.id === currentLabel.id }"
+              class="nav-item"
+              @click="handleToggleLabel(label)">
               <label class="nav-item__label slo">
                 <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
                 <span class="nav-item__name slo">{{ label.name }}</span>
@@ -93,7 +136,14 @@
     <transition name="slide-up">
       <ul v-show="!isEditLabel" class="label-category">
         <li :style="categoryLabelSliderStyle" class="label-category__slider"></li>
-        <li v-for="(category, index) of labelCategorys" :key="category" :class="{ active: index === labelCategoryIndex }" class="label-category__item" @click="handleToggleLabelCategory(index)">{{ category }}</li>
+        <li
+          v-for="(category, index) of labelCategorys"
+          :key="category"
+          :class="{ active: index === labelCategoryIndex }"
+          class="label-category__item"
+          @click="handleToggleLabelCategory(index)">
+          {{ category }}
+        </li>
       </ul>
     </transition>
     <footer class="sidebar-footer">

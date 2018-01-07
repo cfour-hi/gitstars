@@ -84,6 +84,10 @@ a:hover {
   margin-left: -3px;
 }
 
+.el-autocomplete-suggestion li {
+  padding: 0 10px;
+}
+
 .enlarge-enter {
   opacity: 0.1;
   transform: scale(0.1);

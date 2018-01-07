@@ -3,10 +3,20 @@
     <template v-if="loadStarredReposCompleted">
       <label class="search-label">
         <i class="fa fa-search" aria-hidden="true"></i>
-        <input v-model="searchValue" :placeholder="`开发者 | 仓库名 @${currentLabel.name}`" type="text" class="search-input" @input="handleChangeSearchValue">
+        <input
+          v-model="searchValue"
+          :placeholder="`开发者 | 仓库名 @${currentLabel.name}`"
+          type="text"
+          class="search-input"
+          @input="handleChangeSearchValue">
       </label>
       <ul v-show="repos.length" class="repo-list">
-        <li v-for="repo in repos" :key="repo.id" :class="{ active: repo.id === activeRepoId }" class="repo-item" @click="handleToggleRepo(repo)">
+        <li
+          v-for="repo in repos"
+          :key="repo.id"
+          :class="{ active: repo.id === activeRepoId }"
+          class="repo-item"
+          @click="handleToggleRepo(repo)">
           <header>
             <h3 class="repo-title">
               <a :href="repo.html_url" target="_blank">{{ repo.owner.login }} / {{ repo.name }}</a>
@@ -14,7 +24,11 @@
           </header>
           <p class="repo-desc">{{ repo.description }}</p>
           <ul class="label-list">
-            <li v-for="label of repo._labels.custom" :key="label.id" class="label-item" @click.stop="handleToggleLabel(label)">
+            <li
+              v-for="label of repo._labels.custom"
+              :key="label.id"
+              class="label-item"
+              @click.stop="handleToggleLabel(label)">
               <el-tag size="small" closable>{{ label.name }}</el-tag>
               <el-popover placement="right" title="Are you sure?">
                 <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
