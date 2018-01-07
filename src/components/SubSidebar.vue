@@ -20,6 +20,9 @@
           <header>
             <h3 class="repo-title">
               <a :href="repo.html_url" target="_blank">{{ repo.owner.login }} / {{ repo.name }}</a>
+              <a v-show="!!repo.homepage" :href="repo.homepage" target="_blank">
+                <i class="fa fa-fw fa-lg fa-home" aria-hidden="true"></i>
+              </a>
             </h3>
           </header>
           <p class="repo-desc">{{ repo.description }}</p>
@@ -177,6 +180,8 @@ export default {
 }
 
 .repo-title {
+  display: flex;
+  justify-content: space-between;
   margin: 0;
   font-size: 16px;
   color: #948aec;

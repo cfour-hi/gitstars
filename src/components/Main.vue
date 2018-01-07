@@ -19,9 +19,6 @@
                 <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
               </a>
               {{ currentRepo.owner.login }} / {{ currentRepo.name }}
-              <a v-show="!!currentRepo.homepage" :href="currentRepo.homepage" target="_blank">
-                <i class="fa fa-fw fa-lg fa-home" aria-hidden="true"></i>
-              </a>
             </h3>
             <el-autocomplete
               v-model="labelName"
