@@ -8,5 +8,9 @@ export default {
   filename: 'gitstars.json',
   description: `github stars manager for ${process.env.NODE_ENV}`,
   norifyPosition: 'bottom-right',
-  starredReposPerPage: 100
+  starredReposPerPage: 100,
+  defaultLabels: {
+    all: { id: 0, name: '全部', icon: 'fa-bars' },
+    unlabeled: { id: -1, name: '未标签', icon: 'fa-star-o' }
+  }
 }

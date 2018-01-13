@@ -8,7 +8,7 @@
     </header>
     <ul class="nav-label">
       <li
-        v-for="label of defaultLabels"
+        v-for="label in defaultLabels"
         :key="label.id" :class="{ active: label.id === currentLabel.id }"
         class="nav-item"
         @click="handleToggleLabel(label)">
@@ -16,7 +16,7 @@
           <i :class="label.icon" class="fa fa-fw" aria-hidden="true"></i>
           <span>{{ label.name }}</span>
         </label>
-        <span class="nav-item-badge">{{ label.id ? unlabeledReposLen : starredReposLen }}</span>
+        <span class="nav-item-badge">{{ label.number }}</span>
       </li>
     </ul>
     <div class="label-nav">
@@ -166,7 +166,7 @@ import constants from '../constants'
 let isValidatedNewLabelName = false
 let dragLabelsClone = []
 
-const { norifyPosition } = config
+const { norifyPosition, defaultLabels } = config
 const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 const SAVE = 'save'
 const CANCEL = 'cancel'
@@ -198,10 +198,6 @@ export default {
   },
   data () {
     return {
-      defaultLabels: [
-        { id: 0, name: '全部', icon: 'fa-bars' },
-        { id: -1, name: '未标签', icon: 'fa-star-o' }
-      ],
       labelNameFormVisible: false,
       labelName: '',
       labelNameInputState: FOCUS,
@@ -212,6 +208,12 @@ export default {
     }
   },
   computed: {
+    defaultLabels () {
+      const labels = JSON.parse(JSON.stringify(defaultLabels))
+      labels.all.number = this.starredReposLen
+      labels.unlabeled.number = this.unlabeledReposLen
+      return labels
+    },
     dragOptions () {
       return { disabled: !this.isEditLabel }
     },
@@ -232,7 +234,7 @@ export default {
     }
   },
   created () {
-    this.$emit('toggleLabel', { label: this.defaultLabels[0] })
+    this.$emit('toggleLabel', { label: this.defaultLabels.all })
   },
   destroyed () {
     dragLabelsClone = []
