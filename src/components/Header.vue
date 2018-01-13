@@ -2,7 +2,7 @@
   <header id="header">
     <a :href="user.html_url" target="_blank"><img :src="user.avatar_url" class="user-avatar"></a>
     <h1 class="user-name">
-      <a :href="user.html_url + '?tab=repositories'" target="_blank">{{ user.name }}’s Starred Repositories</a>
+      <a :href="`${user.html_url}?tab=repositories`" target="_blank">{{ user.name }}’s Starred Repositories</a>
     </h1>
     <a href="https://github.com/Monine/gitstars" target="_blank">
       <svg width="60" height="60" viewBox="0 0 250 250" aria-hidden="true" class="octocat">
@@ -18,10 +18,7 @@
 export default {
   name: 'header',
   props: {
-    user: { type: Object, default: {} }
-  },
-  data () {
-    return {}
+    user: { type: Object, default () { return {} } }
   }
 }
 </script>

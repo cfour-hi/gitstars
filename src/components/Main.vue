@@ -63,11 +63,11 @@ export default {
   name: 'main',
   components: { LayoutHeader, SubSidebar },
   props: {
-    user: { type: Object, default: {} },
-    repos: { type: Array, default: [] },
+    user: { type: Object, default () { return {} } },
+    repos: { type: Array, default () { return [] } },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    customLabels: { type: Array, default: [] },
-    currentLabel: { type: Object, default: {} }
+    customLabels: { type: Array, default () { return [] } },
+    currentLabel: { type: Object, default () { return {} } }
   },
   data () {
     return {
@@ -83,11 +83,16 @@ export default {
     currentRepos () {
       return this.repos.filter(({ owner = {}, name = '' }) => {
         const { login = '' } = owner
-        return (login.toLowerCase().includes(this.searchValue) || name.toLowerCase().includes(this.searchValue))
+        return (
+          login.toLowerCase().includes(this.searchValue) ||
+          name.toLowerCase().includes(this.searchValue)
+        )
       })
     },
     currentRepoUnlabeledLabels () {
-      return this.customLabels.filter(label => !this.currentRepo._labels.custom.find(({ id }) => id === label.id)).map(({ name }) => name)
+      return this.customLabels
+        .filter(label => !this.currentRepo._labels.custom.find(({ id }) => id === label.id))
+        .map(({ name }) => name)
     }
   },
   methods: {
@@ -99,7 +104,8 @@ export default {
 
       const { content } = await getRepoReadme(owner.login, name)
 
-      this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content)))) // 包含中文内容的 base64 解码
+      // 包含中文内容的 base64 解码
+      this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content))))
       this.isLoadingRepoReadme = false
     },
     handleToggleLabel (payload) {
@@ -113,16 +119,23 @@ export default {
     },
     handleFetchLabelSuggestions (inputStr, cb) {
       inputStr = inputStr.toLowerCase()
-      cb(this.currentRepoUnlabeledLabels.filter(name => name.toLowerCase().includes(inputStr)).map(name => ({ value: name })))
+      cb(this.currentRepoUnlabeledLabels
+        .filter(name => name.toLowerCase().includes(inputStr))
+        .map(name => ({ value: name })))
     },
     handleAddRepoLabel () {
       let message = ''
       const labelName = this.labelName.trim()
+
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
 
-      if (this.currentRepo._labels.custom.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
+      if (this.currentRepo._labels.custom.find(({ name }) => name === labelName)) {
+        message = LABEL_NAME_ALREADY_EXIST
+      }
 
-      if (message) return this.$notify.warning({ message, showClose: false, position: norifyPosition })
+      if (message) {
+        return this.$notify.warning({ message, showClose: false, position: norifyPosition })
+      }
 
       this.$emit('addRepoLabel', { id: this.currentRepo.id, name: labelName })
       this.labelName = ''

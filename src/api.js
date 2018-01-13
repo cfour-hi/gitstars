@@ -22,7 +22,11 @@ axios.interceptors.response.use(({ data }) => {
   const { status, statusText, data } = response
 
   if (data) message = data.message
-  Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
+  Notification.error({
+    message,
+    title: `${status} ${statusText}`,
+    showClose: false
+  })
   return Promise.reject(err)
 })
 

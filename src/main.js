@@ -37,12 +37,12 @@ new Promise(async (resolve, reject) => {
   const gitstarsCode = storageCode || code
 
   if (gitstarsCode) {
-    if (!storageCode) window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
-
     if (code) {
       let href = window.location.href.replace(/code=[^&]+/, '')
       if (href[href.length - 1] === '?') href = href.slice(0, -1)
       window.history.replaceState({}, null, `${href}`)
+    } else {
+      window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
     }
 
     const { access_token } = await getGitstarsAccessToken({
@@ -66,7 +66,10 @@ new Promise(async (resolve, reject) => {
    * 所以以下代码执行之前就需要给赋值 window._gitstars
    */
   window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
-  if (!gitstarsUser) window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
+
+  if (!gitstarsUser) {
+    window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
+  }
 
   new Vue({ el: '#app', template: '<App/>', components: { App } })
 })

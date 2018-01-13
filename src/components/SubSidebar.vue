@@ -74,9 +74,9 @@
 export default {
   name: 'sub-sidebar',
   props: {
-    repos: { type: Array, default: [] },
+    repos: { type: Array, default () { return [] } },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    currentLabel: { type: Object, default: {} }
+    currentLabel: { type: Object, default () { return {} } }
   },
   data () {
     return {

@@ -77,7 +77,12 @@
       </transition>
       <div class="label-list__group">
         <transition name="slide-to-left">
-          <draggable v-show="labelCategoryIndex === 0" :list="dragLabels" :options="dragOptions" :class="{ edit: isEditLabel }" class="draggable-labels">
+          <draggable
+            v-show="labelCategoryIndex === 0"
+            :list="dragLabels"
+            :options="dragOptions"
+            :class="{ edit: isEditLabel }"
+            class="draggable-labels">
             <transition-group name="label-list" tag="ul" class="nav-label label-list">
               <li
                 v-for="(label, index) of dragLabels"
@@ -176,6 +181,7 @@ const tranformLabels = function tranformLabels (labels = {}) {
     label._ref = `labelNameEditInput${label.id}`
     label._preName = ''
   })
+
   return dragLabels
 }
 
@@ -185,9 +191,9 @@ export default {
   props: {
     starredReposLen: { type: Number, default: 0 },
     unlabeledReposLen: { type: Number, default: 0 },
-    customLabels: { type: Array, default: [] },
-    languageLabels: { type: Array, default: [] },
-    currentLabel: { type: Object, default: {} },
+    customLabels: { type: Array, default () { return [] } },
+    languageLabels: { type: Array, default () { return [] } },
+    currentLabel: { type: Object, default () { return {} } },
     labelCategoryIndex: { type: Number, default: 0 }
   },
   data () {
@@ -256,16 +262,18 @@ export default {
       const labelName = this.labelName.trim()
 
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
-      if (this.customLabels.find(({ name }) => name === labelName)) message = LABEL_NAME_ALREADY_EXIST
+
+      if (this.customLabels.find(({ name }) => name === labelName)) {
+        message = LABEL_NAME_ALREADY_EXIST
+      }
+
       if (message) {
         this.$notify.warning({ message, showClose: false, position: norifyPosition })
         return this.$refs.labelFormNameInput.focus()
       }
 
       this.$emit('saveNewLabel', labelName)
-      this.labelNameFormVisible = false
-      this.labelNameBtnState = CANCEL
-      this.labelName = ''
+      this.handleCancelAddLabel()
     },
     handleCancelAddLabel () {
       this.labelNameFormVisible = false
@@ -277,14 +285,17 @@ export default {
 
       this.isEditLabel = true
       dragLabelsClone = JSON.parse(JSON.stringify(this.dragLabels))
+
       this.$emit('editLabels')
     },
     handleEditLabelName (label) {
       if (!this.isEditLabel) return
 
       this.dragLabels.forEach(label => (label._isEdit = false))
+
       label._isEdit = true
       label._preName = label.name
+
       this.$nextTick(() => this.$refs[label._ref][0].focus())
     },
     handleChangeLabelNameByBlur (label) {
@@ -298,12 +309,16 @@ export default {
           return
         }
 
-        if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) {
+        if (this.dragLabels.find(dragLabel => (
+          dragLabel.name === newLabelName &&
+          dragLabel !== label
+        ))) {
           this.$notify.warning({
             message: LABEL_NAME_ALREADY_EXIST,
             showClose: false,
             position: norifyPosition
           })
+
           return $input.focus()
         }
       }
@@ -312,6 +327,7 @@ export default {
       label.name = newLabelName
       label._preName = ''
       label._isEdit = false
+
       this.$emit('changeLabelName', { id: label.id, name: newLabelName })
     },
     handleChangeLabelNameByEnter (label) {
@@ -320,7 +336,14 @@ export default {
       const newLabelName = $input.value.trim()
 
       if (!newLabelName) message = LABEL_NAME_CANNOT_ENPTY
-      if (this.dragLabels.find(dragLabel => (dragLabel.name === newLabelName && dragLabel !== label))) message = LABEL_NAME_ALREADY_EXIST
+
+      if (this.dragLabels.find(dragLabel => (
+        dragLabel.name === newLabelName &&
+        dragLabel !== label
+      ))) {
+        message = LABEL_NAME_ALREADY_EXIST
+      }
+
       if (message) {
         this.$notify.warning({ message, showClose: false, position: norifyPosition })
         return $input.focus()
@@ -348,6 +371,7 @@ export default {
       this.isEditLabel = false
 
       let isChanged = false
+
       for (const [index, { id, name }] of dragLabelsClone.entries()) {
         const label = this.dragLabels[index]
         if (!label || id !== label.id || name !== label.name) {
@@ -355,6 +379,7 @@ export default {
           break
         }
       }
+
       if (!isChanged) return
 
       const labels = this.dragLabels.map(({ id, name, repos }) => ({ id, name, repos }))

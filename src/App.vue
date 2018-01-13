@@ -52,7 +52,7 @@ const { filename, norifyPosition, starredReposPerPage } = config
 const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
-const loadStarredRepos = function loadStarredRepos (page = 1) {
+function loadStarredRepos (page = 1) {
   return new Promise(async (resolve, reject) => {
     let repos = []
     do {
@@ -66,7 +66,7 @@ const loadStarredRepos = function loadStarredRepos (page = 1) {
   })
 }
 
-const saveGitstarsLabels = async function saveGitstarsLabels ({ message, content }) {
+async function saveGitstarsLabels ({ message, content }) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
     message: '正在更新，请稍后...',
@@ -74,9 +74,11 @@ const saveGitstarsLabels = async function saveGitstarsLabels ({ message, content
     showClose: false,
     position: norifyPosition
   })
+
   if (!content) content = { lastModified: Date.now(), labels: this.customLabels }
 
   const result = await saveGitstarsGist(gitstarsGistId, content)
+
   window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
   loadingNotify.close()
 
@@ -101,9 +103,12 @@ export default {
   },
   computed: {
     unlabeledRepos () {
-      const labeledReposId = new Set(this.customLabels.reduce((accumRepos, { repos = [] }) => [...accumRepos, ...repos], []))
+      const labeledReposId = new Set(
+        this.customLabels.reduce((accumRepos, { repos = [] }) => [...accumRepos, ...repos], [])
+      )
       return this.starredRepos.filter(repo => !labeledReposId.has(repo.id))
     },
+
     currentLabelRepos () {
       const { id } = this.currentLabel
 
@@ -188,6 +193,7 @@ export default {
 
         const { language: _languageLabels } = _labels
         const label = languageLabels.find(label => label.name === language)
+
         if (label) {
           label.repos.push(repoId)
           _languageLabels.push({ id: label.id, name: label.name })
@@ -214,6 +220,7 @@ export default {
             delete reposCopy[index]
           }
         })
+
         label.repos = reposCopy.filter(repo => repo)
       })
 
@@ -274,7 +281,7 @@ export default {
       this.customLabels = gistContent.labels
     })
   },
-  destroyed () {
+  beforeDestroy () {
     gitstarsGistId = ''
     starredReposClone = []
     isContentFromAPI = true
@@ -342,11 +349,12 @@ export default {
 
       customLabels.push({ id: label.id, name: labelName })
 
-      saveGitstarsLabels.call(this, { message: `${repo.owner.login} / ${repo.name} 仓库添加 ${labelName} 标签` })
-        .catch(() => {
-          repos ? repos.pop() : this.customLabels.pop()
-          customLabels.pop()
-        })
+      saveGitstarsLabels.call(this, {
+        message: `${repo.owner.login} / ${repo.name} 仓库添加 ${labelName} 标签`
+      }).catch(() => {
+        repos ? repos.pop() : this.customLabels.pop()
+        customLabels.pop()
+      })
     },
     handleDeleteRepoLabel ({ repoId, labelId }) {
       /**
@@ -365,11 +373,12 @@ export default {
       const repoIndex = repos.findIndex(id => id === repoId)
 
       repos.splice(repoIndex, 1)
-      saveGitstarsLabels.call(this, { message: `${repo.owner.login} / ${repo.name} 仓库删除 ${labelCopy.name} 标签` })
-        .catch(() => {
-          customLabels.splice(labelIndex, 0, labelCopy)
-          repos.splice(repoIndex, 0, repoId)
-        })
+      saveGitstarsLabels.call(this, {
+        message: `${repo.owner.login} / ${repo.name} 仓库删除 ${labelCopy.name} 标签`
+      }).catch(() => {
+        customLabels.splice(labelIndex, 0, labelCopy)
+        repos.splice(repoIndex, 0, repoId)
+      })
     },
     handleToggleLabelCategory ({ index }) {
       currentLabelReposCopy = this.currentLabelRepos
