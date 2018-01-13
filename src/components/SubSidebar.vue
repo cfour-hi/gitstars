@@ -32,14 +32,16 @@
               :key="label.id"
               class="label-item"
               @click.stop="handleToggleLabel(label)">
-              <el-tag size="small" closable>{{ label.name }}</el-tag>
-              <el-popover placement="right" title="Are you sure?">
-                <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
-                <footer class="popover-footer">
-                  <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-                  <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(repo.id, label.id)">Yes</el-button>
-                </footer>
-              </el-popover>
+              <el-tag size="small">
+                {{ label.name }}
+                <el-popover placement="right" title="Are you sure?">
+                  <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
+                  <footer class="popover-footer">
+                    <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
+                    <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(repo.id, label.id)">Yes</el-button>
+                  </footer>
+                </el-popover>
+              </el-tag>
             </li>
           </ul>
           <footer class="repo-footer">
@@ -209,25 +211,13 @@ export default {
 }
 
 .label-delete-btn {
-  vertical-align: middle;
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  font-size: 12px;
-  line-height: 16px;
-  text-align: center;
-  color: #409eff;
+  margin-left: -7px;
+  line-height: 19px;
   cursor: pointer;
 }
 
 .label-delete-btn:hover {
-  width: 15px;
-  height: 15px;
-  color: #fff;
-  background-color: #409eff;
+  font-size: 13px;
 }
 
 .repo-footer {
