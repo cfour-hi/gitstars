@@ -198,10 +198,6 @@ export default {
         delete content.labels
       }
 
-      const { tags } = content
-      const { custom, language } = this.tagCategorys
-      this.currentTagCategory = tags.length === 0 ? language : custom
-
       let isIncludeInvalidId = false
       let DateNow = Date.now()
       const { languageTags, starredRepos, isNewUser } = this
@@ -222,10 +218,9 @@ export default {
         }
       })
 
+      const { tags } = content
       tags.forEach(tag => {
-        let reposCopy = [...tag.repos]
-
-        tag.repos.forEach((repoId, index) => {
+        tag.repos.forEach((repoId, index, repos) => {
           /**
            * 可能用户 Unstar 了某些仓库
            * 所以存在标签内仓库 id 在 starredRepos 找不到 id 对应仓库的情况
@@ -235,14 +230,18 @@ export default {
             _tags.custom.push({ id: tag.id, name: tag.name })
           } else {
             isIncludeInvalidId = true
-            delete reposCopy[index]
+            repos[index] = undefined
           }
         })
 
-        tag.repos = reposCopy.filter(repo => repo)
+        tag.repos = tag.repos.filter(repo => !!repo)
       })
 
       this.customTags = tags
+
+      const { custom, language } = this.tagCategorys
+      this.currentTagCategory = tags.length === 0 ? language : custom
+
       window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
 
       /**
@@ -250,7 +249,7 @@ export default {
        * 则更新一次远程数据
       */
       if ((isIssue1OldData && isContentFromAPI) || isIncludeInvalidId || isNewUser || isIssue5OldData) {
-        saveGitstarsLabels.call(this, { content, message: this.$t('update.completed') })
+        saveGitstarsTags.call(this, { content, message: this.$t('update.completed') })
           .catch(() => {
             this.$notify.warning({
               message: this.$t('update.failed'),
