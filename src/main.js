@@ -6,6 +6,7 @@ import App from './App'
 import { parseURLSearch } from './util'
 import { getGitstarsAccessToken, getUserInfo } from './api'
 import config from './config'
+import i18n from './i18n'
 
 Vue.use(Tag)
 Vue.use(Input)
@@ -71,5 +72,5 @@ new Promise(async (resolve, reject) => {
     window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
   }
 
-  new Vue({ el: '#app', template: '<App/>', components: { App } })
+  new Vue({ i18n, el: '#app', template: '<App/>', components: { App } })
 })
