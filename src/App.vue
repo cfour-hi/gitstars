@@ -32,7 +32,7 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 import config from './config'
-import constants from './constants'
+// import constants from './constants'
 import {
   getStarredRepos,
   getGitstarsGist,
@@ -48,7 +48,7 @@ let isIssue1OldData = false // (issue1)
 let currentLabelReposCopy = []
 
 const { filename, norifyPosition, starredReposPerPage, labelCategorys } = config
-const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
+// const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
 function loadStarredRepos (page = 1) {
@@ -239,10 +239,10 @@ export default {
        * 则更新一次远程数据
       */
       if ((isIssue1OldData && isContentFromAPI) || isIncludeInvalidId || isNewUser) {
-        saveGitstarsLabels.call(this, { content, message: UPDATE_SUCCESS })
+        saveGitstarsLabels.call(this, { content, message: this.$t('update.completed') })
           .catch(() => {
             this.$notify.warning({
-              message: UPDATE_FAILED,
+              message: this.$t('update.failed'),
               showClose: false,
               position: norifyPosition
             })
@@ -274,10 +274,10 @@ export default {
       if (gistContent.lastModified <= content.lastModified && !isIssue1OldData) return
 
       if (isIssue1OldDataFromAPI) {
-        saveGitstarsLabels.call(this, { message: UPDATE_SUCCESS, content: gistContent })
+        saveGitstarsLabels.call(this, { message: this.$t('update.completed'), content: gistContent })
           .catch(() => {
             this.$notify.warning({
-              message: UPDATE_FAILED,
+              message: this.$t('update.failed'),
               showClose: false,
               position: norifyPosition
             })

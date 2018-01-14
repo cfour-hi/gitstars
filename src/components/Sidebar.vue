@@ -161,13 +161,13 @@
 <script>
 import draggable from 'vuedraggable'
 import config from '../config'
-import constants from '../constants'
+// import constants from '../constants'
 
 let isValidatedNewLabelName = false
 let dragLabelsClone = []
 
 const { norifyPosition, defaultLabels } = config
-const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
+// const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
@@ -264,10 +264,10 @@ export default {
       let message = ''
       const labelName = this.labelName.trim()
 
-      if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (!labelName) message = this.$t('labelNameCannotEmpty')
 
-      if (this.labelCategorys.custom.find(({ name }) => name === labelName)) {
-        message = LABEL_NAME_ALREADY_EXIST
+      if (this.labelCategorys.custom.labels.find(({ name }) => name === labelName)) {
+        message = this.$t('labelNameAlreadyExist')
       }
 
       if (message) {
@@ -317,7 +317,7 @@ export default {
           dragLabel !== label
         ))) {
           this.$notify.warning({
-            message: LABEL_NAME_ALREADY_EXIST,
+            message: this.$t('labelNameAlreadyExist'),
             showClose: false,
             position: norifyPosition
           })
@@ -338,13 +338,13 @@ export default {
       const $input = this.$refs[label._ref][0]
       const newLabelName = $input.value.trim()
 
-      if (!newLabelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (!newLabelName) message = this.$t('labelNameCannotEmpty')
 
       if (this.dragLabels.find(dragLabel => (
         dragLabel.name === newLabelName &&
         dragLabel !== label
       ))) {
-        message = LABEL_NAME_ALREADY_EXIST
+        message = this.$t('labelNameAlreadyExist')
       }
 
       if (message) {

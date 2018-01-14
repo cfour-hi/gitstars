@@ -55,10 +55,10 @@ import LayoutHeader from './Header'
 import SubSidebar from './SubSidebar'
 import { getRepoReadme, getRenderedReadme } from '../api'
 import config from '../config'
-import constants from '../constants'
+// import constants from '../constants'
 
 const { norifyPosition } = config
-const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
+// const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 
 export default {
   name: 'main',
@@ -128,10 +128,10 @@ export default {
       let message = ''
       const labelName = this.labelName.trim()
 
-      if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (!labelName) message = this.$t('labelNameCannotEmpty')
 
       if (this.currentRepo._labels.custom.find(({ name }) => name === labelName)) {
-        message = LABEL_NAME_ALREADY_EXIST
+        message = this.$t('labelNameAlreadyExist')
       }
 
       if (message) {
