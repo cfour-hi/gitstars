@@ -54,10 +54,8 @@ import LayoutHeader from './Header'
 import SubSidebar from './SubSidebar'
 import { getRepoReadme, getRenderedReadme } from '../api'
 import config from '../config'
-// import constants from '../constants'
 
 const { norifyPosition } = config
-// const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 
 export default {
   name: 'main',

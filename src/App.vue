@@ -32,7 +32,6 @@ import axios from 'axios'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 import config from './config'
-// import constants from './constants'
 import {
   getStarredRepos,
   getGitstarsGist,
@@ -47,7 +46,7 @@ let isContentFromAPI = true
 let isIssue1OldData = false // (issue1)
 let currentTagReposCopy = []
 
-const { filename, norifyPosition, starredReposPerPage, tagCategorys } = config
+const { filename, norifyPosition, starredReposPerPage, defaultTags, tagCategorys } = config
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
 function loadStarredRepos (page = 1) {
@@ -117,10 +116,8 @@ export default {
     currentTagRepos () {
       const { id } = this.currentTag
 
-      // TODO
-      // 0: 全部; -1: 未标签;
-      if (id === 0) return this.starredRepos
-      if (id === -1) return this.untaggedRepos
+      if (id === defaultTags.all.id) return this.starredRepos
+      if (id === defaultTags.untagged.id) return this.untaggedRepos
 
       const { tags } = this.currentTagCategory
       const { repos } = tags ? tags.find(tag => tag.id === id) || {} : {}
@@ -245,7 +242,10 @@ export default {
       window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
 
       /**
-       * 如果是来自 API 的老数据 (issue1) 或是用户 Unstar 了某些仓库
+       * 如果是来自 API 的老数据 (issue1)
+       * 或者用户 Unstar 了某些仓库
+       * 或者是新用户
+       * 或者是以 label 为标签标识的老数据（issue5）
        * 则更新一次远程数据
       */
       if ((isIssue1OldData && isContentFromAPI) || isIncludeInvalidId || isNewUser || isIssue5OldData) {
