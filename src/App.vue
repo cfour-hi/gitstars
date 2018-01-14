@@ -3,10 +3,9 @@
     <layout-sidebar
       :starred-repos-len="starredRepos.length"
       :unlabeled-repos-len="unlabeledRepos.length"
-      :custom-labels="customLabels"
-      :language-labels="languageLabels"
       :current-label="currentLabel"
-      :label-category-index="labelCategoryIndex"
+      :label-categorys="labelCategorys"
+      :current-label-category="currentLabelCategory"
       @toggleLabel="handleToggleLabel"
       @saveNewLabel="handleSaveNewLabel"
       @editLabels="handleEditLabels"
@@ -19,8 +18,8 @@
       :user="user"
       :repos="currentLabelRepos"
       :load-starred-repos-completed="loadStarredReposCompleted"
-      :custom-labels="customLabels"
       :current-label="currentLabel"
+      :label-categorys="labelCategorys"
       @toggleLabel="handleToggleLabel"
       @addRepoLabel="handleAddRepoLabel"
       @deleteRepoLabel="handleDeleteRepoLabel">
@@ -48,7 +47,7 @@ let isContentFromAPI = true
 let isIssue1OldData = false // (issue1)
 let currentLabelReposCopy = []
 
-const { filename, norifyPosition, starredReposPerPage } = config
+const { filename, norifyPosition, starredReposPerPage, labelCategorys } = config
 const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
@@ -98,7 +97,7 @@ export default {
       customLabels: [],
       languageLabels: [],
       currentLabel: {},
-      labelCategoryIndex: 0
+      currentLabelCategory: {}
     }
   },
   computed: {
@@ -109,15 +108,23 @@ export default {
       return this.starredRepos.filter(repo => !labeledReposId.has(repo.id))
     },
 
+    labelCategorys () {
+      const categorys = JSON.parse(JSON.stringify(labelCategorys))
+      categorys.custom.labels = this.customLabels
+      categorys.language.labels = this.languageLabels
+      return categorys
+    },
+
     currentLabelRepos () {
       const { id } = this.currentLabel
 
+      // TODO
       // 0: 全部; -1: 未标签;
       if (id === 0) return this.starredRepos
       if (id === -1) return this.unlabeledRepos
 
-      const labels = this.labelCategoryIndex === 0 ? this.customLabels : this.languageLabels
-      const { repos } = labels.find(label => label.id === id) || {}
+      const { labels } = this.currentLabelCategory
+      const { repos } = labels ? labels.find(label => label.id === id) : {}
 
       return repos ? this.starredRepos.filter(repo => repos.includes(repo.id)) : currentLabelReposCopy
     }
@@ -182,7 +189,7 @@ export default {
       resolve(content)
     }).then(async content => {
       const { labels } = content
-      if (labels.length === 0) this.labelCategoryIndex = 1
+      if (labels.length === 0) this.currentLabelCategory = this.labelCategorys.custom
 
       let isIncludeInvalidId = false
       let DateNow = Date.now()
@@ -289,9 +296,9 @@ export default {
     currentLabelReposCopy = []
   },
   methods: {
-    handleToggleLabel ({ label, index = this.labelCategoryIndex }) {
+    handleToggleLabel ({ label, category = this.labelCategorys.custom }) {
       this.currentLabel = label
-      this.labelCategoryIndex = index
+      this.currentLabelCategory = category
     },
     handleSaveNewLabel (name) {
       this.customLabels.push({ name, id: Date.now(), repos: [] })
@@ -380,9 +387,9 @@ export default {
         repos.splice(repoIndex, 0, repoId)
       })
     },
-    handleToggleLabelCategory ({ index }) {
+    handleToggleLabelCategory ({ category }) {
       currentLabelReposCopy = this.currentLabelRepos
-      this.labelCategoryIndex = index
+      this.currentLabelCategory = category
     }
   }
 }

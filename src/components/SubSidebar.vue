@@ -76,7 +76,8 @@ export default {
   props: {
     repos: { type: Array, default () { return [] } },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    currentLabel: { type: Object, default () { return {} } }
+    currentLabel: { type: Object, default () { return {} } },
+    labelCategorys: { required: true, type: Object }
   },
   data () {
     return {
@@ -96,7 +97,7 @@ export default {
       this.$emit('toggleRepo', repo)
     },
     handleToggleLabel (label) {
-      this.$emit('toggleLabel', { label, index: 0 })
+      this.$emit('toggleLabel', { label, category: this.labelCategorys.custom })
     },
     handleDeleteLabel () {
       document.body.click()

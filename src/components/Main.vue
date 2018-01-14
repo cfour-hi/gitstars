@@ -6,6 +6,7 @@
         :repos="currentRepos"
         :load-starred-repos-completed="loadStarredReposCompleted"
         :current-label="currentLabel"
+        :label-categorys="labelCategorys"
         @changeSearchValue="handleChangeSearchValue"
         @toggleRepo="handleToggleRepo"
         @toggleLabel="handleToggleLabel"
@@ -66,8 +67,8 @@ export default {
     user: { type: Object, default () { return {} } },
     repos: { type: Array, default () { return [] } },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    customLabels: { type: Array, default () { return [] } },
-    currentLabel: { type: Object, default () { return {} } }
+    currentLabel: { type: Object, default () { return {} } },
+    labelCategorys: { required: true, type: Object }
   },
   data () {
     return {
@@ -90,7 +91,7 @@ export default {
       })
     },
     currentRepoUnlabeledLabels () {
-      return this.customLabels
+      return this.labelCategorys.custom.labels
         .filter(label => !this.currentRepo._labels.custom.find(({ id }) => id === label.id))
         .map(({ name }) => name)
     }

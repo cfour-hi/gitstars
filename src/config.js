@@ -12,5 +12,9 @@ export default {
   defaultLabels: {
     all: { id: 0, name: '全部', icon: 'fa-bars' },
     unlabeled: { id: -1, name: '未标签', icon: 'fa-star-o' }
+  },
+  labelCategorys: {
+    custom: { id: 0, name: '自定义' },
+    language: { id: 1, name: '语言' }
   }
 }

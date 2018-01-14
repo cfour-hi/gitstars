@@ -26,7 +26,7 @@
           <span>标签</span>
         </h3>
         <transition name="slide-to-left">
-          <div v-show="labelCategoryIndex === 0" class="nav-caption__operate">
+          <div v-show="currentLabelCategory.id === labelCategorys.custom.id" class="nav-caption__operate">
             <div :class="{ disabled: isEditLabel || labelNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewLabel">
               <i class="fa fa-plus-square" aria-hidden="true"></i>
               <span>添加</span>
@@ -47,7 +47,7 @@
                 @click="handleEditLabels">
                 <i class="fa fa-cog" aria-hidden="true"></i>
                 <span>编辑</span>
-            </div>
+              </div>
             </transition-group>
           </div>
         </transition>
@@ -78,7 +78,7 @@
       <div class="label-list__group">
         <transition name="slide-to-left">
           <draggable
-            v-show="labelCategoryIndex === 0"
+            v-show="currentLabelCategory.id === labelCategorys.custom.id"
             :list="dragLabels"
             :options="dragOptions"
             :class="{ edit: isEditLabel }"
@@ -115,9 +115,9 @@
           </draggable>
         </transition>
         <transition name="slide-to-right">
-          <ul v-show="labelCategoryIndex === 1" class="nav-label label-list">
+          <ul v-show="currentLabelCategory.id === labelCategorys.language.id" class="nav-label label-list">
             <li
-              v-for="label of languageLabels"
+              v-for="label of labelCategorys.language.labels"
               :key="label.id"
               :class="{ active: label.id === currentLabel.id }"
               class="nav-item"
@@ -132,7 +132,7 @@
         </transition>
       </div>
       <transition name="telescopic">
-        <div v-show="!customLabels.length && labelCategoryIndex === 0" class="no-label vc-p">
+        <div v-show="!labelCategorys.custom.labels.length && currentLabelCategory.id === labelCategorys.custom.id" class="no-label vc-p">
           <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
           <p>添加标签</p>
         </div>
@@ -142,12 +142,12 @@
       <ul v-show="!isEditLabel && !labelNameFormVisible" class="label-category">
         <li :style="categoryLabelSliderStyle" class="label-category__slider"></li>
         <li
-          v-for="(category, index) of labelCategorys"
-          :key="category"
-          :class="{ active: index === labelCategoryIndex }"
+          v-for="(category, key) in labelCategorys"
+          :key="key"
+          :class="{ active: category.id === currentLabelCategory.id }"
           class="label-category__item"
-          @click="$emit('toggleLabelCategory', { index })">
-          {{ category }}
+          @click="$emit('toggleLabelCategory', { category })">
+          {{ category.name }}
         </li>
       </ul>
     </transition>
@@ -191,10 +191,9 @@ export default {
   props: {
     starredReposLen: { type: Number, default: 0 },
     unlabeledReposLen: { type: Number, default: 0 },
-    customLabels: { type: Array, default () { return [] } },
-    languageLabels: { type: Array, default () { return [] } },
     currentLabel: { type: Object, default () { return {} } },
-    labelCategoryIndex: { type: Number, default: 0 }
+    labelCategorys: { required: true, type: Object },
+    currentLabelCategory: { required: true, type: Object }
   },
   data () {
     return {
@@ -203,8 +202,7 @@ export default {
       labelNameInputState: FOCUS,
       labelNameBtnState: CANCEL,
       isEditLabel: false,
-      dragLabels: tranformLabels(this.customLabels),
-      labelCategorys: ['自定义', '语言']
+      dragLabels: tranformLabels(this.labelCategorys.custom.labels)
     }
   },
   computed: {
@@ -218,15 +216,18 @@ export default {
       return { disabled: !this.isEditLabel }
     },
     categoryLabelSliderStyle () {
-      const slidebarWidth = 100 / this.labelCategorys.length
+      const values = Object.values(this.labelCategorys)
+      const slidebarWidth = 100 / values.length
+      const index = values.findIndex(value => value.id === this.currentLabelCategory.id)
+
       return {
-        left: `${this.labelCategoryIndex * slidebarWidth}%`,
+        left: `${index * slidebarWidth}%`,
         width: `${slidebarWidth}%`
       }
     }
   },
   watch: {
-    customLabels: {
+    'labelCategorys.custom.labels': {
       deep: true,
       handler (newVal) {
         this.dragLabels = tranformLabels(newVal)
@@ -265,7 +266,7 @@ export default {
 
       if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
 
-      if (this.customLabels.find(({ name }) => name === labelName)) {
+      if (this.labelCategorys.custom.find(({ name }) => name === labelName)) {
         message = LABEL_NAME_ALREADY_EXIST
       }
 
