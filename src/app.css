@@ -97,7 +97,6 @@ a:hover {
   transition: all 0.15s ease-in;
 }
 
-
 .slide-up-enter,
 .slide-up-leave-active {
   transform: translateY(100%);
@@ -133,7 +132,6 @@ a:hover {
   transform: scale(0.1);
   transform-origin: 0 0 0;
 }
-
 
 .slide-to-left-enter-active,
 .slide-to-left-leave-active,

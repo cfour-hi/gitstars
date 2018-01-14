@@ -1,4 +1,4 @@
-export const parseURLSearch = function parseURLSearch (searchStr = window.location.search) {
+export function parseURLSearch (searchStr = window.location.search) {
   const search = {}
 
   if (!searchStr.length) return search
@@ -10,4 +10,15 @@ export const parseURLSearch = function parseURLSearch (searchStr = window.locati
     search[skv[0]] = decodeURIComponent(skv[1])
   }
   return search
+}
+
+export function convertFirstWordToUpperCase (str = '') {
+  const firstWord = String.fromCodePoint(str.codePointAt(0))
+  return str.replace(firstWord, firstWord.toUpperCase())
+}
+
+export default {
+  install (Vue, options) {
+    Vue.prototype.convertFirstWordToUpperCase = convertFirstWordToUpperCase
+  }
 }

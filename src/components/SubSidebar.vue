@@ -5,7 +5,7 @@
         <i class="fa fa-search" aria-hidden="true"></i>
         <input
           v-model="searchValue"
-          :placeholder="`开发者 | 仓库名 @${currentTag.name}`"
+          :placeholder="`${convertFirstWordToUpperCase($t('developer'))} | ${$t('repositoryName')} @${currentTag.i18nKey ? $t(currentTag.i18nKey) : currentTag.name}`"
           type="text"
           class="search-input"
           @input="handleChangeSearchValue">
@@ -53,12 +53,10 @@
       </ul>
       <div v-show="!repos.length" class="no-match vc-p">
         <i class="fa fa-bell-o fa-3x" aria-hidden="true"></i>
-        <p>没有匹配仓库</p>
+        <p>{{ $t('noMatchingReposigory') }}</p>
         <p>
           <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
-          <span>切换标签</span>
-          <span>或</span>
-          <span>调整搜索</span>
+          <span>{{ $t('switchTagOrAdjustSearch') }}</span>
           <i class="fa fa-hand-o-up fa-lg" aria-hidden="true"></i>
         </p>
       </div>
@@ -245,6 +243,8 @@ export default {
 
 .loader,
 .no-match {
+  top: 40%;
+  width: 100%;
   font-size: 14px;
   text-align: center;
   color: #bfbfbf;

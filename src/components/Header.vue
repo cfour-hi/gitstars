@@ -1,10 +1,19 @@
 <template>
   <header id="header">
-    <a :href="user.html_url" target="_blank"><img :src="user.avatar_url" class="user-avatar"></a>
-    <h1 class="user-name">
-      <a :href="`${user.html_url}?tab=repositories`" target="_blank">{{ user.name }}’s Starred Repositories</a>
-    </h1>
-    <a href="https://github.com/Monine/gitstars" target="_blank">
+    <div class="user-info">
+      <a :href="user.html_url" target="_blank"><img :src="user.avatar_url" class="user-avatar"></a>
+      <h1 class="user-name">
+        <a :href="`${user.html_url}?tab=repositories`" target="_blank">{{ user.name }}’s Starred Repositories</a>
+      </h1>
+    </div>
+    <el-radio-group v-model="currentLanguage" size="mini" @change="handleChangeLanguage">
+      <el-radio-button
+        v-for="language of languages"
+        :key="language"
+        :label="$t(language)">
+      </el-radio-button>
+    </el-radio-group>
+    <a href="https://github.com/Monine/gitstars" target="_blank" class="octocat-link">
       <svg width="60" height="60" viewBox="0 0 250 250" aria-hidden="true" class="octocat">
         <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
         <path class="octocat-arm" d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor"></path>
@@ -19,6 +28,23 @@ export default {
   name: 'header',
   props: {
     user: { type: Object, default () { return {} } }
+  },
+  data () {
+    const { messages, locale } = this.$i18n
+    return {
+      languages: Object.keys(messages),
+      currentLanguage: this.$t(locale)
+    }
+  },
+  methods: {
+    handleChangeLanguage (language) {
+      const texts = this.$i18n.messages[this.languages[0]]
+      for (let key of Object.keys(texts)) {
+        if (texts[key] === language) {
+          return (this.$i18n.locale = key)
+        }
+      }
+    }
   }
 }
 </script>
@@ -26,30 +52,39 @@ export default {
 <style scoped>
 #header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   flex: 0 0 60px;
-  padding: 0 15px;
+  position: relative;
+  padding: 0 75px 0 15px;
   border-bottom: 1px solid #e9e9e9;
 }
 
+.user-info {
+  display: inline-flex;
+  align-items: center;
+}
+
 .user-avatar {
-  flex: none;
   height: 40px;
   margin: 0 10px;
   border-radius: 50%;
 }
 
 .user-name {
-  flex: none;
   font-size: 20px;
   text-align: center;
   color: #7265e6;
 }
 
-.octocat {
+.octocat-link {
   position: absolute;
   top: 0;
   right: 0;
+  height: 100%;
+}
+
+.octocat {
   color: #fff;
   fill: #7265e6b3;
   transition: fill 0.3s;

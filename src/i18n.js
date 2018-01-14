@@ -5,6 +5,7 @@ import lang from './lang'
 Vue.use(VueI18n)
 
 export default new VueI18n({
-  locale: 'en',
+  locale: 'cn',
+  fallbackLocale: 'base',
   messages: lang
 })

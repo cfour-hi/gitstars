@@ -10,11 +10,11 @@ export default {
   norifyPosition: 'bottom-right',
   starredReposPerPage: 100,
   defaultTags: {
-    all: { id: 0, name: '全部', icon: 'fa-bars' },
-    untagged: { id: -1, name: '未标签', icon: 'fa-star-o' }
+    all: { id: 0, name: '全部', i18nKey: 'allRepos', icon: 'fa-bars' },
+    untagged: { id: -1, name: '未标签', i18nKey: 'untaggedRepos', icon: 'fa-star-o' }
   },
   tagCategorys: {
-    custom: { id: 0, name: '自定义' },
-    language: { id: 1, name: '语言' }
+    custom: { id: 0, name: '自定义', i18nKey: 'custom' },
+    language: { id: 1, name: '语言', i18nKey: 'language' }
   }
 }

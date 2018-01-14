@@ -66,7 +66,7 @@ function loadStarredRepos (page = 1) {
 async function saveGitstarsTags ({ message, content }) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
-    message: '正在更新，请稍后...',
+    message: this.$t('update.wait'),
     duration: 0,
     showClose: false,
     position: norifyPosition
@@ -336,7 +336,7 @@ export default {
     handleCompleteEditTags (tags = []) {
       const oldTags = this.customTags
       this.customTags = tags
-      saveGitstarsTags.call(this, { message: `编辑标签完成` })
+      saveGitstarsTags.call(this, { message: this.$t('edit.completed') })
         .catch(() => {
           this.customTags = oldTags
           this.starredRepos = starredReposClone

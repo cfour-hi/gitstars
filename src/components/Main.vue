@@ -24,23 +24,24 @@
             <el-autocomplete
               v-model="tagName"
               :fetch-suggestions="handleFetchTagSuggestions"
-              size="small" placeholder="新增标签"
+              :placeholder="convertFirstWordToUpperCase($t('addNewTag'))"
+              size="small"
               class="repo-tag-input"
               @select="handleAddRepoTag"
               select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
-              <el-button slot="append" @click="handleAddRepoTag">添加</el-button>
+              <el-button slot="append" @click="handleAddRepoTag">{{ convertFirstWordToUpperCase($t('add')) }}</el-button>
             </el-autocomplete>
           </header>
           <article v-html="repoReadme" class="markdown-body"></article>
         </section>
-        <section v-show="!repoReadme" class="waiting">
+        <section v-show="!repoReadme" class="waiting vc-p">
           <h4 class="readme">README.md</h4>
           <p class="loader">
             <i v-show="isLoadingRepoReadme" class="fa fa-cog fa-spin fa-2x fa-fw"></i>
             <span v-if="!isSelectedRepo">
               <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
-              <span>点击左侧 starred 仓库查看</span>
+              <span>{{ $t('clickLeftStarredRepoToView') }}</span>
             </span>
           </p>
         </section>
@@ -125,10 +126,10 @@ export default {
       let message = ''
       const tagName = this.tagName.trim()
 
-      if (!tagName) message = this.$t('labelNameCannotEmpty')
+      if (!tagName) message = this.$t('tagNameCannotEmpty')
 
       if (this.currentRepo._tags.custom.find(({ name }) => name === tagName)) {
-        message = this.$t('labelNameAlreadyExist')
+        message = this.$t('tagNameAlreadyExist')
       }
 
       if (message) {
@@ -203,14 +204,11 @@ export default {
 }
 
 .waiting {
-  position: absolute;
-  top: 30%;
-  left: 50%;
+  top: 40%;
   font-size: 14px;
   text-align: center;
   color: #d9d9d9;
   user-select: none;
-  transform: translateX(-50%);
 }
 
 .readme {

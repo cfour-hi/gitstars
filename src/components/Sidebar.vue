@@ -14,7 +14,7 @@
         @click="handleToggleTag(tag)">
         <label class="nav-item__label">
           <i :class="tag.icon" class="fa fa-fw" aria-hidden="true"></i>
-          <span>{{ tag.name }}</span>
+          <span>{{ $t(tag.i18nKey) }}</span>
         </label>
         <span class="nav-item-badge">{{ tag.number }}</span>
       </li>
@@ -23,21 +23,23 @@
       <header class="nav-caption">
         <h3 class="nav-caption__title">
           <i class="fa fa-fw fa-tags" aria-hidden="true"></i>
-          <span>标签</span>
+          <span>{{ $t('tags').toUpperCase() }}</span>
         </h3>
         <transition name="slide-to-left">
           <div v-show="currentTagCategory.id === tagCategorys.custom.id" class="nav-caption__operate">
             <div :class="{ disabled: isEditTag || tagNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewTag">
-              <i class="fa fa-plus-square" aria-hidden="true"></i>
-              <span>添加</span>
+              <span>
+                <i class="fa fa-plus-square" aria-hidden="true"></i>
+                {{ convertFirstWordToUpperCase($t('add')) }}
+              </span>
             </div>
-            <transition-group name="enlarge" tag="div" class="nav-caption__group--edit-over">
+            <transition-group name="enlarge" tag="div" class="nav-caption__group--edit-ok">
               <div
                 v-show="isEditTag"
-                key="over"
-                class="nav-caption__operate-btn nav-caption__complete-btn"
+                key="ok"
+                class="nav-caption__operate-btn nav-caption__ok-btn"
                 @click="handleCompleteEditTags">
-                完成
+                <span>{{ $t('ok').toUpperCase() }}</span>
               </div>
               <div
                 v-show="!isEditTag"
@@ -45,8 +47,10 @@
                 key="edit"
                 class="nav-caption__operate-btn"
                 @click="handleEditTags">
-                <i class="fa fa-cog" aria-hidden="true"></i>
-                <span>编辑</span>
+                <span>
+                  <i class="fa fa-cog" aria-hidden="true"></i>
+                  {{ convertFirstWordToUpperCase($t('edit.default')) }}
+                </span>
               </div>
             </transition-group>
           </div>
@@ -57,23 +61,33 @@
           <input
             v-model="tagName"
             :class="tagNameInputState"
+            :placeholder="`${convertFirstWordToUpperCase($t('tagName'))}`"
             ref="tagFormNameInput"
             type="text"
             class="tag-form__input--name"
-            placeholder="标签名称"
             @input="handleInputTagName"
             @focus="handleFocusTagName"
             @blur="handleBlurTagName"
             @keyup.enter.prevent="handleAddTag"
             @keyup.esc="handleCancelAddTag">
             <div class="tag-form__operate" :class="tagNameBtnState">
-              <button type="button" class="tag-form__operate-btn save" @click="handleAddTag">SAVE</button>
-              <button type="button" class="tag-form__operate-btn cancel" @click="handleCancelAddTag">CANCEL</button>
+              <button
+                type="button"
+                class="tag-form__operate-btn save"
+                @click="handleAddTag">
+                {{ $t('save').toUpperCase() }}
+              </button>
+              <button
+                type="button"
+                class="tag-form__operate-btn cancel"
+                @click="handleCancelAddTag">
+                {{ $t('cancel').toUpperCase() }}
+              </button>
             </div>
         </form>
       </transition>
       <transition name="slide-down">
-        <div v-show="isEditTag" class="edit-tag-tip">双击标签修改名称，拖拽标签排列顺序</div>
+        <div v-show="isEditTag" class="edit-tag-tip">{{ $t('tips.editTag') }}</div>
       </transition>
       <div class="tag-list__group">
         <transition name="slide-to-left">
@@ -132,9 +146,11 @@
         </transition>
       </div>
       <transition name="telescopic">
-        <div v-show="!tagCategorys.custom.tags.length && currentTagCategory.id === tagCategorys.custom.id" class="no-tag vc-p">
+        <div
+          v-show="!tagCategorys.custom.tags.length && currentTagCategory.id === tagCategorys.custom.id"
+          class="no-tag vc-p">
           <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
-          <p>添加标签</p>
+          <p>{{ convertFirstWordToUpperCase($t('addTag')) }}</p>
         </div>
       </transition>
     </div>
@@ -147,7 +163,7 @@
           :class="{ active: category.id === currentTagCategory.id }"
           class="tag-category__item"
           @click="$emit('toggleTagCategory', { category })">
-          {{ category.name }}
+          {{ convertFirstWordToUpperCase($t(category.i18nKey)) }}
         </li>
       </ul>
     </transition>
@@ -263,10 +279,10 @@ export default {
       let message = ''
       const tagName = this.tagName.trim()
 
-      if (!tagName) message = this.$t('labelNameCannotEmpty')
+      if (!tagName) message = this.$t('tagNameCannotEmpty')
 
       if (this.tagCategorys.custom.tags.find(({ name }) => name === tagName)) {
-        message = this.$t('labelNameAlreadyExist')
+        message = this.$t('tagNameAlreadyExist')
       }
 
       if (message) {
@@ -316,7 +332,7 @@ export default {
           dragTag !== tag
         ))) {
           this.$notify.warning({
-            message: this.$t('labelNameAlreadyExist'),
+            message: this.$t('tagNameAlreadyExist'),
             showClose: false,
             position: norifyPosition
           })
@@ -337,13 +353,13 @@ export default {
       const $input = this.$refs[tag._ref][0]
       const newTagName = $input.value.trim()
 
-      if (!newTagName) message = this.$t('labelNameCannotEmpty')
+      if (!newTagName) message = this.$t('tagNameCannotEmpty')
 
       if (this.dragTags.find(dragTag => (
         dragTag.name === newTagName &&
         dragTag !== tag
       ))) {
-        message = this.$t('labelNameAlreadyExist')
+        message = this.$t('tagNameAlreadyExist')
       }
 
       if (message) {
@@ -550,7 +566,6 @@ export default {
   font-size: 14px;
   padding-left: 1em;
   color: #919191;
-  transition: all 0.3s;
 }
 
 .nav-caption__operate {
@@ -558,7 +573,7 @@ export default {
   flex: 0 0 140px;
 }
 
-.nav-caption__group--edit-over {
+.nav-caption__group--edit-ok {
   display: flex;
   flex: auto;
 }
@@ -574,6 +589,10 @@ export default {
   user-select: none;
 }
 
+.nav-caption__operate-btn .fa {
+  margin-right: 3px;
+}
+
 .nav-caption__operate-btn.disabled {
   color: #919191;
   cursor: default;
@@ -583,15 +602,15 @@ export default {
   background-color: transparent;
 }
 
-.nav-caption__complete-btn {
+.nav-caption__ok-btn {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.nav-caption__complete-btn:hover {
+.nav-caption__ok-btn:hover {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.nav-caption__complete-btn:active {
+.nav-caption__ok-btn:active {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -716,8 +735,6 @@ export default {
   line-height: 30px;
   text-align: center;
   list-style: none;
-  text-indent: 5px;
-  letter-spacing: 5px;
   color: #919191;
   cursor: pointer;
 }
