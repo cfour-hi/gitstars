@@ -19,7 +19,7 @@ export default {
   allRepos: 'All Stars',
   untaggedRepos: 'Untagged Stars',
   tagName: '@:tag @:name',
-  tagNameCannotEmpty: 'Label @:name can not be empty',
+  tagNameCannotEmpty: 'Tag @:name can not be empty',
   tagNameAlreadyExist: 'This @:tag already exists',
   clickLeftStarredRepoToView: 'Click left starred @:repository to view',
   noMatchingReposigory: 'No matching @:repository',
