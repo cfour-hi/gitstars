@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import config from '../config'
+
 export default {
   name: 'header',
   props: {
@@ -41,7 +43,9 @@ export default {
       const texts = this.$i18n.messages[this.languages[0]]
       for (let key of Object.keys(texts)) {
         if (texts[key] === language) {
-          return (this.$i18n.locale = key)
+          this.$i18n.locale = key
+          window.localStorage.setItem(config.i18nLocaleKey, key)
+          return
         }
       }
     }

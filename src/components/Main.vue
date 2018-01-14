@@ -30,7 +30,9 @@
               @select="handleAddRepoTag"
               select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
-              <el-button slot="append" @click="handleAddRepoTag">{{ convertFirstWordToUpperCase($t('add')) }}</el-button>
+              <el-button slot="append" @click="handleAddRepoTag">
+                {{ convertFirstWordToUpperCase($t('add')) }}
+              </el-button>
             </el-autocomplete>
           </header>
           <article v-html="repoReadme" class="markdown-body"></article>

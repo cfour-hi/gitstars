@@ -34,11 +34,15 @@
               @click.stop="handleToggleTag(tag)">
               <el-tag size="small">
                 {{ tag.name }}
-                <el-popover placement="right" title="Are you sure?">
+                <el-popover :title="`${$t('areYouSure')}？`" placement="right">
                   <i slot="reference" class="el-tag__close el-icon-close tag-delete-btn" @click.stop="handleDeleteTag"></i>
                   <footer class="popover-footer">
-                    <el-button size="mini" @click="handleCancelDeleteTag">No</el-button>
-                    <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(repo.id, tag.id)">Yes</el-button>
+                    <el-button size="mini" @click="handleCancelDeleteTag">
+                      {{ convertFirstWordToUpperCase($t('no')) }}
+                    </el-button>
+                    <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(repo.id, tag.id)">
+                      {{ convertFirstWordToUpperCase($t('yes')) }}
+                    </el-button>
                   </footer>
                 </el-popover>
               </el-tag>
@@ -63,7 +67,7 @@
     </template>
     <div v-else class="loader vc-p">
       <i class="fa fa-cog fa-spin fa-2x"></i>
-      <p>正在获取 starred 仓库</p>
+      <p>{{ $t('gettingStarredRepository') }}</p>
     </div>
   </nav>
 </template>

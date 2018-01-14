@@ -9,6 +9,7 @@ export default {
   description: `github stars manager for ${process.env.NODE_ENV}`,
   norifyPosition: 'bottom-right',
   starredReposPerPage: 100,
+  i18nLocaleKey: 'gitstars_i18n_local',
   defaultTags: {
     all: { id: 0, name: '全部', i18nKey: 'allRepos', icon: 'fa-bars' },
     untagged: { id: -1, name: '未标签', i18nKey: 'untaggedRepos', icon: 'fa-star-o' }

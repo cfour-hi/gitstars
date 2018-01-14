@@ -312,7 +312,7 @@ export default {
     },
     handleSaveNewTag (name) {
       this.customTags.push({ name, id: Date.now(), repos: [] })
-      saveGitstarsTags.call(this, { message: `添加 ${name} 标签` })
+      saveGitstarsTags.call(this, { message: `${this.convertFirstWordToUpperCase(this.$t('addTag'))}: ${name}` })
         .catch(() => this.customTags.pop())
     },
     handleEditTags () {
@@ -367,7 +367,7 @@ export default {
       customTags.push({ id: tag.id, name: tagName })
 
       saveGitstarsTags.call(this, {
-        message: `${repo.owner.login} / ${repo.name} 仓库添加 ${tagName} 标签`
+        message: `${repo.owner.login} / ${repo.name} ${this.$t('add')} ${tagName} ${this.$t('tag')}`
       }).catch(() => {
         repos ? repos.pop() : this.customTags.pop()
         customTags.pop()
@@ -391,7 +391,7 @@ export default {
 
       repos.splice(repoIndex, 1)
       saveGitstarsTags.call(this, {
-        message: `${repo.owner.login} / ${repo.name} 仓库删除 ${tagCopy.name} 标签`
+        message: `${repo.owner.login} / ${repo.name} ${this.$t('delete')} ${tagCopy.name} ${this.$t('tag')}`
       }).catch(() => {
         customTags.splice(tagIndex, 0, tagCopy)
         repos.splice(repoIndex, 0, repoId)
