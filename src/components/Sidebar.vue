@@ -6,45 +6,45 @@
         <img src="../assets/app-name.png" alt="app name" class="app-name-img">
       </a>
     </header>
-    <ul class="nav-label">
+    <ul class="nav-tag">
       <li
-        v-for="label in defaultLabels"
-        :key="label.id" :class="{ active: label.id === currentLabel.id }"
+        v-for="tag in defaultTags"
+        :key="tag.id" :class="{ active: tag.id === currentTag.id }"
         class="nav-item"
-        @click="handleToggleLabel(label)">
+        @click="handleToggleTag(tag)">
         <label class="nav-item__label">
-          <i :class="label.icon" class="fa fa-fw" aria-hidden="true"></i>
-          <span>{{ label.name }}</span>
+          <i :class="tag.icon" class="fa fa-fw" aria-hidden="true"></i>
+          <span>{{ tag.name }}</span>
         </label>
-        <span class="nav-item-badge">{{ label.number }}</span>
+        <span class="nav-item-badge">{{ tag.number }}</span>
       </li>
     </ul>
-    <div class="label-nav">
+    <div class="tag-nav">
       <header class="nav-caption">
         <h3 class="nav-caption__title">
           <i class="fa fa-fw fa-tags" aria-hidden="true"></i>
           <span>标签</span>
         </h3>
         <transition name="slide-to-left">
-          <div v-show="currentLabelCategory.id === labelCategorys.custom.id" class="nav-caption__operate">
-            <div :class="{ disabled: isEditLabel || labelNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewLabel">
+          <div v-show="currentTagCategory.id === tagCategorys.custom.id" class="nav-caption__operate">
+            <div :class="{ disabled: isEditTag || tagNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewTag">
               <i class="fa fa-plus-square" aria-hidden="true"></i>
               <span>添加</span>
             </div>
             <transition-group name="enlarge" tag="div" class="nav-caption__group--edit-over">
               <div
-                v-show="isEditLabel"
+                v-show="isEditTag"
                 key="over"
                 class="nav-caption__operate-btn nav-caption__complete-btn"
-                @click="handleCompleteEditLabels">
+                @click="handleCompleteEditTags">
                 完成
               </div>
               <div
-                v-show="!isEditLabel"
-                :class="{ disabled: labelNameFormVisible }"
+                v-show="!isEditTag"
+                :class="{ disabled: tagNameFormVisible }"
                 key="edit"
                 class="nav-caption__operate-btn"
-                @click="handleEditLabels">
+                @click="handleEditTags">
                 <i class="fa fa-cog" aria-hidden="true"></i>
                 <span>编辑</span>
               </div>
@@ -53,100 +53,100 @@
         </transition>
       </header>
       <transition name="slide-down">
-        <form v-show="labelNameFormVisible" class="label-form" onsubmit="return false">
+        <form v-show="tagNameFormVisible" class="tag-form" onsubmit="return false">
           <input
-            v-model="labelName"
-            :class="labelNameInputState"
-            ref="labelFormNameInput"
+            v-model="tagName"
+            :class="tagNameInputState"
+            ref="tagFormNameInput"
             type="text"
-            class="label-form__input--name"
+            class="tag-form__input--name"
             placeholder="标签名称"
-            @input="handleInputLabelName"
-            @focus="handleFocusLabelName"
-            @blur="handleBlurLabelName"
-            @keyup.enter.prevent="handleAddLabel"
-            @keyup.esc="handleCancelAddLabel">
-            <div class="label-form__operate" :class="labelNameBtnState">
-              <button type="button" class="label-form__operate-btn save" @click="handleAddLabel">SAVE</button>
-              <button type="button" class="label-form__operate-btn cancel" @click="handleCancelAddLabel">CANCEL</button>
+            @input="handleInputTagName"
+            @focus="handleFocusTagName"
+            @blur="handleBlurTagName"
+            @keyup.enter.prevent="handleAddTag"
+            @keyup.esc="handleCancelAddTag">
+            <div class="tag-form__operate" :class="tagNameBtnState">
+              <button type="button" class="tag-form__operate-btn save" @click="handleAddTag">SAVE</button>
+              <button type="button" class="tag-form__operate-btn cancel" @click="handleCancelAddTag">CANCEL</button>
             </div>
         </form>
       </transition>
       <transition name="slide-down">
-        <div v-show="isEditLabel" class="edit-label-tip">双击标签修改名称，拖拽标签排列顺序</div>
+        <div v-show="isEditTag" class="edit-tag-tip">双击标签修改名称，拖拽标签排列顺序</div>
       </transition>
-      <div class="label-list__group">
+      <div class="tag-list__group">
         <transition name="slide-to-left">
           <draggable
-            v-show="currentLabelCategory.id === labelCategorys.custom.id"
-            :list="dragLabels"
+            v-show="currentTagCategory.id === tagCategorys.custom.id"
+            :list="dragTags"
             :options="dragOptions"
-            :class="{ edit: isEditLabel }"
-            class="draggable-labels">
-            <transition-group name="label-list" tag="ul" class="nav-label label-list">
+            :class="{ edit: isEditTag }"
+            class="draggable-tags">
+            <transition-group name="tag-list" tag="ul" class="nav-tag tag-list">
               <li
-                v-for="(label, index) of dragLabels"
-                :key="label.id"
-                :class="{ active: label.id === currentLabel.id }"
+                v-for="(tag, index) of dragTags"
+                :key="tag.id"
+                :class="{ active: tag.id === currentTag.id }"
                 class="nav-item"
-                @click="handleToggleLabel(label)">
-                <div class="nav-item__label slo" @dblclick="handleEditLabelName(label)">
+                @click="handleToggleTag(tag)">
+                <div class="nav-item__label slo" @dblclick="handleEditTagName(tag)">
                   <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
-                  <span v-show="!label._isEdit" class="nav-item__name slo">{{ label.name }}</span>
+                  <span v-show="!tag._isEdit" class="nav-item__name slo">{{ tag.name }}</span>
                   <input
-                    v-show="label._isEdit"
-                    :ref="label._ref" type="text"
-                    :value="label.name"
+                    v-show="tag._isEdit"
+                    :ref="tag._ref" type="text"
+                    :value="tag.name"
                     class="nav-item__input--name"
-                    @blur="handleChangeLabelNameByBlur(label)"
-                    @keyup.enter="handleChangeLabelNameByEnter(label)"
-                    @keyup.esc="handleCancelEditLabelName(label)">
+                    @blur="handleChangeTagNameByBlur(tag)"
+                    @keyup.enter="handleChangeTagNameByEnter(tag)"
+                    @keyup.esc="handleCancelEditTagName(tag)">
                 </div>
                 <el-popover placement="right" title="Are you sure?">
-                  <i v-show="isEditLabel" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteLabel"></i>
+                  <i v-show="isEditTag" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteTag"></i>
                   <footer class="popover-footer">
-                    <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-                    <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(label, index)">Yes</el-button>
+                    <el-button size="mini" @click="handleCancelDeleteTag">No</el-button>
+                    <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(tag, index)">Yes</el-button>
                   </footer>
                 </el-popover>
-                <span v-show="!isEditLabel" class="nav-item-badge">{{ label.repos.length }}</span>
+                <span v-show="!isEditTag" class="nav-item-badge">{{ tag.repos.length }}</span>
               </li>
             </transition-group>
           </draggable>
         </transition>
         <transition name="slide-to-right">
-          <ul v-show="currentLabelCategory.id === labelCategorys.language.id" class="nav-label label-list">
+          <ul v-show="currentTagCategory.id === tagCategorys.language.id" class="nav-tag tag-list">
             <li
-              v-for="label of labelCategorys.language.labels"
-              :key="label.id"
-              :class="{ active: label.id === currentLabel.id }"
+              v-for="tag of tagCategorys.language.tags"
+              :key="tag.id"
+              :class="{ active: tag.id === currentTag.id }"
               class="nav-item"
-              @click="handleToggleLabel(label)">
+              @click="handleToggleTag(tag)">
               <label class="nav-item__label slo">
                 <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
-                <span class="nav-item__name slo">{{ label.name }}</span>
+                <span class="nav-item__name slo">{{ tag.name }}</span>
               </label>
-              <span v-show="!isEditLabel" class="nav-item-badge">{{ label.repos.length }}</span>
+              <span v-show="!isEditTag" class="nav-item-badge">{{ tag.repos.length }}</span>
             </li>
           </ul>
         </transition>
       </div>
       <transition name="telescopic">
-        <div v-show="!labelCategorys.custom.labels.length && currentLabelCategory.id === labelCategorys.custom.id" class="no-label vc-p">
+        <div v-show="!tagCategorys.custom.tags.length && currentTagCategory.id === tagCategorys.custom.id" class="no-tag vc-p">
           <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
           <p>添加标签</p>
         </div>
       </transition>
     </div>
     <transition name="slide-up">
-      <ul v-show="!isEditLabel && !labelNameFormVisible" class="label-category">
-        <li :style="categoryLabelSliderStyle" class="label-category__slider"></li>
+      <ul v-show="!isEditTag && !tagNameFormVisible" class="tag-category">
+        <li :style="categoryTagSliderStyle" class="tag-category__slider"></li>
         <li
-          v-for="(category, key) in labelCategorys"
+          v-for="(category, key) in tagCategorys"
           :key="key"
-          :class="{ active: category.id === currentLabelCategory.id }"
-          class="label-category__item"
-          @click="$emit('toggleLabelCategory', { category })">
+          :class="{ active: category.id === currentTagCategory.id }"
+          class="tag-category__item"
+          @click="$emit('toggleTagCategory', { category })">
           {{ category.name }}
         </li>
       </ul>
@@ -163,26 +163,26 @@ import draggable from 'vuedraggable'
 import config from '../config'
 import constants from '../constants'
 
-let isValidatedNewLabelName = false
-let dragLabelsClone = []
+let isValidatedNewTagName = false
+let dragTagsClone = []
 
-const { norifyPosition, defaultLabels } = config
+const { norifyPosition, defaultTags } = config
 const { LABEL_NAME_CANNOT_ENPTY, LABEL_NAME_ALREADY_EXIST } = constants
 const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
 const BLUR = 'blur'
 
-const tranformLabels = function tranformLabels (labels = {}) {
-  const dragLabels = JSON.parse(JSON.stringify(labels))
+function tranformTags (tags = {}) {
+  const dragTags = JSON.parse(JSON.stringify(tags))
 
-  dragLabels.forEach((label, index) => {
-    label._isEdit = false
-    label._ref = `labelNameEditInput${label.id}`
-    label._preName = ''
+  dragTags.forEach((tag, index) => {
+    tag._isEdit = false
+    tag._ref = `tagNameEditInput${tag.id}`
+    tag._preName = ''
   })
 
-  return dragLabels
+  return dragTags
 }
 
 export default {
@@ -190,35 +190,35 @@ export default {
   components: { draggable },
   props: {
     starredReposLen: { type: Number, default: 0 },
-    unlabeledReposLen: { type: Number, default: 0 },
-    currentLabel: { type: Object, default () { return {} } },
-    labelCategorys: { required: true, type: Object },
-    currentLabelCategory: { required: true, type: Object }
+    untaggedReposLen: { type: Number, default: 0 },
+    currentTag: { type: Object, default () { return {} } },
+    tagCategorys: { required: true, type: Object },
+    currentTagCategory: { required: true, type: Object }
   },
   data () {
     return {
-      labelNameFormVisible: false,
-      labelName: '',
-      labelNameInputState: FOCUS,
-      labelNameBtnState: CANCEL,
-      isEditLabel: false,
-      dragLabels: tranformLabels(this.labelCategorys.custom.labels)
+      tagNameFormVisible: false,
+      tagName: '',
+      tagNameInputState: FOCUS,
+      tagNameBtnState: CANCEL,
+      isEditTag: false,
+      dragTags: tranformTags(this.tagCategorys.custom.tags)
     }
   },
   computed: {
-    defaultLabels () {
-      const labels = JSON.parse(JSON.stringify(defaultLabels))
-      labels.all.number = this.starredReposLen
-      labels.unlabeled.number = this.unlabeledReposLen
-      return labels
+    defaultTags () {
+      const tags = JSON.parse(JSON.stringify(defaultTags))
+      tags.all.number = this.starredReposLen
+      tags.untagged.number = this.untaggedReposLen
+      return tags
     },
     dragOptions () {
-      return { disabled: !this.isEditLabel }
+      return { disabled: !this.isEditTag }
     },
-    categoryLabelSliderStyle () {
-      const values = Object.values(this.labelCategorys)
+    categoryTagSliderStyle () {
+      const values = Object.values(this.tagCategorys)
       const slidebarWidth = 100 / values.length
-      const index = values.findIndex(value => value.id === this.currentLabelCategory.id)
+      const index = values.findIndex(value => value.id === this.currentTagCategory.id)
 
       return {
         left: `${index * slidebarWidth}%`,
@@ -227,94 +227,94 @@ export default {
     }
   },
   watch: {
-    'labelCategorys.custom.labels': {
+    'tagCategorys.custom.tags': {
       deep: true,
       handler (newVal) {
-        this.dragLabels = tranformLabels(newVal)
+        this.dragTags = tranformTags(newVal)
       }
     }
   },
   created () {
-    this.$emit('toggleLabel', { label: this.defaultLabels.all })
+    this.$emit('toggleTag', { tag: this.defaultTags.all })
   },
   destroyed () {
-    dragLabelsClone = []
+    dragTagsClone = []
   },
   methods: {
-    handleToggleLabel (label) {
-      if (this.isEditLabel) return
-      this.$emit('toggleLabel', { label })
+    handleToggleTag (tag) {
+      if (this.isEditTag) return
+      this.$emit('toggleTag', { tag })
     },
-    handleAddNewLabel () {
-      if (this.isEditLabel || this.labelNameFormVisible) return
+    handleAddNewTag () {
+      if (this.isEditTag || this.tagNameFormVisible) return
 
-      this.labelNameFormVisible = true
-      this.$nextTick(() => this.$refs.labelFormNameInput.focus())
+      this.tagNameFormVisible = true
+      this.$nextTick(() => this.$refs.tagFormNameInput.focus())
     },
-    handleInputLabelName () {
-      this.labelNameBtnState = this.labelName.trim().length ? SAVE : CANCEL
+    handleInputTagName () {
+      this.tagNameBtnState = this.tagName.trim().length ? SAVE : CANCEL
     },
-    handleFocusLabelName () {
-      this.labelNameInputState = FOCUS
+    handleFocusTagName () {
+      this.tagNameInputState = FOCUS
     },
-    handleBlurLabelName () {
-      this.labelNameInputState = BLUR
+    handleBlurTagName () {
+      this.tagNameInputState = BLUR
     },
-    handleAddLabel () {
+    handleAddTag () {
       let message = ''
-      const labelName = this.labelName.trim()
+      const tagName = this.tagName.trim()
 
-      if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (!tagName) message = LABEL_NAME_CANNOT_ENPTY
 
-      if (this.labelCategorys.custom.find(({ name }) => name === labelName)) {
+      if (this.tagCategorys.custom.tags.find(({ name }) => name === tagName)) {
         message = LABEL_NAME_ALREADY_EXIST
       }
 
       if (message) {
         this.$notify.warning({ message, showClose: false, position: norifyPosition })
-        return this.$refs.labelFormNameInput.focus()
+        return this.$refs.tagFormNameInput.focus()
       }
 
-      this.$emit('saveNewLabel', labelName)
-      this.handleCancelAddLabel()
+      this.$emit('saveNewTag', tagName)
+      this.handleCancelAddTag()
     },
-    handleCancelAddLabel () {
-      this.labelNameFormVisible = false
-      this.labelNameBtnState = CANCEL
-      this.labelName = ''
+    handleCancelAddTag () {
+      this.tagNameFormVisible = false
+      this.tagNameBtnState = CANCEL
+      this.tagName = ''
     },
-    handleEditLabels () {
-      if (this.labelNameFormVisible) return
+    handleEditTags () {
+      if (this.tagNameFormVisible) return
 
-      this.isEditLabel = true
-      dragLabelsClone = JSON.parse(JSON.stringify(this.dragLabels))
+      this.isEditTag = true
+      dragTagsClone = JSON.parse(JSON.stringify(this.dragTags))
 
-      this.$emit('editLabels')
+      this.$emit('editTags')
     },
-    handleEditLabelName (label) {
-      if (!this.isEditLabel) return
+    handleEditTagName (tag) {
+      if (!this.isEditTag) return
 
-      this.dragLabels.forEach(label => (label._isEdit = false))
+      this.dragTags.forEach(tag => (tag._isEdit = false))
 
-      label._isEdit = true
-      label._preName = label.name
+      tag._isEdit = true
+      tag._preName = tag.name
 
-      this.$nextTick(() => this.$refs[label._ref][0].focus())
+      this.$nextTick(() => this.$refs[tag._ref][0].focus())
     },
-    handleChangeLabelNameByBlur (label) {
-      const $input = this.$refs[label._ref][0]
-      const newLabelName = $input.value.trim()
+    handleChangeTagNameByBlur (tag) {
+      const $input = this.$refs[tag._ref][0]
+      const newTagName = $input.value.trim()
 
-      if (!isValidatedNewLabelName) {
-        if (!newLabelName) {
-          label.name = label._preName
-          label._isEdit = false
+      if (!isValidatedNewTagName) {
+        if (!newTagName) {
+          tag.name = tag._preName
+          tag._isEdit = false
           return
         }
 
-        if (this.dragLabels.find(dragLabel => (
-          dragLabel.name === newLabelName &&
-          dragLabel !== label
+        if (this.dragTags.find(dragTag => (
+          dragTag.name === newTagName &&
+          dragTag !== tag
         ))) {
           this.$notify.warning({
             message: LABEL_NAME_ALREADY_EXIST,
@@ -326,23 +326,23 @@ export default {
         }
       }
 
-      isValidatedNewLabelName = false
-      label.name = newLabelName
-      label._preName = ''
-      label._isEdit = false
+      isValidatedNewTagName = false
+      tag.name = newTagName
+      tag._preName = ''
+      tag._isEdit = false
 
-      this.$emit('changeLabelName', { id: label.id, name: newLabelName })
+      this.$emit('changeTagName', { id: tag.id, name: newTagName })
     },
-    handleChangeLabelNameByEnter (label) {
+    handleChangeTagNameByEnter (tag) {
       let message = ''
-      const $input = this.$refs[label._ref][0]
-      const newLabelName = $input.value.trim()
+      const $input = this.$refs[tag._ref][0]
+      const newTagName = $input.value.trim()
 
-      if (!newLabelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (!newTagName) message = LABEL_NAME_CANNOT_ENPTY
 
-      if (this.dragLabels.find(dragLabel => (
-        dragLabel.name === newLabelName &&
-        dragLabel !== label
+      if (this.dragTags.find(dragTag => (
+        dragTag.name === newTagName &&
+        dragTag !== tag
       ))) {
         message = LABEL_NAME_ALREADY_EXIST
       }
@@ -352,32 +352,32 @@ export default {
         return $input.focus()
       }
 
-      isValidatedNewLabelName = true
+      isValidatedNewTagName = true
       $input.blur()
     },
-    handleCancelEditLabelName (label) {
-      label.name = label._preName
-      label._preName = ''
-      label._isEdit = false
+    handleCancelEditTagName (tag) {
+      tag.name = tag._preName
+      tag._preName = ''
+      tag._isEdit = false
     },
-    handleDeleteLabel () {
+    handleDeleteTag () {
       document.body.click()
     },
-    handleConfirmDeleteLabel (label, index) {
-      this.$emit('deleteLabel', { index, label })
+    handleConfirmDeleteTag (tag, index) {
+      this.$emit('deleteTag', { index, tag })
       document.body.click()
     },
-    handleCancelDeleteLabel () {
+    handleCancelDeleteTag () {
       document.body.click()
     },
-    handleCompleteEditLabels () {
-      this.isEditLabel = false
+    handleCompleteEditTags () {
+      this.isEditTag = false
 
       let isChanged = false
 
-      for (const [index, { id, name }] of dragLabelsClone.entries()) {
-        const label = this.dragLabels[index]
-        if (!label || id !== label.id || name !== label.name) {
+      for (const [index, { id, name }] of dragTagsClone.entries()) {
+        const tag = this.dragTags[index]
+        if (!tag || id !== tag.id || name !== tag.name) {
           isChanged = true
           break
         }
@@ -385,8 +385,8 @@ export default {
 
       if (!isChanged) return
 
-      const labels = this.dragLabels.map(({ id, name, repos }) => ({ id, name, repos }))
-      this.$emit('completeEditLabels', labels)
+      const tags = this.dragTags.map(({ id, name, repos }) => ({ id, name, repos }))
+      this.$emit('completeEditTags', tags)
     }
   }
 }
@@ -408,7 +408,7 @@ export default {
   padding: 10px 0;
 }
 
-.nav-label {
+.nav-tag {
   display: flex;
   flex-direction: column;
   flex: none;
@@ -480,7 +480,7 @@ export default {
   outline: none;
 }
 
-.edit-label-tip {
+.edit-tag-tip {
   overflow: hidden;
   height: 24px;
   font-size: 12px;
@@ -490,15 +490,15 @@ export default {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.label-list__group {
+.tag-list__group {
   overflow-y: auto;
   overflow-x: hidden;
   flex: auto;
   position: relative;
 }
 
-.label-list__group .label-list,
-.label-list__group .draggable-labels {
+.tag-list__group .tag-list,
+.tag-list__group .draggable-tags {
   position: absolute;
   top: 0;
   left: 0;
@@ -506,16 +506,16 @@ export default {
   height: 100%;
 }
 
-.draggable-labels::-webkit-scrollbar-thumb {
+.draggable-tags::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.3);
 }
 
-.draggable-labels.edit .nav-item {
+.draggable-tags.edit .nav-item {
   cursor: move;
 }
 
-.draggable-labels.edit .nav-item.active {
+.draggable-tags.edit .nav-item.active {
   border-left-color: transparent;
   border-bottom-color: rgba(255, 255, 255, 0.08);
   background-color: transparent;
@@ -530,7 +530,7 @@ export default {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.label-nav {
+.tag-nav {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -596,13 +596,13 @@ export default {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.label-form {
+.tag-form {
   display: flex;
   flex: none;
   height: 38px;
   font-size: 12px;
 }
-.label-form__input--name {
+.tag-form__input--name {
   flex: auto;
   box-sizing: border-box;
   padding: 0 15px;
@@ -613,23 +613,23 @@ export default {
   transition: all 0.3s;
 }
 
-.label-form__input--name:focus {
+.tag-form__input--name:focus {
   color: #28343d;
   background-color: #fff;
 }
 
-.label-form__input--name.blur {
+.tag-form__input--name.blur {
   color: #d9d9d9;
 }
 
-.label-form__operate {
+.tag-form__operate {
   flex: 0 0 70px;
   overflow: hidden;
   position: relative;
   height: 100%;
 }
 
-.label-form__operate-btn {
+.tag-form__operate-btn {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -642,39 +642,39 @@ export default {
   transition: all 0.3s ease-out 0.1s;
 }
 
-.label-form__operate-btn.save {
+.tag-form__operate-btn.save {
   background-color: #3dbd7d;
 }
 
-.label-form__operate-btn.save:active {
+.tag-form__operate-btn.save:active {
   background-color: #39b175;
 }
 
-.label-form__operate.save .save {
+.tag-form__operate.save .save {
   margin-left: 0;
 }
 
-.label-form__operate.save .cancel {
+.tag-form__operate.save .cancel {
   margin-left: 100%;
 }
 
-.label-form__operate-btn.cancel {
+.tag-form__operate-btn.cancel {
   background-color: #697178;
 }
 
-.label-form__operate-btn.cancel:active {
+.tag-form__operate-btn.cancel:active {
   background-color: #616970;
 }
 
-.label-form__operate.cancel .save {
+.tag-form__operate.cancel .save {
   margin-left: -100%;
 }
 
-.label-form__operate.cancel .cancel {
+.tag-form__operate.cancel .cancel {
   margin-left: 0;
 }
 
-.label-list {
+.tag-list {
   overflow: auto;
   flex: auto;
   border-top: none;
@@ -690,23 +690,23 @@ export default {
   transform: scale(1.5);
 }
 
-.label-list-enter,
-.label-list-leave-active {
+.tag-list-enter,
+.tag-list-leave-active {
   transform: translateX(-100%);
 }
 
-.label-list-enter-active,
-.label-list-leave-active {
+.tag-list-enter-active,
+.tag-list-leave-active {
   transition: all 0.3s;
 }
 
-.no-label {
+.no-tag {
   font-size: 14px;
   text-align: center;
   color: #919191;
 }
 
-.label-category {
+.tag-category {
   display: flex;
   flex: 0 0 29px;
   position: relative;
@@ -723,7 +723,7 @@ export default {
   cursor: pointer;
 }
 
-.label-category__slider {
+.tag-category__slider {
   position: absolute;
   height: 100%;
   border-top: 1px solid #7265e6;
@@ -731,22 +731,22 @@ export default {
   transition: all 0.2s;
 }
 
-.label-category__item {
+.tag-category__item {
   width: 50%;
   margin: 0;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s;
 }
 
-.label-category__item:hover {
+.tag-category__item:hover {
   background-color: rgba(255, 255, 255, 0.03);
 }
 
-.label-category__item.active {
+.tag-category__item.active {
   color: #d9d9d9;
 }
 
-.label-category__item:last-child {
+.tag-category__item:last-child {
   border-right: none;
 }
 

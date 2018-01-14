@@ -2,27 +2,27 @@
   <div id="app">
     <layout-sidebar
       :starred-repos-len="starredRepos.length"
-      :unlabeled-repos-len="unlabeledRepos.length"
-      :current-label="currentLabel"
-      :label-categorys="labelCategorys"
-      :current-label-category="currentLabelCategory"
-      @toggleLabel="handleToggleLabel"
-      @saveNewLabel="handleSaveNewLabel"
-      @editLabels="handleEditLabels"
-      @deleteLabel="handleDeleteLabel"
-      @changeLabelName="handleChangeLabelName"
-      @completeEditLabels="handleCompleteEditLabels"
-      @toggleLabelCategory="handleToggleLabelCategory">
+      :untagged-repos-len="untaggedRepos.length"
+      :current-tag="currentTag"
+      :tag-categorys="tagCategorys"
+      :current-tag-category="currentTagCategory"
+      @toggleTag="handleToggleTag"
+      @saveNewTag="handleSaveNewTag"
+      @editTags="handleEditTags"
+      @deleteTag="handleDeleteTag"
+      @changeTagName="handleChangeTagName"
+      @completeEditTags="handleCompleteEditTags"
+      @toggleTagCategory="handleToggleTagCategory">
     </layout-sidebar>
     <layout-main
       :user="user"
-      :repos="currentLabelRepos"
+      :repos="currentTagRepos"
       :load-starred-repos-completed="loadStarredReposCompleted"
-      :current-label="currentLabel"
-      :label-categorys="labelCategorys"
-      @toggleLabel="handleToggleLabel"
-      @addRepoLabel="handleAddRepoLabel"
-      @deleteRepoLabel="handleDeleteRepoLabel">
+      :current-tag="currentTag"
+      :tag-categorys="tagCategorys"
+      @toggleTag="handleToggleTag"
+      @addRepoTag="handleAddRepoTag"
+      @deleteRepoTag="handleDeleteRepoTag">
     </layout-main>
   </div>
 </template>
@@ -45,9 +45,9 @@ let gitstarsGistId = ''
 let starredReposClone = []
 let isContentFromAPI = true
 let isIssue1OldData = false // (issue1)
-let currentLabelReposCopy = []
+let currentTagReposCopy = []
 
-const { filename, norifyPosition, starredReposPerPage, labelCategorys } = config
+const { filename, norifyPosition, starredReposPerPage, tagCategorys } = config
 const { UPDATE_SUCCESS, UPDATE_FAILED } = constants
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
@@ -56,7 +56,7 @@ function loadStarredRepos (page = 1) {
     let repos = []
     do {
       repos = await getStarredRepos(page++)
-      repos.forEach(repo => (repo._labels = { custom: [], language: [] }))
+      repos.forEach(repo => (repo._tags = { custom: [], language: [] }))
       this.starredRepos = [...this.starredRepos, ...repos]
     } while (repos.length === starredReposPerPage)
 
@@ -65,7 +65,7 @@ function loadStarredRepos (page = 1) {
   })
 }
 
-async function saveGitstarsLabels ({ message, content }) {
+async function saveGitstarsTags ({ message, content }) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
     message: '正在更新，请稍后...',
@@ -74,7 +74,7 @@ async function saveGitstarsLabels ({ message, content }) {
     position: norifyPosition
   })
 
-  if (!content) content = { lastModified: Date.now(), labels: this.customLabels }
+  if (!content) content = { lastModified: Date.now(), tags: this.customTags }
 
   const result = await saveGitstarsGist(gitstarsGistId, content)
 
@@ -94,39 +94,39 @@ export default {
       isNewUser: false,
       starredRepos: [],
       loadStarredReposCompleted: false,
-      customLabels: [],
-      languageLabels: [],
-      currentLabel: {},
-      currentLabelCategory: {}
+      customTags: [],
+      languageTags: [],
+      currentTag: {},
+      currentTagCategory: {}
     }
   },
   computed: {
-    unlabeledRepos () {
-      const labeledReposId = new Set(
-        this.customLabels.reduce((accumRepos, { repos = [] }) => [...accumRepos, ...repos], [])
+    untaggedRepos () {
+      const taggedReposId = new Set(
+        this.customTags.reduce((accumRepos, { repos = [] }) => [...accumRepos, ...repos], [])
       )
-      return this.starredRepos.filter(repo => !labeledReposId.has(repo.id))
+      return this.starredRepos.filter(repo => !taggedReposId.has(repo.id))
     },
 
-    labelCategorys () {
-      const categorys = JSON.parse(JSON.stringify(labelCategorys))
-      categorys.custom.labels = this.customLabels
-      categorys.language.labels = this.languageLabels
+    tagCategorys () {
+      const categorys = JSON.parse(JSON.stringify(tagCategorys))
+      categorys.custom.tags = this.customTags
+      categorys.language.tags = this.languageTags
       return categorys
     },
 
-    currentLabelRepos () {
-      const { id } = this.currentLabel
+    currentTagRepos () {
+      const { id } = this.currentTag
 
       // TODO
       // 0: 全部; -1: 未标签;
       if (id === 0) return this.starredRepos
-      if (id === -1) return this.unlabeledRepos
+      if (id === -1) return this.untaggedRepos
 
-      const { labels } = this.currentLabelCategory
-      const { repos } = labels ? labels.find(label => label.id === id) : {}
+      const { tags } = this.currentTagCategory
+      const { repos } = tags ? tags.find(tag => tag.id === id) || {} : {}
 
-      return repos ? this.starredRepos.filter(repo => repos.includes(repo.id)) : currentLabelReposCopy
+      return repos ? this.starredRepos.filter(repo => repos.includes(repo.id)) : currentTagReposCopy
     }
   },
   created () {
@@ -151,7 +151,7 @@ export default {
         // 数据兼容 (issue1)
         if (Array.isArray(content)) {
           isIssue1OldData = true
-          content = { lastModified: Date.now(), labels: content }
+          content = { lastModified: Date.now(), tags: content }
         }
 
         await loadStarredRepos.call(this)
@@ -167,14 +167,14 @@ export default {
               // 数据兼容 (issue1)
               if (Array.isArray(content)) {
                 isIssue1OldData = true
-                content = { lastModified: Date.now(), labels: content }
+                content = { lastModified: Date.now(), tags: content }
               }
               break
             }
           }
 
           if (!gitstarsGistId) {
-            content = { labels: [], lastModified: Date.now() }
+            content = { tags: [], lastModified: Date.now() }
             const { id } = await createGitstarsGist(content)
             gitstarsGistId = id
             this.isNewUser = true
@@ -188,58 +188,70 @@ export default {
       }
       resolve(content)
     }).then(async content => {
-      const { labels } = content
-      if (labels.length === 0) this.currentLabelCategory = this.labelCategorys.custom
+      /**
+       * 老代码使用 label 标识标签不太准确
+       * 修改为 tag
+       */
+      let isIssue5OldData = false
+      if (content.labels) {
+        isIssue5OldData = true
+        content.tags = content.labels
+        delete content.labels
+      }
+
+      const { tags } = content
+      const { custom, language } = this.tagCategorys
+      this.currentTagCategory = tags.length === 0 ? language : custom
 
       let isIncludeInvalidId = false
       let DateNow = Date.now()
-      const { languageLabels, starredRepos, isNewUser } = this
+      const { languageTags, starredRepos, isNewUser } = this
 
-      starredRepos.forEach(({ id: repoId, language, _labels }) => {
+      starredRepos.forEach(({ id: repoId, language, _tags }) => {
         if (!language) return
 
-        const { language: _languageLabels } = _labels
-        const label = languageLabels.find(label => label.name === language)
+        const { language: _languageTags } = _tags
+        const tag = languageTags.find(tag => tag.name === language)
 
-        if (label) {
-          label.repos.push(repoId)
-          _languageLabels.push({ id: label.id, name: label.name })
+        if (tag) {
+          tag.repos.push(repoId)
+          _languageTags.push({ id: tag.id, name: tag.name })
         } else {
-          languageLabels.push({ id: DateNow, name: language, repos: [repoId] })
-          _languageLabels.push({ id: DateNow, name: language })
+          languageTags.push({ id: DateNow, name: language, repos: [repoId] })
+          _languageTags.push({ id: DateNow, name: language })
           DateNow += 1
         }
       })
 
-      labels.forEach(label => {
-        let reposCopy = [...label.repos]
+      tags.forEach(tag => {
+        let reposCopy = [...tag.repos]
 
-        label.repos.forEach((repoId, index) => {
+        tag.repos.forEach((repoId, index) => {
           /**
            * 可能用户 Unstar 了某些仓库
            * 所以存在标签内仓库 id 在 starredRepos 找不到 id 对应仓库的情况
           */
-          const { _labels } = starredRepos.find(({ id }) => id === repoId) || {}
-          if (_labels) {
-            _labels.custom.push({ id: label.id, name: label.name })
+          const { _tags } = starredRepos.find(({ id }) => id === repoId) || {}
+          if (_tags) {
+            _tags.custom.push({ id: tag.id, name: tag.name })
           } else {
             isIncludeInvalidId = true
             delete reposCopy[index]
           }
         })
 
-        label.repos = reposCopy.filter(repo => repo)
+        tag.repos = reposCopy.filter(repo => repo)
       })
 
-      this.customLabels = labels
+      this.customTags = tags
       window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
 
       /**
        * 如果是来自 API 的老数据 (issue1) 或是用户 Unstar 了某些仓库
        * 则更新一次远程数据
       */
-      if ((isIssue1OldData && isContentFromAPI) || isIncludeInvalidId || isNewUser) {
-        saveGitstarsLabels.call(this, { content, message: UPDATE_SUCCESS })
+      if ((isIssue1OldData && isContentFromAPI) || isIncludeInvalidId || isNewUser || isIssue5OldData) {
+        saveGitstarsTags.call(this, { content, message: UPDATE_SUCCESS })
           .catch(() => {
             this.$notify.warning({
               message: UPDATE_FAILED,
@@ -264,7 +276,7 @@ export default {
       // 数据兼容 (issue1)
       if (Array.isArray(gistContent)) {
         isIssue1OldDataFromAPI = true
-        gistContent = { lastModified: Date.now(), labels: gistContent }
+        gistContent = { lastModified: Date.now(), tags: gistContent }
       }
 
       /**
@@ -274,7 +286,7 @@ export default {
       if (gistContent.lastModified <= content.lastModified && !isIssue1OldData) return
 
       if (isIssue1OldDataFromAPI) {
-        saveGitstarsLabels.call(this, { message: UPDATE_SUCCESS, content: gistContent })
+        saveGitstarsTags.call(this, { message: UPDATE_SUCCESS, content: gistContent })
           .catch(() => {
             this.$notify.warning({
               message: UPDATE_FAILED,
@@ -285,7 +297,7 @@ export default {
       } else {
         window.localStorage.setItem(gitstarsGistId, JSON.stringify(gistContent))
       }
-      this.customLabels = gistContent.labels
+      this.customTags = gistContent.tags
     })
   },
   beforeDestroy () {
@@ -293,103 +305,103 @@ export default {
     starredReposClone = []
     isContentFromAPI = true
     isIssue1OldData = false
-    currentLabelReposCopy = []
+    currentTagReposCopy = []
   },
   methods: {
-    handleToggleLabel ({ label, category = this.labelCategorys.custom }) {
-      this.currentLabel = label
-      this.currentLabelCategory = category
+    handleToggleTag ({ tag, category }) {
+      this.currentTag = tag
+      if (category) this.currentTagCategory = category
     },
-    handleSaveNewLabel (name) {
-      this.customLabels.push({ name, id: Date.now(), repos: [] })
-      saveGitstarsLabels.call(this, { message: `添加 ${name} 标签` })
-        .catch(() => this.customLabels.pop())
+    handleSaveNewTag (name) {
+      this.customTags.push({ name, id: Date.now(), repos: [] })
+      saveGitstarsTags.call(this, { message: `添加 ${name} 标签` })
+        .catch(() => this.customTags.pop())
     },
-    handleEditLabels () {
+    handleEditTags () {
       starredReposClone = JSON.parse(JSON.stringify(this.starredRepos))
     },
-    handleDeleteLabel ({ index, label }) {
-      this.customLabels.splice(index, 1)
+    handleDeleteTag ({ index, tag }) {
+      this.customTags.splice(index, 1)
 
-      this.starredRepos.forEach(({ _labels }) => {
-        const { custom: customLabels } = _labels
-        const index = customLabels.findIndex(({ id }) => id === label.id)
-        if (index > -1) customLabels.splice(index, 1)
+      this.starredRepos.forEach(({ _tags }) => {
+        const { custom: customTags } = _tags
+        const index = customTags.findIndex(({ id }) => id === tag.id)
+        if (index > -1) customTags.splice(index, 1)
       })
     },
-    handleChangeLabelName ({ id, name }) {
-      this.starredRepos.forEach(({ _labels }) => {
-        const label = _labels.custom.find(label => label.id === id)
-        if (label) label.name = name
+    handleChangeTagName ({ id, name }) {
+      this.starredRepos.forEach(({ _tags }) => {
+        const tag = _tags.custom.find(tag => tag.id === id)
+        if (tag) tag.name = name
       })
     },
-    handleCompleteEditLabels (labels = []) {
-      const oldLabels = this.customLabels
-      this.customLabels = labels
-      saveGitstarsLabels.call(this, { message: `编辑标签完成` })
+    handleCompleteEditTags (tags = []) {
+      const oldTags = this.customTags
+      this.customTags = tags
+      saveGitstarsTags.call(this, { message: `编辑标签完成` })
         .catch(() => {
-          this.customLabels = oldLabels
+          this.customTags = oldTags
           this.starredRepos = starredReposClone
         })
     },
-    handleAddRepoLabel ({ id, name }) {
-      let label = {}
-      const existLabel = this.customLabels.find(label => label.name === name) || {}
-      const { repos } = existLabel
+    handleAddRepoTag ({ id, name }) {
+      let tag = {}
+      const existTag = this.customTags.find(tag => tag.name === name) || {}
+      const { repos } = existTag
 
       if (repos) {
-        label = existLabel
+        tag = existTag
         repos.push(id)
       } else {
-        label = { name, id: Date.now(), repos: [id] }
-        this.customLabels.push(label)
+        tag = { name, id: Date.now(), repos: [id] }
+        this.customTags.push(tag)
       }
 
       /**
-       * 查找仓库使用 this.starredRepos 而不是 this.currentLabelRepos
-       * 是因为切换标签会改变 this.currentLabelRepos 的内容
-       * this.currentRepo 不一定在 this.currentLabelRepos 内
+       * 查找仓库使用 this.starredRepos 而不是 this.currentTagRepos
+       * 是因为切换标签会改变 this.currentTagRepos 的内容
+       * this.currentRepo 不一定在 this.currentTagRepos 内
       */
       const repo = this.starredRepos.find(repo => repo.id === id)
-      const { name: labelName } = label
-      const { custom: customLabels } = repo._labels
+      const { name: tagName } = tag
+      const { custom: customTags } = repo._tags
 
-      customLabels.push({ id: label.id, name: labelName })
+      customTags.push({ id: tag.id, name: tagName })
 
-      saveGitstarsLabels.call(this, {
-        message: `${repo.owner.login} / ${repo.name} 仓库添加 ${labelName} 标签`
+      saveGitstarsTags.call(this, {
+        message: `${repo.owner.login} / ${repo.name} 仓库添加 ${tagName} 标签`
       }).catch(() => {
-        repos ? repos.pop() : this.customLabels.pop()
-        customLabels.pop()
+        repos ? repos.pop() : this.customTags.pop()
+        customTags.pop()
       })
     },
-    handleDeleteRepoLabel ({ repoId, labelId }) {
+    handleDeleteRepoTag ({ repoId, tagId }) {
       /**
-       * 因为计算函数 this.currentLabelRepos 依赖 this.customLabels
-       * 所以先操作 this.currentLabelRepos 再操作 this.customLabels
+       * 因为计算函数 this.currentTagRepos 依赖 this.customTags
+       * 所以先操作 this.currentTagRepos 再操作 this.customTags
        * 如果操作顺序交换
-       * 则 this.currentLabelRepos 内无法找到 id 值对应的仓库
-       * 因为 this.customLabels 内的值被改变之后立即更新了 this.currentLabelRepos 的值
+       * 则 this.currentTagRepos 内无法找到 id 值对应的仓库
+       * 因为 this.customTags 内的值被改变之后立即更新了 this.currentTagRepos 的值
        * 即已删除 id 值对应的仓库
       */
-      const repo = this.currentLabelRepos.find(({ id }) => id === repoId) || {}
-      const { custom: customLabels } = repo._labels
-      const labelIndex = customLabels.findIndex(({ id }) => id === labelId)
-      const labelCopy = customLabels.splice(labelIndex, 1)[0]
-      const { repos } = this.customLabels.find(({ id }) => id === labelId) || {}
+      const repo = this.currentTagRepos.find(({ id }) => id === repoId) || {}
+      const { custom: customTags } = repo._tags
+      const tagIndex = customTags.findIndex(({ id }) => id === tagId)
+      const tagCopy = customTags.splice(tagIndex, 1)[0]
+      const { repos } = this.customTags.find(({ id }) => id === tagId) || {}
       const repoIndex = repos.findIndex(id => id === repoId)
 
       repos.splice(repoIndex, 1)
-      saveGitstarsLabels.call(this, {
-        message: `${repo.owner.login} / ${repo.name} 仓库删除 ${labelCopy.name} 标签`
+      saveGitstarsTags.call(this, {
+        message: `${repo.owner.login} / ${repo.name} 仓库删除 ${tagCopy.name} 标签`
       }).catch(() => {
-        customLabels.splice(labelIndex, 0, labelCopy)
+        customTags.splice(tagIndex, 0, tagCopy)
         repos.splice(repoIndex, 0, repoId)
       })
     },
-    handleToggleLabelCategory ({ category }) {
-      currentLabelReposCopy = this.currentLabelRepos
-      this.currentLabelCategory = category
+    handleToggleTagCategory ({ category }) {
+      currentTagReposCopy = this.currentTagRepos
+      this.currentTagCategory = category
     }
   }
 }

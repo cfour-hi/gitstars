@@ -5,12 +5,12 @@
       <sub-sidebar
         :repos="currentRepos"
         :load-starred-repos-completed="loadStarredReposCompleted"
-        :current-label="currentLabel"
-        :label-categorys="labelCategorys"
+        :current-tag="currentTag"
+        :tag-categorys="tagCategorys"
         @changeSearchValue="handleChangeSearchValue"
         @toggleRepo="handleToggleRepo"
-        @toggleLabel="handleToggleLabel"
-        @deleteRepoLabel="handleDeleteRepoLabel">
+        @toggleTag="handleToggleTag"
+        @deleteRepoTag="handleDeleteRepoTag">
       </sub-sidebar>
       <div class="content">
         <section v-show="repoReadme || isLoadingRepoReadme" class="repo-readme">
@@ -22,15 +22,14 @@
               {{ currentRepo.owner.login }} / {{ currentRepo.name }}
             </h3>
             <el-autocomplete
-              v-model="labelName"
-              :fetch-suggestions="handleFetchLabelSuggestions"
-              ref="repoLabelNameInput"
+              v-model="tagName"
+              :fetch-suggestions="handleFetchTagSuggestions"
               size="small" placeholder="新增标签"
-              class="repo-label-input"
-              @select="handleAddRepoLabel"
+              class="repo-tag-input"
+              @select="handleAddRepoTag"
               select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
-              <el-button slot="append" @click="handleAddRepoLabel">添加</el-button>
+              <el-button slot="append" @click="handleAddRepoTag">添加</el-button>
             </el-autocomplete>
           </header>
           <article v-html="repoReadme" class="markdown-body"></article>
@@ -67,14 +66,14 @@ export default {
     user: { type: Object, default () { return {} } },
     repos: { type: Array, default () { return [] } },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    currentLabel: { type: Object, default () { return {} } },
-    labelCategorys: { required: true, type: Object }
+    currentTag: { type: Object, default () { return {} } },
+    tagCategorys: { required: true, type: Object }
   },
   data () {
     return {
       repoReadme: '',
       searchValue: '',
-      labelName: '',
+      tagName: '',
       currentRepo: {},
       isLoadingRepoReadme: false,
       isSelectedRepo: false
@@ -82,17 +81,17 @@ export default {
   },
   computed: {
     currentRepos () {
+      const { searchValue } = this
       return this.repos.filter(({ owner = {}, name = '' }) => {
-        const { login = '' } = owner
         return (
-          login.toLowerCase().includes(this.searchValue) ||
-          name.toLowerCase().includes(this.searchValue)
+          owner.login.toLowerCase().includes(searchValue) ||
+          name.toLowerCase().includes(searchValue)
         )
       })
     },
-    currentRepoUnlabeledLabels () {
-      return this.labelCategorys.custom.labels
-        .filter(label => !this.currentRepo._labels.custom.find(({ id }) => id === label.id))
+    currentRepoUntaggedTags () {
+      return this.tagCategorys.custom.tags
+        .filter(tag => !this.currentRepo._tags.custom.find(({ id }) => id === tag.id))
         .map(({ name }) => name)
     }
   },
@@ -109,28 +108,28 @@ export default {
       this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content))))
       this.isLoadingRepoReadme = false
     },
-    handleToggleLabel (payload) {
-      this.$emit('toggleLabel', payload)
+    handleToggleTag (payload) {
+      this.$emit('toggleTag', payload)
     },
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()
     },
-    handleDeleteRepoLabel (payload) {
-      this.$emit('deleteRepoLabel', payload)
+    handleDeleteRepoTag (payload) {
+      this.$emit('deleteRepoTag', payload)
     },
-    handleFetchLabelSuggestions (inputStr, cb) {
+    handleFetchTagSuggestions (inputStr, cb) {
       inputStr = inputStr.toLowerCase()
-      cb(this.currentRepoUnlabeledLabels
+      cb(this.currentRepoUntaggedTags
         .filter(name => name.toLowerCase().includes(inputStr))
         .map(name => ({ value: name })))
     },
-    handleAddRepoLabel () {
+    handleAddRepoTag () {
       let message = ''
-      const labelName = this.labelName.trim()
+      const tagName = this.tagName.trim()
 
-      if (!labelName) message = LABEL_NAME_CANNOT_ENPTY
+      if (!tagName) message = LABEL_NAME_CANNOT_ENPTY
 
-      if (this.currentRepo._labels.custom.find(({ name }) => name === labelName)) {
+      if (this.currentRepo._tags.custom.find(({ name }) => name === tagName)) {
         message = LABEL_NAME_ALREADY_EXIST
       }
 
@@ -138,8 +137,8 @@ export default {
         return this.$notify.warning({ message, showClose: false, position: norifyPosition })
       }
 
-      this.$emit('addRepoLabel', { id: this.currentRepo.id, name: labelName })
-      this.labelName = ''
+      this.$emit('addRepoTag', { id: this.currentRepo.id, name: tagName })
+      this.tagName = ''
     }
   }
 }
@@ -185,11 +184,11 @@ export default {
   color: #5a5a5a;
 }
 
-.repo-label-input {
+.repo-tag-input {
   width: 200px;
 }
 
-.repo-label-input .el-input-group__append .el-button {
+.repo-tag-input .el-input-group__append .el-button {
   padding: 10px;
 }
 

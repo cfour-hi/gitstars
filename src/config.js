@@ -9,11 +9,11 @@ export default {
   description: `github stars manager for ${process.env.NODE_ENV}`,
   norifyPosition: 'bottom-right',
   starredReposPerPage: 100,
-  defaultLabels: {
+  defaultTags: {
     all: { id: 0, name: '全部', icon: 'fa-bars' },
-    unlabeled: { id: -1, name: '未标签', icon: 'fa-star-o' }
+    untagged: { id: -1, name: '未标签', icon: 'fa-star-o' }
   },
-  labelCategorys: {
+  tagCategorys: {
     custom: { id: 0, name: '自定义' },
     language: { id: 1, name: '语言' }
   }

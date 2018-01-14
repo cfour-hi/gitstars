@@ -5,7 +5,7 @@
         <i class="fa fa-search" aria-hidden="true"></i>
         <input
           v-model="searchValue"
-          :placeholder="`开发者 | 仓库名 @${currentLabel.name}`"
+          :placeholder="`开发者 | 仓库名 @${currentTag.name}`"
           type="text"
           class="search-input"
           @input="handleChangeSearchValue">
@@ -26,19 +26,19 @@
             </h3>
           </header>
           <p class="repo-desc">{{ repo.description }}</p>
-          <ul class="label-list">
+          <ul class="tag-list">
             <li
-              v-for="label of repo._labels.custom"
-              :key="label.id"
-              class="label-item"
-              @click.stop="handleToggleLabel(label)">
+              v-for="tag of repo._tags.custom"
+              :key="tag.id"
+              class="tag-item"
+              @click.stop="handleToggleTag(tag)">
               <el-tag size="small">
-                {{ label.name }}
+                {{ tag.name }}
                 <el-popover placement="right" title="Are you sure?">
-                  <i slot="reference" class="el-tag__close el-icon-close label-delete-btn" @click.stop="handleDeleteLabel"></i>
+                  <i slot="reference" class="el-tag__close el-icon-close tag-delete-btn" @click.stop="handleDeleteTag"></i>
                   <footer class="popover-footer">
-                    <el-button size="mini" @click="handleCancelDeleteLabel">No</el-button>
-                    <el-button type="primary" size="mini" @click="handleConfirmDeleteLabel(repo.id, label.id)">Yes</el-button>
+                    <el-button size="mini" @click="handleCancelDeleteTag">No</el-button>
+                    <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(repo.id, tag.id)">Yes</el-button>
                   </footer>
                 </el-popover>
               </el-tag>
@@ -76,8 +76,8 @@ export default {
   props: {
     repos: { type: Array, default () { return [] } },
     loadStarredReposCompleted: { type: Boolean, default: false },
-    currentLabel: { type: Object, default () { return {} } },
-    labelCategorys: { required: true, type: Object }
+    currentTag: { type: Object, default () { return {} } },
+    tagCategorys: { required: true, type: Object }
   },
   data () {
     return {
@@ -96,17 +96,17 @@ export default {
       this.activeRepoId = id
       this.$emit('toggleRepo', repo)
     },
-    handleToggleLabel (label) {
-      this.$emit('toggleLabel', { label, category: this.labelCategorys.custom })
+    handleToggleTag (tag) {
+      this.$emit('toggleTag', { tag, category: this.tagCategorys.custom })
     },
-    handleDeleteLabel () {
+    handleDeleteTag () {
       document.body.click()
     },
-    handleConfirmDeleteLabel (repoId, labelId) {
-      this.$emit('deleteRepoLabel', { repoId, labelId })
+    handleConfirmDeleteTag (repoId, tagId) {
+      this.$emit('deleteRepoTag', { repoId, tagId })
       document.body.click()
     },
-    handleCancelDeleteLabel () {
+    handleCancelDeleteTag () {
       document.body.click()
     }
   }
@@ -196,7 +196,7 @@ export default {
   color: #5a5a5a;
 }
 
-.label-list {
+.tag-list {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
@@ -205,19 +205,19 @@ export default {
   color: #fff;
 }
 
-.label-item {
+.tag-item {
   position: relative;
   margin-bottom: 0.3em;
   margin-right: 0.5em;
 }
 
-.label-delete-btn {
+.tag-delete-btn {
   margin-left: -7px;
   line-height: 19px;
   cursor: pointer;
 }
 
-.label-delete-btn:hover {
+.tag-delete-btn:hover {
   font-size: 13px;
 }
 
