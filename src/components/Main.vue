@@ -159,7 +159,7 @@ export default {
 
 .content {
   position: absolute;
-  left: 400px;
+  left: 360px;
   right: 0;
   height: 100%;
   min-width: 650px;

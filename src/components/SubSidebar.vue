@@ -120,7 +120,7 @@ export default {
   position: absolute;
   display: flex;
   flex-direction: column;
-  width: 399px;
+  width: 359px;
   height: 100%;
   border-right: 1px solid #e9e9e9;
   background-color: #fbfbfb;
@@ -132,15 +132,16 @@ export default {
   justify-content: center;
   align-items: center;
   flex: 0 0 44px;
+  padding: 0 10px;
   border-bottom: 1px solid #e9e9e9;
   background-color: #f5f5f5;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .search-input {
-  width: 320px;
+  width: 100%;
   height: 30px;
-  padding: 0 12px 0 34px;
+  padding: 0 12px 0 33px;
   border: 1px solid #d9d9d9;
   border-radius: 15px;
   font-size: 12px;
@@ -152,7 +153,7 @@ export default {
 
 .fa-search {
   position: absolute;
-  left: 28px;
+  left: 22px;
   color: #d9d9d9;
 }
 
