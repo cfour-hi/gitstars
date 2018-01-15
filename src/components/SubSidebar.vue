@@ -16,7 +16,7 @@
           :key="repo.id"
           :class="{ active: repo.id === activeRepoId }"
           class="repo-item"
-          @click="handleToggleRepo(repo)">
+          @click="handleSwitchRepo(repo)">
           <header>
             <h3 class="repo-title">
               <a :href="repo.html_url" target="_blank">{{ repo.owner.login }} / {{ repo.name }}</a>
@@ -31,7 +31,7 @@
               v-for="tag of repo._tags.custom"
               :key="tag.id"
               class="tag-item"
-              @click.stop="handleToggleTag(tag)">
+              @click.stop="handleSwitchTag(tag)">
               <el-tag size="small">
                 {{ tag.name }}
                 <el-popover :title="`${$t('areYouSure')}？`" placement="right">
@@ -91,15 +91,15 @@ export default {
     handleChangeSearchValue () {
       this.$emit('changeSearchValue', this.searchValue)
     },
-    handleToggleRepo (repo) {
+    handleSwitchRepo (repo) {
       const { id } = repo
       if (this.activeRepoId === id) return
 
       this.activeRepoId = id
-      this.$emit('toggleRepo', repo)
+      this.$emit('switchRepo', repo)
     },
-    handleToggleTag (tag) {
-      this.$emit('toggleTag', { tag, category: this.tagCategorys.custom })
+    handleSwitchTag (tag) {
+      this.$emit('switchTag', { tag, category: this.tagCategorys.custom })
     },
     handleDeleteTag () {
       document.body.click()

@@ -8,8 +8,8 @@
         :current-tag="currentTag"
         :tag-categorys="tagCategorys"
         @changeSearchValue="handleChangeSearchValue"
-        @toggleRepo="handleToggleRepo"
-        @toggleTag="handleToggleTag"
+        @switchRepo="handleSwitchRepo"
+        @switchTag="handleSwitchTag"
         @deleteRepoTag="handleDeleteRepoTag">
       </sub-sidebar>
       <div class="content">
@@ -97,7 +97,7 @@ export default {
     }
   },
   methods: {
-    async handleToggleRepo ({ id, owner, name }) {
+    async handleSwitchRepo ({ id, owner, name }) {
       this.currentRepo = this.repos.find(repo => repo.id === id)
       this.isSelectedRepo = true
       this.isLoadingRepoReadme = true
@@ -109,8 +109,8 @@ export default {
       this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content))))
       this.isLoadingRepoReadme = false
     },
-    handleToggleTag (payload) {
-      this.$emit('toggleTag', payload)
+    handleSwitchTag (payload) {
+      this.$emit('switchTag', payload)
     },
     handleChangeSearchValue (searchValue = '') {
       this.searchValue = searchValue.toLowerCase()

@@ -11,7 +11,7 @@
         v-for="tag in defaultTags"
         :key="tag.id" :class="{ active: tag.id === currentTag.id }"
         class="nav-item"
-        @click="handleToggleTag(tag)">
+        @click="handleSwitchTag(tag)">
         <label class="nav-item__label">
           <i :class="tag.icon" class="fa fa-fw" aria-hidden="true"></i>
           <span>{{ $t(tag.i18nKey) }}</span>
@@ -61,7 +61,7 @@
           <input
             v-model="tagName"
             :class="tagNameInputState"
-            :placeholder="`${convertFirstWordToUpperCase($t('tagName'))}`"
+            :placeholder="`${$t('tagName')}`"
             ref="tagFormNameInput"
             type="text"
             class="tag-form__input--name"
@@ -103,7 +103,7 @@
                 :key="tag.id"
                 :class="{ active: tag.id === currentTag.id }"
                 class="nav-item"
-                @click="handleToggleTag(tag)">
+                @click="handleSwitchTag(tag)">
                 <div class="nav-item__label slo" @dblclick="handleEditTagName(tag)">
                   <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
                   <span v-show="!tag._isEdit" class="nav-item__name slo">{{ tag.name }}</span>
@@ -140,7 +140,7 @@
               :key="tag.id"
               :class="{ active: tag.id === currentTag.id }"
               class="nav-item"
-              @click="handleToggleTag(tag)">
+              @click="handleSwitchTag(tag)">
               <label class="nav-item__label slo">
                 <i class="fa fa-fw fa-tag" aria-hidden="true"></i>
                 <span class="nav-item__name slo">{{ tag.name }}</span>
@@ -167,7 +167,7 @@
           :key="key"
           :class="{ active: category.id === currentTagCategory.id }"
           class="tag-category__item"
-          @click="$emit('toggleTagCategory', { category })">
+          @click="$emit('switchTagCategory', { category })">
           {{ convertFirstWordToUpperCase($t(category.i18nKey)) }}
         </li>
       </ul>
@@ -255,15 +255,29 @@ export default {
     }
   },
   created () {
-    this.$emit('toggleTag', { tag: this.defaultTags.all })
+    this.$emit('switchTag', { tag: this.defaultTags.all })
   },
   destroyed () {
     dragTagsClone = []
   },
   methods: {
-    handleToggleTag (tag) {
-      if (this.isEditTag) return
-      this.$emit('toggleTag', { tag })
+    handleSwitchTag (tag) {
+      const { id } = tag
+
+      if (id === this.currentTag.id) return
+
+      if (this.isEditTag) {
+        if (Object.values(this.defaultTags).find(tag => tag.id === id)) {
+          return this.$notify.warning({
+            message: this.$t('canNotSwitchTagWhenEdit'),
+            showClose: false,
+            position: norifyPosition
+          })
+        }
+        return
+      }
+
+      this.$emit('switchTag', { tag })
     },
     handleAddNewTag () {
       if (this.isEditTag || this.tagNameFormVisible) return

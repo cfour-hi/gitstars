@@ -25,6 +25,7 @@ export default {
   noMatchingReposigory: '没有匹配@:repository',
   switchTagOrAdjustSearch: '切换@:tag 或 调整搜索',
   gettingStarredRepository: '正在获取 Starred 仓库...',
+  canNotSwitchTagWhenEdit: '@:edit.default状态下不能切换@:tag',
   areYouSure: '确定@:delete',
   update: {
     default: '更新',

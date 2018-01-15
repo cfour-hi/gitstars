@@ -60,7 +60,7 @@ export default {
   align-items: center;
   flex: 0 0 60px;
   position: relative;
-  padding: 0 75px 0 15px;
+  padding: 0 75px 0 5px;
   border-bottom: 1px solid #e9e9e9;
 }
 

@@ -18,13 +18,14 @@ export default {
   repositoryName: 'Repository Name',
   allRepos: 'All Stars',
   untaggedRepos: 'Untagged Stars',
-  tagName: '@:tag @:name',
+  tagName: 'Tag Name',
   tagNameCannotEmpty: 'Tag @:name can not be empty',
   tagNameAlreadyExist: 'This @:tag already exists',
   clickLeftStarredRepoToView: 'Click left starred @:repository to view',
   noMatchingReposigory: 'No matching @:repository',
   switchTagOrAdjustSearch: 'Switch tag or Adjust search',
   gettingStarredRepository: 'Getting Starred Repository...',
+  canNotSwitchTagWhenEdit: 'Edit state can not switch tag',
   areYouSure: 'Are you sure',
   update: {
     default: 'update',
@@ -37,6 +38,6 @@ export default {
     completed: 'Edit @:tag completed'
   },
   tips: {
-    editTag: 'Double-click or drag tag'
+    editTag: 'Double-click change @:name | Drag sort order'
   }
 }

@@ -6,13 +6,13 @@
       :current-tag="currentTag"
       :tag-categorys="tagCategorys"
       :current-tag-category="currentTagCategory"
-      @toggleTag="handleToggleTag"
+      @switchTag="handleSwitchTag"
       @saveNewTag="handleSaveNewTag"
       @editTags="handleEditTags"
       @deleteTag="handleDeleteTag"
       @changeTagName="handleChangeTagName"
       @completeEditTags="handleCompleteEditTags"
-      @toggleTagCategory="handleToggleTagCategory">
+      @switchTagCategory="handleSwitchTagCategory">
     </layout-sidebar>
     <layout-main
       :user="user"
@@ -20,7 +20,7 @@
       :load-starred-repos-completed="loadStarredReposCompleted"
       :current-tag="currentTag"
       :tag-categorys="tagCategorys"
-      @toggleTag="handleToggleTag"
+      @switchTag="handleSwitchTag"
       @addRepoTag="handleAddRepoTag"
       @deleteRepoTag="handleDeleteRepoTag">
     </layout-main>
@@ -312,7 +312,7 @@ export default {
     currentTagReposCopy = []
   },
   methods: {
-    handleToggleTag ({ tag, category }) {
+    handleSwitchTag ({ tag, category }) {
       this.currentTag = tag
       if (category) this.currentTagCategory = category
     },
@@ -401,7 +401,7 @@ export default {
         repos.splice(repoIndex, 0, repoId)
       })
     },
-    handleToggleTagCategory ({ category }) {
+    handleSwitchTagCategory ({ category }) {
       currentTagReposCopy = this.currentTagRepos
       this.currentTagCategory = category
     }
