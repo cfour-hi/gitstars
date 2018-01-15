@@ -1,32 +1,31 @@
 export default {
-  tag: '标签',
-  tags: '@:tag集',
+  tags: '标签集',
   add: '添加',
-  addTag: '@:add@:tag',
-  addNewTag: '新增@:tag',
-  delete: '删除',
-  custom: '自定义',
-  language: '语言',
   ok: '完成',
-  name: '名称',
-  save: '保存',
   cancel: '取消',
   yes: '是',
   no: '否',
+  save: '保存',
+  custom: '自定义',
+  language: '语言',
   developer: '开发者',
-  repository: '仓库',
-  repositoryName: '@:repository名',
+
+  addTag: '@:add标签',
+  addNewTag: '新增标签',
+  deleteTag: '删除标签',
+  repositoryName: '仓库名',
   allRepos: '全部',
-  untaggedRepos: '未@:tag',
-  tagName: '@:tag@:name',
-  tagNameCannotEmpty: '@:tag@:name不能为空',
-  tagNameAlreadyExist: '已存在此@:tag',
-  clickLeftStarredRepoToView: '点击左侧 Starred @:repository查看',
-  noMatchingReposigory: '没有匹配@:repository',
-  switchTagOrAdjustSearch: '切换@:tag 或 调整搜索',
+  untaggedRepos: '未标签',
+  tagName: '标签名称',
+  tagNameCannotEmpty: '@:tagName不能为空',
+  tagNameAlreadyExist: '已存在此标签',
+  clickLeftStarredRepoToView: '点击左侧 Starred 仓库查看',
+  noMatchingReposigory: '没有匹配仓库',
+  switchTagOrAdjustSearch: '切换标签 或 调整搜索',
   gettingStarredRepository: '正在获取 Starred 仓库...',
-  canNotSwitchTagWhenEdit: '@:edit.default状态下不能切换@:tag',
-  areYouSure: '确定@:delete',
+  canNotSwitchTagWhenEdit: '@:edit.default状态下不能切换标签',
+  areYouSure: '确定删除',
+
   update: {
     default: '更新',
     wait: '正在@:update.default，请稍后...',
@@ -35,9 +34,9 @@ export default {
   },
   edit: {
     default: '编辑',
-    completed: '@:edit.default@:tag@:ok'
+    completed: '@:edit.default标签@:ok'
   },
   tips: {
-    editTag: '双击@:tag修改@:name | 拖拽@:tag排列顺序'
+    editTag: '双击标签修改名称 | 拖拽标签排列顺序'
   }
 }

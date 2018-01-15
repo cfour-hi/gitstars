@@ -11,14 +11,3 @@ export function parseURLSearch (searchStr = window.location.search) {
   }
   return search
 }
-
-export function convertFirstWordToUpperCase (str = '') {
-  const firstWord = String.fromCodePoint(str.codePointAt(0))
-  return str.replace(firstWord, firstWord.toUpperCase())
-}
-
-export default {
-  install (Vue, options) {
-    Vue.prototype.convertFirstWordToUpperCase = convertFirstWordToUpperCase
-  }
-}

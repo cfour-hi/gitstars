@@ -30,7 +30,7 @@
             <div :class="{ disabled: isEditTag || tagNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewTag">
               <span>
                 <i class="fa fa-plus-square" aria-hidden="true"></i>
-                {{ convertFirstWordToUpperCase($t('add')) }}
+                {{ $t('add') }}
               </span>
             </div>
             <transition-group name="enlarge" tag="div" class="nav-caption__group--edit-ok">
@@ -49,7 +49,7 @@
                 @click="handleEditTags">
                 <span>
                   <i class="fa fa-cog" aria-hidden="true"></i>
-                  {{ convertFirstWordToUpperCase($t('edit.default')) }}
+                  {{ $t('edit.default') }}
                 </span>
               </div>
             </transition-group>
@@ -121,10 +121,10 @@
                   <i v-show="isEditTag" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteTag"></i>
                   <footer class="popover-footer">
                     <el-button size="mini" @click="handleCancelDeleteTag">
-                      {{ convertFirstWordToUpperCase($t('no')) }}
+                      {{ $t('no') }}
                     </el-button>
                     <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(tag, index)">
-                      {{ convertFirstWordToUpperCase($t('yes')) }}
+                      {{ $t('yes') }}
                     </el-button>
                   </footer>
                 </el-popover>
@@ -155,7 +155,7 @@
           v-show="!tagCategorys.custom.tags.length && currentTagCategory.id === tagCategorys.custom.id"
           class="no-tag vc-p">
           <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
-          <p>{{ convertFirstWordToUpperCase($t('addTag')) }}</p>
+          <p>{{ $t('addTag') }}</p>
         </div>
       </transition>
     </div>
@@ -168,7 +168,7 @@
           :class="{ active: category.id === currentTagCategory.id }"
           class="tag-category__item"
           @click="$emit('switchTagCategory', { category })">
-          {{ convertFirstWordToUpperCase($t(category.i18nKey)) }}
+          {{ $t(category.i18nKey) }}
         </li>
       </ul>
     </transition>
@@ -610,6 +610,7 @@ export default {
   flex: 0 0 49px;
   padding: 0 10px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
+  text-transform: capitalize;
   cursor: pointer;
   user-select: none;
 }
@@ -776,6 +777,7 @@ export default {
   width: 50%;
   margin: 0;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: capitalize;
   transition: all 0.3s;
 }
 

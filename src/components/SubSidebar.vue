@@ -5,7 +5,7 @@
         <i class="fa fa-search" aria-hidden="true"></i>
         <input
           v-model="searchValue"
-          :placeholder="`${convertFirstWordToUpperCase($t('developer'))} | ${$t('repositoryName')} @${currentTag.i18nKey ? $t(currentTag.i18nKey) : currentTag.name}`"
+          :placeholder="`${$t('developer')} | ${$t('repositoryName')} @${currentTag.i18nKey ? $t(currentTag.i18nKey) : currentTag.name}`"
           type="text"
           class="search-input"
           @input="handleChangeSearchValue">
@@ -37,11 +37,9 @@
                 <el-popover :title="`${$t('areYouSure')}？`" placement="right">
                   <i slot="reference" class="el-tag__close el-icon-close tag-delete-btn" @click.stop="handleDeleteTag"></i>
                   <footer class="popover-footer">
-                    <el-button size="mini" @click="handleCancelDeleteTag">
-                      {{ convertFirstWordToUpperCase($t('no')) }}
-                    </el-button>
+                    <el-button size="mini" @click="handleCancelDeleteTag">{{ $t('no') }}</el-button>
                     <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(repo.id, tag.id)">
-                      {{ convertFirstWordToUpperCase($t('yes')) }}
+                      {{ $t('yes') }}
                     </el-button>
                   </footer>
                 </el-popover>
@@ -57,7 +55,7 @@
       </ul>
       <div v-show="!repos.length" class="no-match vc-p">
         <i class="fa fa-bell-o fa-3x" aria-hidden="true"></i>
-        <p>{{ $t('noMatchingReposigory') }}</p>
+        <p class="ttc">{{ $t('noMatchingReposigory') }}</p>
         <p>
           <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
           <span>{{ $t('switchTagOrAdjustSearch') }}</span>
@@ -67,7 +65,7 @@
     </template>
     <div v-else class="loader vc-p">
       <i class="fa fa-cog fa-spin fa-2x"></i>
-      <p>{{ $t('gettingStarredRepository') }}</p>
+      <p class="ttc">{{ $t('gettingStarredRepository') }}</p>
     </div>
   </nav>
 </template>

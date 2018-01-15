@@ -24,14 +24,14 @@
             <el-autocomplete
               v-model="tagName"
               :fetch-suggestions="handleFetchTagSuggestions"
-              :placeholder="convertFirstWordToUpperCase($t('addNewTag'))"
+              :placeholder="$t('addNewTag')"
               size="small"
               class="repo-tag-input"
               @select="handleAddRepoTag"
               select-when-unmatched>
               <i slot="prefix" class="fa fa-fw fa-lg fa-tag el-input__icon"></i>
-              <el-button slot="append" @click="handleAddRepoTag">
-                {{ convertFirstWordToUpperCase($t('add')) }}
+              <el-button slot="append" @click="handleAddRepoTag" class="ttc">
+                {{ $t('add') }}
               </el-button>
             </el-autocomplete>
           </header>
@@ -43,7 +43,7 @@
             <i v-show="isLoadingRepoReadme" class="fa fa-cog fa-spin fa-2x fa-fw"></i>
             <span v-if="!isSelectedRepo">
               <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
-              <span>{{ $t('clickLeftStarredRepoToView') }}</span>
+              <span class="ttc">{{ $t('clickLeftStarredRepoToView') }}</span>
             </span>
           </p>
         </section>

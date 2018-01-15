@@ -69,7 +69,7 @@ function loadStarredRepos (page = 1) {
   })
 }
 
-async function saveGitstarsTags ({ message, content }) {
+async function saveGitstarsTags ({ title, message, content }) {
   const loadingNotify = this.$notify.info({
     iconClass: 'fa fa-cog fa-spin fa-fw',
     message: this.$t('update.wait'),
@@ -85,7 +85,16 @@ async function saveGitstarsTags ({ message, content }) {
   window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
   loadingNotify.close()
 
-  if (message) this.$notify.success({ message, showClose: false, position: norifyPosition })
+  if (message) {
+    this.$notify.success({
+      title,
+      message,
+      duration: 0,
+      showClose: false,
+      position: norifyPosition
+    })
+  }
+
   return result
 }
 
@@ -318,8 +327,9 @@ export default {
     },
     handleSaveNewTag (name) {
       this.customTags.push({ name, id: Date.now(), repos: [] })
-      saveGitstarsTags.call(this, { message: `${this.convertFirstWordToUpperCase(this.$t('addTag'))}: ${name}` })
-        .catch(() => this.customTags.pop())
+      saveGitstarsTags.call(this, {
+        message: `${this.$t('addTag')}: ${name}`
+      }).catch(() => this.customTags.pop())
     },
     handleEditTags () {
       starredReposClone = JSON.parse(JSON.stringify(this.starredRepos))
@@ -371,7 +381,8 @@ export default {
       customTags.push({ id: tag.id, name: tagName })
 
       saveGitstarsTags.call(this, {
-        message: `${repo.owner.login} / ${repo.name} ${this.$t('add')} ${tagName} ${this.$t('tag')}`
+        title: `${repo.owner.login} / ${repo.name}`,
+        message: `${this.$t('addTag')}: ${tagName}`
       }).catch(() => {
         repos ? repos.pop() : this.customTags.pop()
         customTags.pop()
@@ -395,7 +406,8 @@ export default {
 
       repos.splice(repoIndex, 1)
       saveGitstarsTags.call(this, {
-        message: `${repo.owner.login} / ${repo.name} ${this.$t('delete')} ${tagCopy.name} ${this.$t('tag')}`
+        title: `${repo.owner.login} / ${repo.name}`,
+        message: `${this.$t('deleteTag')}: ${tagCopy.name}`
       }).catch(() => {
         customTags.splice(tagIndex, 0, tagCopy)
         repos.splice(repoIndex, 0, repoId)

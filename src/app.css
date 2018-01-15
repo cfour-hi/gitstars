@@ -31,6 +31,10 @@ a:hover {
   white-space: nowrap;
 }
 
+.ttc {
+  text-transform: capitalize;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -77,6 +81,10 @@ a:hover {
 .popover-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.popover-footer .el-button {
+  text-transform: capitalize;
 }
 
 .el-autocomplete-suggestion.el-popper .popper__arrow {

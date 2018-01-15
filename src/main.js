@@ -3,12 +3,10 @@
 import Vue from 'vue'
 import App from './App'
 import i18n from './i18n'
-import util, { parseURLSearch } from './util'
+import { parseURLSearch } from './util'
 import { getGitstarsAccessToken, getUserInfo } from './api'
 import config from './config'
 import './element-ui'
-
-Vue.use(util)
 
 Vue.config.productionTip = false
 
