@@ -37,6 +37,6 @@ export default {
     completed: 'Edit @:tag completed'
   },
   tips: {
-    editTag: 'Change @:name by dblclick | Sort order by drag'
+    editTag: 'Double-click or drag tag'
   }
 }
