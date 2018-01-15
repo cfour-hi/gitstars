@@ -318,9 +318,7 @@ export default {
     handleEditTags () {
       starredReposClone = JSON.parse(JSON.stringify(this.starredRepos))
     },
-    handleDeleteTag ({ index, tag }) {
-      this.customTags.splice(index, 1)
-
+    handleDeleteTag ({ tag }) {
       this.starredRepos.forEach(({ _tags }) => {
         const { custom: customTags } = _tags
         const index = customTags.findIndex(({ id }) => id === tag.id)

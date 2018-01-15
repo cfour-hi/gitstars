@@ -109,18 +109,23 @@
                   <span v-show="!tag._isEdit" class="nav-item__name slo">{{ tag.name }}</span>
                   <input
                     v-show="tag._isEdit"
-                    :ref="tag._ref" type="text"
+                    :ref="tag._ref"
                     :value="tag.name"
+                    type="text"
                     class="nav-item__input--name"
                     @blur="handleChangeTagNameByBlur(tag)"
                     @keyup.enter="handleChangeTagNameByEnter(tag)"
                     @keyup.esc="handleCancelEditTagName(tag)">
                 </div>
-                <el-popover placement="right" title="Are you sure?">
+                <el-popover :title="`${$t('areYouSure')}？`" placement="right">
                   <i v-show="isEditTag" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteTag"></i>
                   <footer class="popover-footer">
-                    <el-button size="mini" @click="handleCancelDeleteTag">No</el-button>
-                    <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(tag, index)">Yes</el-button>
+                    <el-button size="mini" @click="handleCancelDeleteTag">
+                      {{ convertFirstWordToUpperCase($t('no')) }}
+                    </el-button>
+                    <el-button type="primary" size="mini" @click="handleConfirmDeleteTag(tag, index)">
+                      {{ convertFirstWordToUpperCase($t('yes')) }}
+                    </el-button>
                   </footer>
                 </el-popover>
                 <span v-show="!isEditTag" class="nav-item-badge">{{ tag.repos.length }}</span>
@@ -379,7 +384,8 @@ export default {
       document.body.click()
     },
     handleConfirmDeleteTag (tag, index) {
-      this.$emit('deleteTag', { index, tag })
+      this.dragTags.splice(index, 1)
+      this.$emit('deleteTag', { tag })
       document.body.click()
     },
     handleCancelDeleteTag () {
@@ -389,7 +395,6 @@ export default {
       this.isEditTag = false
 
       let isChanged = false
-
       for (const [index, { id, name }] of dragTagsClone.entries()) {
         const tag = this.dragTags[index]
         if (!tag || id !== tag.id || name !== tag.name) {
