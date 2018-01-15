@@ -9,7 +9,8 @@
     <ul class="nav-tag">
       <li
         v-for="tag in defaultTags"
-        :key="tag.id" :class="{ active: tag.id === currentTag.id }"
+        :key="tag.id"
+        :class="{ active: tag.id === currentTag.id }"
         class="nav-item"
         @click="handleSwitchTag(tag)">
         <label class="nav-item__label">
@@ -27,7 +28,10 @@
         </h3>
         <transition name="slide-to-left">
           <div v-show="currentTagCategory.id === tagCategorys.custom.id" class="nav-caption__operate">
-            <div :class="{ disabled: isEditTag || tagNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewTag">
+            <div
+              :class="{ disabled: isEditTag || tagNameFormVisible }"
+              class="nav-caption__operate-btn"
+              @click="handleAddNewTag">
               <span>
                 <i class="fa fa-plus-square" aria-hidden="true"></i>
                 {{ $t('add') }}
@@ -75,13 +79,13 @@
                 type="button"
                 class="tag-form__operate-btn save"
                 @click="handleAddTag">
-                {{ $t('save').toUpperCase() }}
+                {{ $t('save') }}
               </button>
               <button
                 type="button"
                 class="tag-form__operate-btn cancel"
                 @click="handleCancelAddTag">
-                {{ $t('cancel').toUpperCase() }}
+                {{ $t('cancel') }}
               </button>
             </div>
         </form>
@@ -118,7 +122,13 @@
                     @keyup.esc="handleCancelEditTagName(tag)">
                 </div>
                 <el-popover :title="`${$t('areYouSure')}？`" placement="right">
-                  <i v-show="isEditTag" slot="reference" class="fa fa-times-circle" aria-hidden="true" @click.stop="handleDeleteTag"></i>
+                  <i
+                    v-show="isEditTag"
+                    slot="reference"
+                    class="fa fa-times-circle"
+                    aria-hidden="true"
+                    @click.stop="handleDeleteTag">
+                  </i>
                   <footer class="popover-footer">
                     <el-button size="mini" @click="handleCancelDeleteTag">
                       {{ $t('no') }}
@@ -187,7 +197,6 @@ let isValidatedNewTagName = false
 let dragTagsClone = []
 
 const { norifyPosition, defaultTags } = config
-
 const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
@@ -286,7 +295,7 @@ export default {
       this.$nextTick(() => this.$refs.tagFormNameInput.focus())
     },
     handleInputTagName () {
-      this.tagNameBtnState = this.tagName.trim().length ? SAVE : CANCEL
+      this.tagNameBtnState = this.tagName.trim().length > 0 ? SAVE : CANCEL
     },
     handleFocusTagName () {
       this.tagNameInputState = FOCUS
@@ -685,6 +694,7 @@ export default {
   border: none;
   border-radius: 0;
   text-align: center;
+  text-transform: uppercase;
   color: #fff;
   cursor: pointer;
   outline: none;

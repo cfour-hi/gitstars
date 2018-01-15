@@ -119,14 +119,12 @@ export default {
       )
       return this.starredRepos.filter(repo => !taggedReposId.has(repo.id))
     },
-
     tagCategorys () {
       const categorys = JSON.parse(JSON.stringify(tagCategorys))
       categorys.custom.tags = this.customTags
       categorys.language.tags = this.languageTags
       return categorys
     },
-
     currentTagRepos () {
       const { id } = this.currentTag
 
@@ -210,7 +208,7 @@ export default {
       }
 
       let isIncludeInvalidId = false
-      let DateNow = Date.now()
+      let dateNow = Date.now()
       const { languageTags, starredRepos, isNewUser } = this
 
       starredRepos.forEach(({ id: repoId, language, _tags }) => {
@@ -223,9 +221,9 @@ export default {
           tag.repos.push(repoId)
           _languageTags.push({ id: tag.id, name: tag.name })
         } else {
-          languageTags.push({ id: DateNow, name: language, repos: [repoId] })
-          _languageTags.push({ id: DateNow, name: language })
-          DateNow += 1
+          languageTags.push({ id: dateNow, name: language, repos: [repoId] })
+          _languageTags.push({ id: dateNow, name: language })
+          dateNow += 1
         }
       })
 
@@ -309,6 +307,7 @@ export default {
       } else {
         window.localStorage.setItem(gitstarsGistId, JSON.stringify(gistContent))
       }
+
       this.customTags = gistContent.tags
     })
   },
