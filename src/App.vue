@@ -89,7 +89,6 @@ async function saveGitstarsTags ({ title, message, content }) {
     this.$notify.success({
       title,
       message,
-      duration: 0,
       showClose: false,
       position: norifyPosition
     })

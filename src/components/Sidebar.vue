@@ -400,6 +400,11 @@ export default {
     handleConfirmDeleteTag (tag, index) {
       this.dragTags.splice(index, 1)
       this.$emit('deleteTag', { tag })
+
+      if (tag.id === this.currentTag.id) {
+        this.$emit('switchTag', { tag: this.defaultTags.all })
+      }
+
       document.body.click()
     },
     handleCancelDeleteTag () {
