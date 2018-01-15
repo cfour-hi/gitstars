@@ -46,7 +46,13 @@ let isContentFromAPI = true
 let isIssue1OldData = false // (issue1)
 let currentTagReposCopy = []
 
-const { filename, norifyPosition, starredReposPerPage, defaultTags, tagCategorys } = config
+const {
+  filename,
+  norifyPosition,
+  starredReposPerPage,
+  defaultTags,
+  tagCategorys
+} = config
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
 function loadStarredRepos (page = 1) {

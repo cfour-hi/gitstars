@@ -209,9 +209,9 @@ export default {
   name: 'sidebar',
   components: { draggable },
   props: {
-    starredReposLen: { type: Number, default: 0 },
-    untaggedReposLen: { type: Number, default: 0 },
-    currentTag: { type: Object, default () { return {} } },
+    starredReposLen: { required: true, type: Number },
+    untaggedReposLen: { required: true, type: Number },
+    currentTag: { required: true, type: Object },
     tagCategorys: { required: true, type: Object },
     currentTagCategory: { required: true, type: Object }
   },

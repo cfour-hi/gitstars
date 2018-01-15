@@ -64,10 +64,10 @@ export default {
   name: 'main',
   components: { LayoutHeader, SubSidebar },
   props: {
-    user: { type: Object, default () { return {} } },
-    repos: { type: Array, default () { return [] } },
-    loadStarredReposCompleted: { type: Boolean, default: false },
-    currentTag: { type: Object, default () { return {} } },
+    user: { required: true, type: Object },
+    repos: { required: true, type: Array },
+    loadStarredReposCompleted: { required: true, type: Boolean },
+    currentTag: { required: true, type: Object },
     tagCategorys: { required: true, type: Object }
   },
   data () {

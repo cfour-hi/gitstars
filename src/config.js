@@ -8,7 +8,7 @@ export default {
   filename: 'gitstars.json',
   description: `github stars manager for ${process.env.NODE_ENV}`,
   norifyPosition: 'bottom-right',
-  starredReposPerPage: 100,
+  starredReposPerPage: 100, // Github 最大值
   i18nLocaleKey: 'gitstars_i18n_local',
   defaultTags: {
     all: { id: 0, name: '全部', i18nKey: 'allRepos', icon: 'fa-bars' },

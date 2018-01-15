@@ -29,7 +29,7 @@ import config from '../config'
 export default {
   name: 'header',
   props: {
-    user: { type: Object, default () { return {} } }
+    user: { required: true, type: Object }
   },
   data () {
     const { messages, locale } = this.$i18n
