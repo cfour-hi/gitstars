@@ -9,6 +9,6 @@ const locale = window.localStorage.getItem(config.i18nLocaleKey) || 'cn'
 
 export default new VueI18n({
   locale,
-  fallbackLocale: 'base',
+  fallbackLocale: 'en',
   messages: lang
 })

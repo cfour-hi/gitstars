@@ -126,6 +126,12 @@ export default {
   background-color: #fbfbfb;
 }
 
+@media (min-width: 1500px) {
+  #subsidebar {
+    width: 409px;
+  }
+}
+
 .search-label {
   position: relative;
   display: flex;

@@ -418,6 +418,12 @@ export default {
   background-color: #28343d;
 }
 
+@media (min-width: 1500px) {
+  #sidebar {
+    flex: 0 0 290px;
+  }
+}
+
 .app-name-img {
   width: 100%;
   padding: 10px 0;

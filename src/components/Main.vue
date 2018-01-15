@@ -162,7 +162,13 @@ export default {
   left: 360px;
   right: 0;
   height: 100%;
-  min-width: 650px;
+  min-width: 700px;
+}
+
+@media (min-width: 1500px) {
+  .content {
+    left: 410px;
+  }
 }
 
 .repo-readme {

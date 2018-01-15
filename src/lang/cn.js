@@ -37,6 +37,6 @@ export default {
     completed: '@:edit.default@:tag@:ok'
   },
   tips: {
-    editTag: '双击@:tag修改@:name，拖拽@:tag排列顺序'
+    editTag: '双击@:tag修改@:name | 拖拽@:tag排列顺序'
   }
 }
