@@ -43,7 +43,7 @@
               </div>
               <div
                 v-show="!isEditTag"
-                :class="{ disabled: tagNameFormVisible }"
+                :class="{ disabled: tagNameFormVisible || dragTags.length === 0 }"
                 key="edit"
                 class="nav-caption__operate-btn"
                 @click="handleEditTags">
@@ -318,7 +318,7 @@ export default {
       this.tagName = ''
     },
     handleEditTags () {
-      if (this.tagNameFormVisible) return
+      if (this.tagNameFormVisible || this.dragTags.length === 0) return
 
       this.isEditTag = true
       dragTagsClone = JSON.parse(JSON.stringify(this.dragTags))
