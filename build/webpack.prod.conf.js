@@ -28,7 +28,8 @@ const webpackConfig = merge(baseWebpackConfig, {
   externals: {
     vue: 'Vue',
     axios: 'axios',
-    sortablejs: 'Sortable'
+    sortablejs: 'Sortable',
+    'vue-i18n': 'VueI18n'
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
