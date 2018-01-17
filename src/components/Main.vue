@@ -15,7 +15,7 @@
       <div class="content">
         <section v-show="repoReadme || isLoadingRepoReadme" class="repo-readme">
           <header class="repo-readme__header">
-            <h3 v-if="!!Object.keys(currentRepo).length" class="repo-title">
+            <h3 v-if="Object.keys(currentRepo).length" class="repo-title">
               <a :href="currentRepo.html_url" target="_blank">
                 <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
               </a>

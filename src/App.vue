@@ -249,7 +249,7 @@ export default {
       this.customTags = tags
 
       const { custom, language } = this.tagCategorys
-      this.currentTagCategory = tags.length === 0 ? language : custom
+      this.currentTagCategory = tags.length ? custom : language
 
       window.localStorage.setItem(gitstarsGistId, JSON.stringify(content))
 

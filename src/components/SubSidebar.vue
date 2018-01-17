@@ -20,7 +20,7 @@
           <header>
             <h3 class="repo-title">
               <a :href="repo.html_url" target="_blank">{{ repo.owner.login }} / {{ repo.name }}</a>
-              <a v-show="!!repo.homepage" :href="repo.homepage" target="_blank">
+              <a v-show="repo.homepage" :href="repo.homepage" target="_blank">
                 <i class="fa fa-fw fa-lg fa-home" aria-hidden="true"></i>
               </a>
             </h3>

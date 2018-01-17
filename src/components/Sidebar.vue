@@ -47,7 +47,7 @@
               </div>
               <div
                 v-show="!isEditTag"
-                :class="{ disabled: tagNameFormVisible || dragTags.length === 0 }"
+                :class="{ disabled: tagNameFormVisible || !dragTags.length }"
                 key="edit"
                 class="nav-caption__operate-btn"
                 @click="handleEditTags">
@@ -295,7 +295,7 @@ export default {
       this.$nextTick(() => this.$refs.tagFormNameInput.focus())
     },
     handleInputTagName () {
-      this.tagNameBtnState = this.tagName.trim().length > 0 ? SAVE : CANCEL
+      this.tagNameBtnState = this.tagName.trim().length ? SAVE : CANCEL
     },
     handleFocusTagName () {
       this.tagNameInputState = FOCUS
@@ -327,7 +327,7 @@ export default {
       this.tagName = ''
     },
     handleEditTags () {
-      if (this.tagNameFormVisible || this.dragTags.length === 0) return
+      if (this.tagNameFormVisible || !this.dragTags.length) return
 
       this.isEditTag = true
       dragTagsClone = JSON.parse(JSON.stringify(this.dragTags))
@@ -793,7 +793,6 @@ export default {
   margin: 0;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   text-transform: capitalize;
-  transition: all 0.3s;
 }
 
 .tag-category__item:hover {
@@ -801,6 +800,7 @@ export default {
 }
 
 .tag-category__item.active {
+  font-size: 14px;
   color: #d9d9d9;
 }
 
