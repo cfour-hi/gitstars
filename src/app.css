@@ -96,6 +96,33 @@ a:hover {
   padding: 0 10px;
 }
 
+#subsidebar-header__dropdown-menu {
+  padding: 5px 0;
+  margin-top: 0;
+}
+
+#subsidebar-header__dropdown-menu .el-dropdown-menu__item {
+  display: flex;
+  align-items: center;
+  width: 50px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 2;
+}
+
+#subsidebar-header__dropdown-menu .el-dropdown-menu__item .fa {
+  flex: 0 0 16px;
+  margin-top: 1px;
+}
+
+.subsidebar-header__dropdown-menu--text {
+  flex: auto;
+  text-align: center;
+  text-align-last: justify;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
 .enlarge-enter {
   opacity: 0.1;
   transform: scale(0.1);

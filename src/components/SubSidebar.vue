@@ -1,15 +1,26 @@
 <template>
   <nav id="subsidebar">
     <template v-if="loadStarredReposCompleted">
-      <label class="search-label">
-        <i class="fa fa-search" aria-hidden="true"></i>
-        <input
-          v-model="searchValue"
-          :placeholder="`${$t('developer')} | ${$t('repositoryName')} @${currentTag.i18nKey ? $t(currentTag.i18nKey) : currentTag.name}`"
-          type="text"
-          class="search-input"
-          @input="handleChangeSearchValue">
-      </label>
+      <header id="subsidebar-header">
+        <label class="search-label">
+          <i class="fa fa-search" aria-hidden="true"></i>
+          <input
+            v-model="searchValue"
+            :placeholder="`${$t('developer')} | ${$t('repositoryName')} @${currentTag.i18nKey ? $t(currentTag.i18nKey) : currentTag.name}`"
+            type="text"
+            class="search-input"
+            @input="handleChangeSearchValue">
+        </label>
+        <el-dropdown :show-timeout="0" :hide-timeout="0" class="sort-drapdown" @command="handleSortRepos">
+          <div class="sort-drapdown-link">排序&nbsp;<i class="el-icon-arrow-down"></i></div>
+          <el-dropdown-menu slot="dropdown" id="subsidebar-header__dropdown-menu">
+            <el-dropdown-item v-for="sort in repoSorts" :key="sort.id" :command="sort.sortKey">
+              <i :class="sort.icon" class="fa" aria-hidden="true"></i>
+              <span class="subsidebar-header__dropdown-menu--text">{{ sort.name }}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </header>
       <ul v-show="repos.length" class="repo-list">
         <li
           v-for="repo in repos"
@@ -71,6 +82,8 @@
 </template>
 
 <script>
+import config from '../config'
+
 export default {
   name: 'sub-sidebar',
   props: {
@@ -81,6 +94,7 @@ export default {
   },
   data () {
     return {
+      repoSorts: config.repoSorts,
       activeRepoId: 0,
       searchValue: ''
     }
@@ -108,6 +122,9 @@ export default {
     },
     handleCancelDeleteTag () {
       document.body.click()
+    },
+    handleSortRepos (key) {
+      this.$emit('switchRepoSort', key)
     }
   }
 }
@@ -130,16 +147,22 @@ export default {
   }
 }
 
-.search-label {
-  position: relative;
+#subsidebar-header {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex: 0 0 44px;
-  padding: 0 10px;
   border-bottom: 1px solid #e9e9e9;
   background-color: #f5f5f5;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-label {
+  position: relative;
+  display: flex;
+  flex: auto;
+  justify-content: center;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 3px;
 }
 
 .search-input {
@@ -159,6 +182,17 @@ export default {
   position: absolute;
   left: 22px;
   color: #d9d9d9;
+}
+
+.sort-drapdown {
+  flex: 0 0 50px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sort-drapdown-link {
+  line-height: 44px;
+  text-align: center;
 }
 
 .repo-list {
@@ -187,6 +221,10 @@ export default {
 .repo-item.active {
   background-color: #f7f7f7;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.repo-item:last-child {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .repo-title {

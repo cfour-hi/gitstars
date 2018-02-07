@@ -10,7 +10,9 @@
         @changeSearchValue="handleChangeSearchValue"
         @switchRepo="handleSwitchRepo"
         @switchTag="handleSwitchTag"
-        @deleteRepoTag="handleDeleteRepoTag">
+        @deleteRepoTag="handleDeleteRepoTag"
+        @switchRepoSort="handleSwitchRepoSort"
+      >
       </sub-sidebar>
       <div class="content">
         <section v-show="repoReadme || isLoadingRepoReadme" class="repo-readme">
@@ -140,6 +142,9 @@ export default {
 
       this.$emit('addRepoTag', { id: this.currentRepo.id, name: tagName })
       this.tagName = ''
+    },
+    handleSwitchRepoSort (key) {
+      this.$emit('switchRepoSort', key)
     }
   }
 }

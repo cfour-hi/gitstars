@@ -12,7 +12,8 @@
       @deleteTag="handleDeleteTag"
       @changeTagName="handleChangeTagName"
       @completeEditTags="handleCompleteEditTags"
-      @switchTagCategory="handleSwitchTagCategory">
+      @switchTagCategory="handleSwitchTagCategory"
+    >
     </layout-sidebar>
     <layout-main
       :user="user"
@@ -22,7 +23,9 @@
       :tag-categorys="tagCategorys"
       @switchTag="handleSwitchTag"
       @addRepoTag="handleAddRepoTag"
-      @deleteRepoTag="handleDeleteRepoTag">
+      @deleteRepoTag="handleDeleteRepoTag"
+      @switchRepoSort="handleSwitchRepoSort"
+    >
     </layout-main>
   </div>
 </template>
@@ -51,7 +54,8 @@ const {
   norifyPosition,
   starredReposPerPage,
   defaultTags,
-  tagCategorys
+  tagCategorys,
+  repoSorts
 } = config
 const GITSTARS_GIST_ID = 'gitstars_gist_id'
 
@@ -60,7 +64,10 @@ function loadStarredRepos (page = 1) {
     let repos = []
     do {
       repos = await getStarredRepos(page++)
-      repos.forEach(repo => (repo._tags = { custom: [], language: [] }))
+      repos.forEach((repo, index) => {
+        repo._tags = { custom: [], language: [] }
+        repo[repoSorts.time.sortKey] = repos.length - index
+      })
       this.starredRepos = [...this.starredRepos, ...repos]
     } while (repos.length === starredReposPerPage)
 
@@ -97,6 +104,10 @@ async function saveGitstarsTags ({ title, message, content }) {
   return result
 }
 
+function sortRepos (repos, key) {
+  return [...repos].sort((a, b) => b[key] - a[key])
+}
+
 export default {
   name: 'app',
   components: { LayoutSidebar, LayoutMain },
@@ -109,7 +120,8 @@ export default {
       customTags: [],
       languageTags: [],
       currentTag: {},
-      currentTagCategory: {}
+      currentTagCategory: {},
+      currentRepoSort: repoSorts.time.sortKey
     }
   },
   computed: {
@@ -126,15 +138,17 @@ export default {
       return categorys
     },
     currentTagRepos () {
-      const { id } = this.currentTag
+      const { currentRepoSort } = this
+      const { id: currentTagId } = this.currentTag
 
-      if (id === defaultTags.all.id) return this.starredRepos
-      if (id === defaultTags.untagged.id) return this.untaggedRepos
+      if (currentTagId === defaultTags.all.id) return sortRepos(this.starredRepos, currentRepoSort)
+      if (currentTagId === defaultTags.untagged.id) return sortRepos(this.untaggedRepos, currentRepoSort)
 
       const { tags } = this.currentTagCategory
-      const { repos } = tags ? tags.find(tag => tag.id === id) || {} : {}
+      const { repos } = tags ? tags.find(tag => tag.id === currentTagId) || {} : {}
+      const tagRepos = repos ? this.starredRepos.filter(repo => repos.includes(repo.id)) : currentTagReposCopy
 
-      return repos ? this.starredRepos.filter(repo => repos.includes(repo.id)) : currentTagReposCopy
+      return sortRepos(tagRepos, currentRepoSort)
     }
   },
   created () {
@@ -414,6 +428,9 @@ export default {
     handleSwitchTagCategory ({ category }) {
       currentTagReposCopy = this.currentTagRepos
       this.currentTagCategory = category
+    },
+    handleSwitchRepoSort (key) {
+      this.currentRepoSort = key
     }
   }
 }
