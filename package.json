@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "0.17.0",
+    "babel-polyfill": "6.26.0",
     "element-ui": "2.0.1",
     "font-awesome": "4.7.0",
     "github-markdown-css": "2.9.0",
@@ -19,7 +20,8 @@
     "sortablejs": "1.6.0",
     "vue": "2.5.8",
     "vue-i18n": "7.4.0",
-    "vuedraggable": "2.14.1"
+    "vuedraggable": "2.14.1",
+    "vuex": "3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

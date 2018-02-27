@@ -11,8 +11,8 @@ export default {
   starredReposPerPage: 100, // Github 最大值
   i18nLocaleKey: 'gitstars_i18n_local',
   defaultTags: {
-    all: { id: 0, name: '全部', i18nKey: 'allRepos', icon: 'fa-bars' },
-    untagged: { id: -1, name: '未标签', i18nKey: 'untaggedRepos', icon: 'fa-star-o' }
+    all: { id: 0, i18nKey: 'allRepos', icon: 'fa-bars', repos: [] },
+    untagged: { id: -1, i18nKey: 'untaggedRepos', icon: 'fa-star-o', repos: [] }
   },
   tagCategorys: {
     custom: { id: 0, name: '自定义', i18nKey: 'custom' },

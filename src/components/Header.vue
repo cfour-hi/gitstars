@@ -7,11 +7,7 @@
       </h1>
     </div>
     <el-radio-group v-model="currentLanguage" size="mini" @change="handleChangeLanguage">
-      <el-radio-button
-        v-for="language of languages"
-        :key="language"
-        :label="$t(language)">
-      </el-radio-button>
+      <el-radio-button v-for="language of languages" :key="language" :label="$t(language)"></el-radio-button>
     </el-radio-group>
     <a href="https://github.com/Monine/gitstars" target="_blank" class="octocat-link">
       <svg width="60" height="60" viewBox="0 0 250 250" aria-hidden="true" class="octocat">
@@ -28,12 +24,10 @@ import config from '../config'
 
 export default {
   name: 'header',
-  props: {
-    user: { required: true, type: Object }
-  },
   data () {
     const { messages, locale } = this.$i18n
     return {
+      user: window._gitstars.user,
       languages: Object.keys(messages),
       currentLanguage: this.$t(locale)
     }

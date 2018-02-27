@@ -1,6 +1,9 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import 'babel-polyfill'
+import './polyfill'
 import Vue from 'vue'
+import store from './store'
 import App from './App'
 import i18n from './i18n'
 import { parseURLSearch } from './util'
@@ -19,12 +22,13 @@ if (process.env.NODE_ENV === 'development') {
 const GITSTARS_ACCESS_TOKEN = 'gitstars_access_token'
 const GITSTARS_CODE = 'gitstars_code'
 const GITSTARS_USER = 'gitstars_user'
+
 const { clientId, clientSecret } = config
 
-/* eslint-disable no-new */
-new Promise(async (resolve, reject) => {
+async function accessTokenProcess () {
   const accessToken = window.localStorage.getItem(GITSTARS_ACCESS_TOKEN)
-  if (accessToken) return resolve(accessToken)
+
+  if (accessToken) return accessToken
 
   const storageCode = window.localStorage.getItem(GITSTARS_CODE)
   const { code } = parseURLSearch()
@@ -34,7 +38,7 @@ new Promise(async (resolve, reject) => {
     if (code) {
       let href = window.location.href.replace(/code=[^&]+/, '')
       if (href[href.length - 1] === '?') href = href.slice(0, -1)
-      window.history.replaceState({}, null, `${href}`)
+      window.history.replaceState({}, null, href)
     } else {
       window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
     }
@@ -44,26 +48,32 @@ new Promise(async (resolve, reject) => {
       client_id: clientId,
       client_secret: clientSecret
     })
+
     window.localStorage.setItem(GITSTARS_ACCESS_TOKEN, access_token)
 
-    resolve(access_token)
+    /* eslint-disable camelcase */
+    return access_token
   } else {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`
   }
-}).then(async accessToken => {
-  window._gitstars = { accessToken: accessToken }
-  const gitstarsUser = window.localStorage.getItem(GITSTARS_USER)
+}
 
-  /**
-   * 需要注意！
-   * getUserInfo 接口依赖 window._gitstars.accessToken
-   * 所以以下代码执行之前就需要给赋值 window._gitstars
-   */
-  window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
+accessTokenProcess()
+  .then(accessToken => {
+    const gitstarsUser = window.localStorage.getItem(GITSTARS_USER)
 
-  if (!gitstarsUser) {
-    window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
-  }
+    /**
+     * 使用 axios 调用接口时做了请求拦截（api.js）
+     * 请求拦截需要使用到 window._gitstars.accessToken
+     */
+    window._gitstars = { accessToken }
+    window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : getUserInfo()
 
-  new Vue({ i18n, el: '#app', template: '<App/>', components: { App } })
-})
+    if (!gitstarsUser) {
+      window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
+    }
+  })
+  .then(() => {
+    /* eslint-disable no-new */
+    new Vue({ store, i18n, el: '#app', template: '<App/>', components: { App } })
+  })

@@ -17,6 +17,8 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(({ data }) => {
   return data
 }, err => {
+  if (err.__CANCEL__) return Promise.reject(err)
+
   let message = err.message
   const { response = {} } = err
   const { status, statusText, data } = response
@@ -32,18 +34,13 @@ axios.interceptors.response.use(({ data }) => {
 
 const { filename, description, starredReposPerPage } = config
 
-export const getGitstarsAccessToken = function getGitstarsAccessToken (params) {
-  return axios.post('https://gh-oauth.imsun.net', params)
-  // return axios.post('https://github.com/login/oauth/access_token', { params })
-}
+export const getGitstarsAccessToken = params => axios.post('https://gh-oauth.imsun.net', params)
 
 // https://developer.github.com/v3/users/#get-the-authenticated-user
-export const getUserInfo = function getUserInfo () {
-  return axios.get(`/user`)
-}
+export const getUserInfo = () => axios.get(`/user`)
 
 // https://developer.github.com/v3/gists/#create-a-gist
-export const createGitstarsGist = function createGitstarsGist (content) {
+export const createGitstarsGist = content => {
   return axios.post('/gists', {
     description,
     public: true,
@@ -56,41 +53,36 @@ export const createGitstarsGist = function createGitstarsGist (content) {
 }
 
 // https://developer.github.com/v3/gists/#get-a-single-gist
-export const getGitstarsGist = function getGitstarsGist (id) {
-  return axios.get(`/gists/${id}`)
-}
+export const getGitstarsGist = id => axios.get(`/gists/${id}`)
 
 // https://developer.github.com/v3/gists/#list-a-users-gists
-export const getUserGists = function getUserGists () {
-  return axios.get(`/users/${window._gitstars.user.login}/gists`)
-}
+export const getUserGists = () => axios.get(`/users/${window._gitstars.user.login}/gists`)
 
 // https://developer.github.com/v3/activity/starring/#list-repositories-being-starred
-export const getStarredRepos = function getStarredRepos (page) {
+export const getStarredRepos = page => {
   const params = { page, per_page: starredReposPerPage }
   return axios.get(`/users/${window._gitstars.user.login}/starred`, { params })
 }
 
 // https://developer.github.com/v3/repos/contents/#get-the-readme
-export const getRepoReadme = function getRepoReadme (login, name) {
-  return axios.get(`/repos/${login}/${name}/readme`)
-}
+export const getRepoReadme = (login, name, source) => axios.get(`/repos/${login}/${name}/readme`, { cancelToken: source.token })
 
 // https://developer.github.com/v3/markdown/#render-a-markdown-document-in-raw-mode
-export const getRenderedReadme = function getRenderedReadme (data) {
+export const getRenderedReadme = (data, source) => {
   return axios({
     data,
     url: `/markdown/raw`,
     method: 'post',
     headers: {
       'Content-Type': 'text/plain'
-    }
+    },
+    cancelToken: source.token
   })
 }
 
 // https://developer.github.com/v3/gists/
-export const saveGitstarsGist = function saveGitstarsGist (id, content) {
-  return axios.patch(`/gists/${id}`, {
+export const saveGitstarsGist = (content) => {
+  return axios.patch(`/gists/${window._gitstars.gistId}`, {
     files: {
       [filename]: {
         content: JSON.stringify(content)
