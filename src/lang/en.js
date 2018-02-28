@@ -29,6 +29,7 @@ export default {
   update: {
     default: 'update',
     wait: 'Updating. please wait...',
+    uncompleted: 'Pre-upgrade has not been completed, please wait...',
     completed: 'Update completed',
     failed: 'Update failed'
   },

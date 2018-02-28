@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <layout-sidebar :defaultTags="defaultTags" :languageTags="languageTags"></layout-sidebar>
-    <layout-main></layout-main>
+    <LayoutSidebar :defaultTags="defaultTags" :languageTags="languageTags" />
+    <LayoutMain />
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import { mapMutations } from 'vuex'
 import LayoutSidebar from './components/Sidebar'
 import LayoutMain from './components/Main'
 import { getGitstarsGist, getStarredRepos, getUserGists, createGitstarsGist } from './api'
-import config from './config'
+import appConfig from './config'
 
 async function loadStarredRepos (page = 1) {
   let starredRepos = []
@@ -21,10 +21,10 @@ async function loadStarredRepos (page = 1) {
     repos = await getStarredRepos(page++)
     repos.forEach((repo, index) => {
       repo._customTags = []
-      repo[config.repoSorts.time.sortKey] = repos.length - index
+      repo[appConfig.repoSorts.time.sortKey] = repos.length - index
     })
     starredRepos.push(...repos)
-  } while (repos.length === config.starredReposPerPage)
+  } while (repos.length === appConfig.starredReposPerPage)
 
   return starredRepos
 }
@@ -39,7 +39,7 @@ async function loadGitstarsData () {
 
     if (!content) {
       const { files } = await getGitstarsGist(gitstarsGistId)
-      content = files[config.filename].content
+      content = files[appConfig.filename].content
     }
 
     content = JSON.parse(content)
@@ -47,9 +47,9 @@ async function loadGitstarsData () {
     const gists = await getUserGists()
 
     for (const { id, description, files } of gists) {
-      if (description === config.description) {
+      if (description === appConfig.description) {
         gitstarsGistId = id
-        content = await axios.get(files[config.filename].raw_url)
+        content = await axios.get(files[appConfig.filename].raw_url)
         break
       }
     }
@@ -69,13 +69,10 @@ async function loadGitstarsData () {
 
 export default {
   name: 'App',
-  components: {
-    LayoutSidebar,
-    LayoutMain
-  },
+  components: { LayoutSidebar, LayoutMain },
   data () {
     return {
-      defaultTags: [],
+      defaultTags: Object.values(appConfig.defaultTags),
       languageTags: []
     }
   },
@@ -83,9 +80,8 @@ export default {
     Promise.all([loadGitstarsData(), loadStarredRepos()])
       .then(([content, starredRepos]) => {
         let dateNow = Date.now()
-
         starredRepos.forEach(({ id: repoId, language }) => {
-          config.defaultTags.all.repos.push(repoId)
+          appConfig.defaultTags.all.repos.push(repoId)
 
           if (!language) return
 
@@ -93,7 +89,12 @@ export default {
           if (languageTag) {
             languageTag.repos.push(repoId)
           } else {
-            this.languageTags.push({ id: dateNow, name: language, repos: [repoId] })
+            this.languageTags.push({
+              id: dateNow,
+              categoryId: appConfig.tagCategorys.language.id,
+              name: language,
+              repos: [repoId]
+            })
             dateNow += 1
           }
         })
@@ -110,14 +111,10 @@ export default {
           tag.repos = tag.repos.filter(repo => repo)
         })
 
-        config.defaultTags.untagged.repos = starredRepos.filter(repo => !repo._customTags.length).map(repo => repo.id)
+        appConfig.defaultTags.untagged.repos = starredRepos.filter(repo => !repo._customTags.length).map(repo => repo.id)
+        this.defaultTags = Object.values(appConfig.defaultTags)
 
-        this.defaultTags = Object.values(config.defaultTags)
-
-        return {
-          starredRepos,
-          customTags: content.tags
-        }
+        return { starredRepos, customTags: content.tags }
       })
       .then(({ starredRepos, customTags }) => {
         this.initStarredRepos(starredRepos)

@@ -7,7 +7,11 @@ export default {
   clientSecret,
   filename: 'gitstars.json',
   description: `github stars manager for ${process.env.NODE_ENV}`,
-  norifyPosition: 'bottom-right',
+  notify: {
+    duration: 3000,
+    showClose: false,
+    position: 'bottom-right'
+  },
   starredReposPerPage: 100, // Github 最大值
   i18nLocaleKey: 'gitstars_i18n_local',
   defaultTags: {

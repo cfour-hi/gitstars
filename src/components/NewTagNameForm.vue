@@ -20,9 +20,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import config from '../config'
-
 const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
@@ -40,9 +37,6 @@ export default {
       btnState: CANCEL
     }
   },
-  computed: {
-    ...mapState(['customTags'])
-  },
   methods: {
     handleInputTagName () {
       this.inputState = this.name.trim().length ? SAVE : CANCEL
@@ -54,21 +48,7 @@ export default {
       this.inputState = BLUR
     },
     handleAddTag () {
-      let message = ''
-      const tagName = this.name.trim()
-
-      if (!tagName) message = this.$t('tagNameCannotEmpty')
-
-      if (this.customTags.find(({ name }) => name === tagName)) {
-        message = this.$t('tagNameAlreadyExist')
-      }
-
-      if (message) {
-        this.$notify.warning({ message, showClose: false, position: config.norifyPosition })
-        return this.$refs.nameInput.focus()
-      }
-
-      this.$emit('saveNewTag', tagName)
+      this.$store.dispatch('addCustomTag', this.name.trim())
       this.handleCancelAddTag()
     },
     handleCancelAddTag () {

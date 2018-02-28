@@ -34,17 +34,7 @@ export default {
     },
     handleConfirmDeleteTag (tag) {
       document.body.click()
-
-      const { repo } = this
-
-      this.$store.dispatch('deleteRepoTag', {
-        repoId: repo.id,
-        tagId: tag.id,
-        notify: {
-          title: `${repo.owner.login} / ${repo.name}`,
-          message: `${this.$t('deleteTag')}: ${tag.name}`
-        }
-      })
+      this.$store.dispatch('deleteRepoCustomTag', { repoId: this.repo.id, tagId: tag.id })
     }
   }
 }

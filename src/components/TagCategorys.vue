@@ -4,9 +4,9 @@
     <li
       v-for="(category, key) of categorys"
       :key="key"
-      :class="{ active: category.id === activeCategory.id }"
+      :class="{ active: category.id === activeTagCategory.id }"
       class="tag-category__item"
-      @click="$emit('onSwitchTagCategory', category)">
+      @click="$emit('onSwitchActiveTagCategory', category)">
       {{ $t(category.i18nKey) }}
     </li>
   </ul>
@@ -18,12 +18,12 @@ export default {
   props: {
     visible: { type: Boolean, default: false },
     categorys: { type: Array, required: true },
-    activeCategory: { type: Object, required: true }
+    activeTagCategory: { type: Object, required: true }
   },
   computed: {
     sliderStyle () {
       const slidebarWidth = 100 / this.categorys.length
-      const index = this.categorys.findIndex(category => category.id === this.activeCategory.id)
+      const index = this.categorys.findIndex(category => category.id === this.activeTagCategory.id)
 
       return {
         left: `${index * slidebarWidth}%`,

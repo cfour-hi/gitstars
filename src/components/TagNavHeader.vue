@@ -14,7 +14,7 @@
             v-show="isEditingTags"
             key="ok"
             class="nav-caption__operate-btn nav-caption__ok-btn"
-            @click="handleEditTagsComplete">
+            @click="handleCompleteEditTags">
             <span>{{ $t('ok').toUpperCase() }}</span>
           </div>
           <div
@@ -57,10 +57,11 @@ export default {
     },
     handleEditTags () {
       if (this.tagNameFormVisible || !this.customTags.length) return
-      this.$emit('onEditTags')
+      this.$emit('update:isEditingTags', true)
     },
-    handleEditTagsComplete () {
-
+    handleCompleteEditTags () {
+      this.$emit('update:isEditingTags', false)
+      this.$store.dispatch('updateGitstarsTag')
     }
   }
 }

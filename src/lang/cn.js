@@ -29,6 +29,7 @@ export default {
   update: {
     default: '更新',
     wait: '正在@:update.default，请稍候...',
+    uncompleted: '前置@:update.default尚未完成，请稍候...',
     completed: '@:update.default成功',
     failed: '@:update.default失败'
   },

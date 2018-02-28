@@ -28,8 +28,7 @@ export default {
   computed: {
     repos () {
       const { searchValue, sortKey } = this
-
-      return this.$store.getters.activeRepos
+      return this.$store.getters.activeTagRepos
         .filter(({ owner = {}, name = '' }) => {
           return (
             owner.login.toLowerCase().includes(searchValue) ||

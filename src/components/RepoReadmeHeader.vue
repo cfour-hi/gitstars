@@ -10,6 +10,7 @@
       v-model="tagName"
       :fetch-suggestions="handleFetchTagSuggestions"
       :placeholder="$t('addNewTag')"
+      :debounce="0"
       size="small"
       class="repo-tag-input"
       @select="handleAddRepoTag"
@@ -31,9 +32,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['activeRepo', 'customTags']),
+    ...mapState(['activeRepo']),
     currentRepoUntaggedTags () {
-      return this.customTags
+      return this.$store.state.customTags
         .filter(tag => !this.activeRepo._customTags.find(({ id }) => id === tag.id))
         .map(({ name }) => name)
     }
@@ -46,7 +47,8 @@ export default {
         .map(name => ({ value: name })))
     },
     handleAddRepoTag () {
-
+      this.$store.dispatch('addRepoCustomTag', this.tagName.trim())
+      this.tagName = ''
     }
   }
 }

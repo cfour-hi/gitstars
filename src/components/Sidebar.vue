@@ -6,42 +6,49 @@
         <img src="../assets/app-name.png" alt="app name" class="app-name-img">
       </a>
     </header>
-    <tags-nav :tags="defaultTags" class="default-tags"></tags-nav>
+    <TagsNav :tags="defaultTags" :isEditingTags="isEditingTags" class="default-tags" />
     <div class="tag-nav">
-      <tag-nav-header
+      <TagNavHeader
         :activeTagCategory="activeTagCategory"
         :tagNameFormVisible="tagNameFormVisible"
-        :isEditingTags="isEditingTags"
+        :isEditingTags.sync="isEditingTags"
         @onToggleTagNameFormVisible="handleToggleTagNameFormVisible"
-        @onEditTags="handleEditTags"
         @onEditTagsComplete="handleEditTagsComplete"
-      ></tag-nav-header>
-      <new-tag-name-form
+      />
+      <NewTagNameForm
         :visible="tagNameFormVisible"
         @onToggleTagNameFormVisible="handleToggleTagNameFormVisible"
-      ></new-tag-name-form>
+      />
       <transition name="slide-down">
         <div v-show="isEditingTags" class="edit-tag-tip">{{ $t('tips.editTag') }}</div>
       </transition>
       <div class="tag-list__group">
-        <tags-nav
-          v-show="activeTagCategory.id === tagCategorys.custom.id"
-          :tags="customTags"
-          class="custom-tags"
-        ></tags-nav>
-        <tags-nav
+        <transition name="slide-to-left">
+          <Draggable
+            v-show="activeTagCategory.id === tagCategorys.custom.id"
+            :list="customTags"
+            :options="dragOptions"
+            :class="{ edit: isEditingTags }"
+            class="draggable-tags">
+            <transition-group name="tag-list" tag="ul" class="nav-tag tag-list custom-tags">
+              <TagNav v-for="tag of customTags" :key="tag.id" :tag="tag" :isEditingTags="isEditingTags" editable />
+            </transition-group>
+          </Draggable>
+        </transition>
+        <TagsNav
           v-show="activeTagCategory.id === tagCategorys.language.id"
           :tags="languageTags"
+          :isEditingTags="isEditingTags"
           class="language-tags"
-        ></tags-nav>
+        />
       </div>
       <transition name="slide-up">
-        <tag-categorys
+        <TagCategorys
           :visible="!isEditingTags && !tagNameFormVisible"
           :categorys="Object.values(tagCategorys)"
-          :activeCategory="activeTagCategory"
-          @onSwitchTagCategory="handleSwitchTagCategory"
-        ></tag-categorys>
+          :activeTagCategory="activeTagCategory"
+          @onSwitchActiveTagCategory="handleSwitchActiveTagCategory"
+        />
       </transition>
       <footer class="sidebar-footer">
         <span>Author&nbsp;:&nbsp;</span>
@@ -52,37 +59,51 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import Draggable from 'vuedraggable'
 import TagsNav from './TagsNav'
+import TagNav from './TagNav'
 import TagNavHeader from './TagNavHeader'
 import NewTagNameForm from './NewTagNameForm'
-import tagCategorys from './TagCategorys'
-import config from '../config'
+import TagCategorys from './TagCategorys'
+import appConfig from '../config'
 
 // let customTagsClone = null
 
 export default {
   name: 'Sidebar',
-  components: {
-    TagsNav,
-    TagNavHeader,
-    NewTagNameForm,
-    tagCategorys
-  },
+  components: { Draggable, TagNav, TagsNav, TagNavHeader, NewTagNameForm, TagCategorys },
   props: {
     defaultTags: { type: Array, required: true },
     languageTags: { type: Array, required: true }
   },
   data () {
+    const { tagCategorys } = appConfig
     return {
-      tagCategorys: config.tagCategorys,
-      activeTagCategory: config.tagCategorys.custom,
+      tagCategorys,
+      activeTagCategory: tagCategorys.custom,
       tagNameFormVisible: false,
       isEditingTags: false
     }
   },
   computed: {
-    ...mapState(['customTags'])
+    customTags: {
+      get () {
+        return this.$store.state.customTags
+      },
+      set (value) {
+        this.$store.commit('initCustomTags', value)
+      }
+    },
+    // dragTags () {
+    //   return this.$store.state.customTags.map((tag, index) => Object.assign({}, tag, {
+    //     _isEdit: false,
+    //     _ref: `tagNameEditInput${tag.id}`,
+    //     _preName: ''
+    //   }))
+    // },
+    dragOptions () {
+      return { disabled: !this.isEditingTags }
+    }
   },
   methods: {
     handleToggleTagNameFormVisible () {
@@ -109,7 +130,7 @@ export default {
       // const tags = this.dragTags.map(({ id, name, repos }) => ({ id, name, repos }))
       // this.$emit('completeEditTags', tags)
     },
-    handleSwitchTagCategory (category) {
+    handleSwitchActiveTagCategory (category) {
       this.activeTagCategory = category
     }
   }
@@ -145,11 +166,30 @@ export default {
   flex: auto;
 }
 
+.edit-tag-tip {
+  height: 24px;
+  font-size: 12px;
+  line-height: 2;
+  text-align: center;
+  color: #919191;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .tag-list__group {
   overflow-y: auto;
   overflow-x: hidden;
   flex: auto;
   position: relative;
+}
+
+.nav-tag {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  padding-left: 0;
+  margin: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  list-style: none;
 }
 
 .tag-list__group .tag-list,
