@@ -52,8 +52,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex: 0 0 60px;
+  flex: 0 0 59px;
   position: relative;
+  min-width: 980px;
   padding: 0 75px 0 5px;
   border-bottom: 1px solid #e9e9e9;
 }
