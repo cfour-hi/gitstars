@@ -1,42 +1,41 @@
 <template>
   <div id="subsidebar">
-    <sub-sidebar-header
-      @onChangeSearchValue="handleChangeSearchValue"
-      @onSwitchRepoSort="handleSwitchRepoSort"
-    ></sub-sidebar-header>
-    <repo-list :repos="repos" @onSwitchActiveRepo="handleSwitchActiveRepo"></repo-list>
+    <sub-sidebar-header @onChangeSearchValue="handleChangeSearchValue" @onSwitchRepoSort="handleSwitchRepoSort"></sub-sidebar-header>
+    <ul v-show="repos.length" class="repo-list">
+      <Repo
+        v-for="repo of repos"
+        :key="repo.id"
+        :class="{ active: repo.id === activeRepo.id }"
+        :repo="repo"
+        @onSwitchActiveRepo="$emit('onSwitchActiveRepo', repo) && $store.commit('changeActiveRepo', repo)"
+      />
+    </ul>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import SubSidebarHeader from './SubSidebarHeader'
-import RepoList from './RepoList'
+import Repo from './Repo'
 import config from '../config'
 
 export default {
   name: 'SubSidebar',
-  components: {
-    SubSidebarHeader,
-    RepoList
-  },
+  components: { SubSidebarHeader, Repo },
   data () {
     return {
       searchValue: '',
-      sortKey: config.repoSorts.time.sortKey
+      sortKey: config.repoSorts.time.sortKey,
     }
   },
   computed: {
+    ...mapState(['activeRepo']),
     repos () {
       const { searchValue, sortKey } = this
       return this.$store.getters.activeTagRepos
-        .filter(({ owner = {}, name = '' }) => {
-          return (
-            owner.login.toLowerCase().includes(searchValue) ||
-            name.toLowerCase().includes(searchValue)
-          )
-        })
+        .filter(repo => repo.owner.login.toLowerCase().includes(searchValue) || repo.name.toLowerCase().includes(searchValue))
         .sort((a, b) => b[sortKey] - a[sortKey])
-    }
+    },
   },
   methods: {
     handleChangeSearchValue (value) {
@@ -45,10 +44,7 @@ export default {
     handleSwitchRepoSort (key) {
       this.sortKey = key
     },
-    handleSwitchActiveRepo (repo) {
-      this.$emit('onSwitchActiveRepo', repo)
-    }
-  }
+  },
 }
 </script>
 
@@ -67,5 +63,17 @@ export default {
   #subsidebar {
     width: 409px;
   }
+}
+
+.repo-list {
+  overflow: auto;
+  flex: auto;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.repo-list::-webkit-scrollbar-thumb {
+  background-color: #e9e9e9;
 }
 </style>
