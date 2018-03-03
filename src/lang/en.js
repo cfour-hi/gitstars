@@ -31,13 +31,13 @@ export default {
     wait: 'Updating. please wait...',
     uncompleted: 'Pre-upgrade has not been completed, please wait...',
     completed: 'Update completed',
-    failed: 'Update failed'
+    failed: 'Update failed',
   },
   edit: {
     default: 'edit',
-    completed: 'Edit tag completed'
+    completed: 'Edit tag completed',
   },
   tips: {
-    editTag: 'Double-click change name | Drag sort order'
-  }
+    editTag: 'Double-click change name | Drag sort order',
+  },
 }

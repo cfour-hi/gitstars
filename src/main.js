@@ -46,7 +46,7 @@ async function accessTokenProcess () {
     const { access_token } = await getGitstarsAccessToken({
       code: gitstarsCode,
       client_id: clientId,
-      client_secret: clientSecret
+      client_secret: clientSecret,
     })
 
     window.localStorage.setItem(GITSTARS_ACCESS_TOKEN, access_token)

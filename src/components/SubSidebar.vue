@@ -1,13 +1,13 @@
 <template>
   <div id="subsidebar">
-    <sub-sidebar-header @onChangeSearchValue="handleChangeSearchValue" @onSwitchRepoSort="handleSwitchRepoSort"></sub-sidebar-header>
+    <sub-sidebar-header @onChangeSearchValue="handleChangeSearchValue" @onSwitchRepoSort="handleSwitchRepoSort" />
     <ul v-show="repos.length" class="repo-list">
-      <Repo
+      <repo
         v-for="repo of repos"
         :key="repo.id"
         :class="{ active: repo.id === activeRepo.id }"
         :repo="repo"
-        @onSwitchActiveRepo="$emit('onSwitchActiveRepo', repo) && $store.commit('changeActiveRepo', repo)"
+        @onSwitchActiveRepo="$emit('onSwitchActiveRepo', repo)"
       />
     </ul>
   </div>

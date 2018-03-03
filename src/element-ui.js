@@ -10,7 +10,7 @@ import {
   RadioButton,
   Dropdown,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from 'element-ui'
 
 Vue.use(Tag)

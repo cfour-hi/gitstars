@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <LayoutSidebar :defaultTags="defaultTags" :languageTags="languageTags" />
-    <LayoutMain />
+    <layout-sidebar :defaultTags="defaultTags" :languageTags="languageTags" />
+    <layout-main />
   </div>
 </template>
 
@@ -73,7 +73,7 @@ export default {
   data () {
     return {
       defaultTags: Object.values(appConfig.defaultTags),
-      languageTags: []
+      languageTags: [],
     }
   },
   async mounted () {
@@ -93,7 +93,7 @@ export default {
               id: dateNow,
               categoryId: appConfig.tagCategorys.language.id,
               name: language,
-              repos: [repoId]
+              repos: [repoId],
             })
             dateNow += 1
           }
@@ -122,8 +122,8 @@ export default {
       })
   },
   methods: {
-    ...mapMutations(['initStarredRepos', 'initCustomTags'])
-  }
+    ...mapMutations(['initStarredRepos', 'initCustomTags']),
+  },
 }
 </script>
 

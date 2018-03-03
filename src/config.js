@@ -10,20 +10,20 @@ export default {
   notify: {
     duration: 3000,
     showClose: false,
-    position: 'bottom-right'
+    position: 'bottom-right',
   },
   starredReposPerPage: 100, // Github 最大值
   i18nLocaleKey: 'gitstars_i18n_local',
   defaultTags: {
     all: { id: 0, i18nKey: 'allRepos', icon: 'fa-bars', repos: [] },
-    untagged: { id: -1, i18nKey: 'untaggedRepos', icon: 'fa-star-o', repos: [] }
+    untagged: { id: -1, i18nKey: 'untaggedRepos', icon: 'fa-star-o', repos: [] },
   },
   tagCategorys: {
     custom: { id: 0, name: '自定义', i18nKey: 'custom' },
-    language: { id: 1, name: '语言', i18nKey: 'language' }
+    language: { id: 1, name: '语言', i18nKey: 'language' },
   },
   repoSorts: {
     time: { id: 0, sortKey: '_sortTime', name: '时间', i18nKey: 'time', icon: 'fa-clock-o' },
-    star: { id: 1, sortKey: 'stargazers_count', name: 'star', i18nKey: 'star', icon: 'fa-star' }
-  }
+    star: { id: 1, sortKey: 'stargazers_count', name: 'star', i18nKey: 'star', icon: 'fa-star' },
+  },
 }

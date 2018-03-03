@@ -21,7 +21,8 @@ export default new Vuex.Store({
     activeTag: appConfig.defaultTags.all,
     starredRepos: [],
     activeRepo: {},
-    isUpdatingGist: false
+    isEditingTags: false,
+    isUpdatingGist: false,
   },
   getters: {
     activeTagRepos: state => {
@@ -37,9 +38,12 @@ export default new Vuex.Store({
       }
 
       return starredRepos.filter(repo => repo._customTags.find(tag => tag.id === activeTag.id))
-    }
+    },
   },
   mutations: {
+    toggleIsEditingTags (state, bool = !state.isEditingTags) {
+      state.isEditingTags = bool
+    },
     toggleUpdating (state) {
       state.isUpdatingGist = !state.isUpdatingGist
     },
@@ -65,6 +69,10 @@ export default new Vuex.Store({
     popCustomTag (state) {
       state.customTags.pop()
     },
+    deleteCustomTag (state, tagId) {
+      const index = state.customTags.findIndex(tag => tag.id === tagId)
+      state.customTags.splice(index, 1)
+    },
     addRepoCustomTag (state, tag) {
       state.activeRepo._customTags.push(tag)
     },
@@ -88,11 +96,11 @@ export default new Vuex.Store({
     },
     deleteCustomTagRepo (state, { tag, repoIndex }) {
       tag.repos.splice(repoIndex, 1)
-    }
+    },
   },
   actions: {
     addCustomTag ({ state, commit, dispatch }, tagName) {
-      validateTagName(state.customTags, tagName)
+      return validateTagName(state.customTags, tagName)
         .then(name => {
           const tag = { id: Date.now(), name, repos: [] }
           commit('addCustomTag', tag)
@@ -100,7 +108,10 @@ export default new Vuex.Store({
           dispatch('updateGitstarsTag', { message: `${i18n.t('addTag')}: ${name}` })
             .catch(() => commit('popCustomTag'))
         })
-        .catch(({ message }) => Notification.warning(Object.assign({ message }, appConfig.notify)))
+        .catch(({ message }) => {
+          Notification.warning(Object.assign({ message }, appConfig.notify))
+          throw new Error(message)
+        })
     },
     changeCustomTagName ({ state, commit }, { tagId, name }) {
       return validateTagName(state.customTags, name)
@@ -122,7 +133,7 @@ export default new Vuex.Store({
 
           dispatch('updateGitstarsTag', {
             title: `${activeRepo.owner.login} / ${activeRepo.name}`,
-            message: `${i18n.t('addTag')}: ${name}`
+            message: `${i18n.t('addTag')}: ${name}`,
           }).catch(() => {
             commit('popRepoCustomTag')
             tag ? commit('popCustomTagRepo', tag) : commit('popCustomTag')
@@ -143,7 +154,7 @@ export default new Vuex.Store({
 
       dispatch('updateGitstarsTag', {
         title: `${repo.owner.login} / ${repo.name}`,
-        message: `${i18n.t('deleteTag')}: ${tag.name}`
+        message: `${i18n.t('deleteTag')}: ${tag.name}`,
       }).catch(() => {
         commit('insertRepoCustomTag', { repo, tag, tagIndex })
         commit('insertCustomTagRepo', { tag, repoIndex, id: repo.id })
@@ -156,7 +167,7 @@ export default new Vuex.Store({
       const loadingNotify = Notification.info(Object.assign({}, appConfig.notify, {
         iconClass: 'fa fa-cog fa-spin fa-fw',
         message: i18n.t('update.wait'),
-        duration: 0
+        duration: 0,
       }))
       const gist = { lastModified: Date.now(), tags: state.customTags }
 
@@ -172,6 +183,6 @@ export default new Vuex.Store({
           commit('toggleUpdating')
           loadingNotify.close()
         })
-    }
-  }
+    },
+  },
 })

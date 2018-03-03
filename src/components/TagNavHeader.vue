@@ -32,38 +32,48 @@
 </template>
 
 <script>
-import config from '../config'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
+
+let customTagsClone = null
 
 export default {
   name: 'TagNavHeader',
   props: {
+    customTags: { type: Array, required: true },
+    tagCategorys: { type: Object, required: true },
     activeTagCategory: { type: Object, required: true },
     tagNameFormVisible: { type: Boolean, default: false },
-    isEditingTags: { type: Boolean, default: false }
-  },
-  data () {
-    return {
-      tagCategorys: config.tagCategorys
-    }
   },
   computed: {
-    ...mapState(['customTags'])
+    ...mapState(['isEditingTags']),
   },
   methods: {
+    ...mapMutations(['toggleIsEditingTags']),
     handleAddNewTag () {
       if (this.isEditingTags || this.tagNameFormVisible) return
-      this.$emit('onToggleTagNameFormVisible')
+      this.$emit('update:tagNameFormVisible', true)
     },
     handleEditTags () {
       if (this.tagNameFormVisible || !this.customTags.length) return
-      this.$emit('update:isEditingTags', true)
+      customTagsClone = JSON.parse(JSON.stringify(this.customTags))
+      this.toggleIsEditingTags(true)
     },
     handleCompleteEditTags () {
-      this.$emit('update:isEditingTags', false)
+      this.toggleIsEditingTags(false)
+
+      let isChanged = false
+      for (const [index, { id, name }] of customTagsClone.entries()) {
+        const tag = this.customTags[index]
+        if (!tag || id !== tag.id || name !== tag.name) {
+          isChanged = true
+          break
+        }
+      }
+      if (!isChanged) return
+
       this.$store.dispatch('updateGitstarsTag')
-    }
-  }
+    },
+  },
 }
 </script>
 

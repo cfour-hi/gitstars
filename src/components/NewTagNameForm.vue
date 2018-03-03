@@ -1,5 +1,5 @@
 <template>
-  <form v-show="visible" class="tag-form" onsubmit="return false">
+  <form class="tag-form" onsubmit="return false">
     <input
       v-model="name"
       :class="inputState"
@@ -28,18 +28,23 @@ const BLUR = 'blur'
 export default {
   name: 'NewTagNameForm',
   props: {
-    visible: { type: Boolean, required: true }
+    visible: { type: Boolean, default: false },
   },
   data () {
     return {
       name: '',
       inputState: FOCUS,
-      btnState: CANCEL
+      btnState: CANCEL,
     }
+  },
+  watch: {
+    visible (newValue) {
+      if (newValue) this.$refs.nameInput.focus()
+    },
   },
   methods: {
     handleInputTagName () {
-      this.inputState = this.name.trim().length ? SAVE : CANCEL
+      this.btnState = this.name.trim().length ? SAVE : CANCEL
     },
     handleFocusTagName () {
       this.inputState = FOCUS
@@ -49,15 +54,15 @@ export default {
     },
     handleAddTag () {
       this.$store.dispatch('addCustomTag', this.name.trim())
-      this.handleCancelAddTag()
+        .then(() => this.handleCancelAddTag())
+        .catch(err => void err)
     },
     handleCancelAddTag () {
-      this.tagNameFormVisible = false
       this.btnState = CANCEL
       this.name = ''
-      this.$emit('onToggleTagNameFormVisible')
-    }
-  }
+      this.$emit('update:visible', false)
+    },
+  },
 }
 </script>
 
@@ -68,6 +73,7 @@ export default {
   height: 38px;
   font-size: 12px;
 }
+
 .tag-form__input--name {
   flex: auto;
   box-sizing: border-box;

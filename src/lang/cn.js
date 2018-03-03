@@ -31,13 +31,13 @@ export default {
     wait: '正在@:update.default，请稍候...',
     uncompleted: '前置@:update.default尚未完成，请稍候...',
     completed: '@:update.default成功',
-    failed: '@:update.default失败'
+    failed: '@:update.default失败',
   },
   edit: {
     default: '编辑',
-    completed: '@:edit.default标签@:ok'
+    completed: '@:edit.default标签@:ok',
   },
   tips: {
-    editTag: '双击标签修改名称 | 拖拽标签排列顺序'
-  }
+    editTag: '双击标签修改名称 | 拖拽标签排列顺序',
+  },
 }

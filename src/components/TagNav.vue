@@ -28,7 +28,7 @@
         <span>{{ tag.name || $t(tag.i18nKey) }}</span>
       </div>
     </template>
-    <span v-show="!isEditingTags" class="nav-item-badge">{{ tag.repos.length }}</span>
+    <span v-show="!isEditingTags || !editable" class="nav-item-badge">{{ tag.repos.length }}</span>
   </li>
 </template>
 
@@ -43,19 +43,18 @@ export default {
   name: 'TagNav',
   props: {
     tag: { type: Object, required: true },
-    isEditingTags: { type: Boolean, default: false },
-    editable: { type: Boolean, default: false }
+    editable: { type: Boolean, default: false },
   },
   data () {
     const { tag } = this
     return {
       name: tag.name,
       isEditing: false,
-      ref: `tagNameEditInput${tag.id}`
+      ref: `tagNameEditInput${tag.id}`,
     }
   },
   computed: {
-    ...mapState(['activeTag'])
+    ...mapState(['activeTag', 'isEditingTags']),
   },
   methods: {
     handleSwitchActiveTag () {
@@ -96,15 +95,16 @@ export default {
       this.name = preName
     },
     handleDeleteTag () {
-
+      document.body.click()
     },
     handleCancelDeleteTag () {
-
+      document.body.click()
     },
     handleConfirmDeleteTag () {
-
-    }
-  }
+      document.body.click()
+      this.$store.commit('deleteCustomTag', this.tag.id)
+    },
+  },
 }
 </script>
 
@@ -169,5 +169,15 @@ export default {
   border-radius: 1em;
   text-align: center;
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.fa-times-circle {
+  font-size: 16px;
+  transition: all 0.1s;
+  cursor: pointer;
+}
+
+.fa-times-circle:hover {
+  transform: scale(1.5);
 }
 </style>

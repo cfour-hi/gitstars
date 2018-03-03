@@ -4,13 +4,13 @@
       <a :href="activeRepo.html_url" target="_blank">
         <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
       </a>
-      {{ activeRepo.owner.login }} / {{ activeRepo.name }}
+      <span>{{ activeRepo.owner.login }} / {{ activeRepo.name }}</span>
     </h3>
     <el-autocomplete
       v-model="tagName"
       :fetch-suggestions="handleFetchTagSuggestions"
       :placeholder="$t('addNewTag')"
-      :debounce="0"
+      :debounce="30"
       size="small"
       class="repo-tag-input"
       @select="handleAddRepoTag"
@@ -28,7 +28,7 @@ export default {
   name: 'RepoReadmeHeader',
   data () {
     return {
-      tagName: ''
+      tagName: '',
     }
   },
   computed: {
@@ -37,7 +37,7 @@ export default {
       return this.$store.state.customTags
         .filter(tag => !this.activeRepo._customTags.find(({ id }) => id === tag.id))
         .map(({ name }) => name)
-    }
+    },
   },
   methods: {
     handleFetchTagSuggestions (inputStr, cb) {
@@ -49,8 +49,8 @@ export default {
     handleAddRepoTag () {
       this.$store.dispatch('addRepoCustomTag', this.tagName.trim())
       this.tagName = ''
-    }
-  }
+    },
+  },
 }
 </script>
 

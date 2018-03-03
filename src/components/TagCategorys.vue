@@ -1,12 +1,12 @@
 <template>
-  <ul v-show="visible" class="tag-category">
+  <ul class="tag-category">
     <li :style="sliderStyle" class="tag-category__slider"></li>
     <li
       v-for="(category, key) of categorys"
       :key="key"
       :class="{ active: category.id === activeTagCategory.id }"
       class="tag-category__item"
-      @click="$emit('onSwitchActiveTagCategory', category)">
+      @click="$emit('update:activeTagCategory', category)">
       {{ $t(category.i18nKey) }}
     </li>
   </ul>
@@ -16,9 +16,8 @@
 export default {
   name: 'TagCategorys',
   props: {
-    visible: { type: Boolean, default: false },
     categorys: { type: Array, required: true },
-    activeTagCategory: { type: Object, required: true }
+    activeTagCategory: { type: Object, required: true },
   },
   computed: {
     sliderStyle () {
@@ -27,10 +26,10 @@ export default {
 
       return {
         left: `${index * slidebarWidth}%`,
-        width: `${slidebarWidth}%`
+        width: `${slidebarWidth}%`,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

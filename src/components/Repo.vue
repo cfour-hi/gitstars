@@ -10,7 +10,7 @@
     </header>
     <p class="repo-desc">{{ repo.description }}</p>
     <ul class="tag-list">
-      <RepoTag v-for="tag of repo._customTags" :key="tag.id" :repo="repo" :tag="tag" />
+      <repo-tag v-for="tag of repo._customTags" :key="tag.id" :repo="repo" :tag="tag" />
     </ul>
     <footer class="repo-footer">
       <span class="repo-star"><i class="fa fa-star" aria-hidden="true"></i>{{ repo.stargazers_count }}</span>

@@ -29,7 +29,7 @@ export default {
     return {
       user: window._gitstars.user,
       languages: Object.keys(messages),
-      currentLanguage: this.$t(locale)
+      currentLanguage: this.$t(locale),
     }
   },
   methods: {
@@ -42,8 +42,8 @@ export default {
           return
         }
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

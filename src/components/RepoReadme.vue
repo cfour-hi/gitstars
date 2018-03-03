@@ -22,17 +22,15 @@ import RepoReadmeHeader from './RepoReadmeHeader'
 
 export default {
   name: 'RepoReadme',
-  components: {
-    RepoReadmeHeader
-  },
+  components: { RepoReadmeHeader },
   props: {
-    readme: { type: String, default: '' }
+    readme: { type: String, default: '' },
   },
   computed: {
     isSelectedRepo () {
       return !!Object.keys(this.$store.state.activeRepo).length
-    }
-  }
+    },
+  },
 }
 </script>
 

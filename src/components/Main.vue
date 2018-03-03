@@ -1,9 +1,9 @@
 <template>
   <div id="main">
-    <layoutHeader></layoutHeader>
+    <layout-header />
     <div class="main-body">
-      <sub-sidebar @onSwitchActiveRepo="handleSwitchActiveRepo"></sub-sidebar>
-      <repo-readme :readme="repoReadme"></repo-readme>
+      <sub-sidebar @onSwitchActiveRepo="handleSwitchActiveRepo" />
+      <repo-readme :readme="repoReadme" />
     </div>
   </div>
 </template>
@@ -20,14 +20,10 @@ let renderedReadmeSource = axios.CancelToken.source()
 
 export default {
   name: 'Main',
-  components: {
-    LayoutHeader,
-    SubSidebar,
-    RepoReadme
-  },
+  components: { LayoutHeader, SubSidebar, RepoReadme },
   data () {
     return {
-      repoReadme: ''
+      repoReadme: '',
     }
   },
   methods: {
@@ -38,14 +34,15 @@ export default {
       renderedReadmeSource = axios.CancelToken.source()
 
       this.repoReadme = ''
+      this.$store.commit('changeActiveRepo', repo)
 
       try {
         const { content } = await getRepoReadme(repo.owner.login, repo.name, repoReadmeSource)
         // 包含中文内容的 base64 解码
         this.repoReadme = await getRenderedReadme(decodeURIComponent(escape(atob(content))), renderedReadmeSource)
       } catch (err) { }
-    }
-  }
+    },
+  },
 }
 </script>
 

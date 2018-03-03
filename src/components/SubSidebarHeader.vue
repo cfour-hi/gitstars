@@ -23,24 +23,24 @@
 
 <script>
 import { mapState } from 'vuex'
-import config from '../config'
+import appConfig from '../config'
 
 export default {
   name: 'SubSidebarHeader',
   data () {
     return {
       searchValue: '',
-      repoSorts: config.repoSorts
+      repoSorts: appConfig.repoSorts,
     }
   },
   computed: {
-    ...mapState(['activeTag'])
+    ...mapState(['activeTag']),
   },
   methods: {
     handleSortRepos (key) {
       this.$emit('onSwitchRepoSort', key)
-    }
-  }
+    },
+  },
 }
 </script>
 

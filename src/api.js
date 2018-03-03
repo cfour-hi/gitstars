@@ -27,7 +27,7 @@ axios.interceptors.response.use(({ data }) => {
   Notification.error({
     message,
     title: `${status} ${statusText}`,
-    showClose: false
+    showClose: false,
   })
   return Promise.reject(err)
 })
@@ -46,9 +46,9 @@ export const createGitstarsGist = content => {
     public: true,
     files: {
       [filename]: {
-        content: JSON.stringify(content)
-      }
-    }
+        content: JSON.stringify(content),
+      },
+    },
   })
 }
 
@@ -74,9 +74,9 @@ export const getRenderedReadme = (data, source) => {
     url: `/markdown/raw`,
     method: 'post',
     headers: {
-      'Content-Type': 'text/plain'
+      'Content-Type': 'text/plain',
     },
-    cancelToken: source.token
+    cancelToken: source.token,
   })
 }
 
@@ -85,8 +85,8 @@ export const saveGitstarsGist = (content) => {
   return axios.patch(`/gists/${window._gitstars.gistId}`, {
     files: {
       [filename]: {
-        content: JSON.stringify(content)
-      }
-    }
+        content: JSON.stringify(content),
+      },
+    },
   })
 }
