@@ -20,13 +20,14 @@
 </template>
 
 <script>
+
 const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
 const BLUR = 'blur'
 
 export default {
-  name: 'NewTagNameForm',
+  name: 'new-tag-name-form',
   props: {
     visible: { type: Boolean, default: false },
   },
@@ -53,7 +54,7 @@ export default {
       this.inputState = BLUR
     },
     handleAddTag () {
-      this.$store.dispatch('addCustomTag', this.name.trim())
+      this.$store.dispatch('tag/addTag', this.name.trim())
         .then(() => this.handleCancelAddTag())
         .catch(err => void err)
     },

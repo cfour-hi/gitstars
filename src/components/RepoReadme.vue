@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <section class="repo-readme">
-      <repo-readme-header v-show="isSelectedRepo"></repo-readme-header>
+      <repo-readme-header v-show="isSelectedRepo" :visible="isSelectedRepo" :activeRepo="activeRepo"></repo-readme-header>
       <article v-show="readme" v-html="readme" class="markdown-body"></article>
     </section>
     <section v-show="!readme" class="waiting vc-p">
@@ -18,17 +18,16 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import RepoReadmeHeader from './RepoReadmeHeader'
 
 export default {
-  name: 'RepoReadme',
+  name: 'repo-readme',
   components: { RepoReadmeHeader },
-  props: {
-    readme: { type: String, default: '' },
-  },
   computed: {
+    ...mapState('repo', { readme: 'readme', activeRepo: 'active' }),
     isSelectedRepo () {
-      return !!Object.keys(this.$store.state.activeRepo).length
+      return !!Object.keys(this.activeRepo).length
     },
   },
 }

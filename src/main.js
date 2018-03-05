@@ -8,7 +8,7 @@ import App from './App'
 import i18n from './i18n'
 import { parseURLSearch } from './util'
 import { getGitstarsAccessToken, getUserInfo } from './api'
-import config from './config'
+import appConfig from './config'
 import './element-ui'
 
 Vue.config.productionTip = false
@@ -19,40 +19,34 @@ if (process.env.NODE_ENV === 'development') {
   require('github-markdown-css')
 }
 
-const GITSTARS_ACCESS_TOKEN = 'gitstars_access_token'
-const GITSTARS_CODE = 'gitstars_code'
-const GITSTARS_USER = 'gitstars_user'
-
-const { clientId, clientSecret } = config
+const { clientId, clientSecret, localStorageKeys } = appConfig
 
 async function accessTokenProcess () {
-  const accessToken = window.localStorage.getItem(GITSTARS_ACCESS_TOKEN)
+  const accessToken = window.localStorage.getItem(localStorageKeys.accessToken)
 
   if (accessToken) return accessToken
 
-  const storageCode = window.localStorage.getItem(GITSTARS_CODE)
+  const storageCode = window.localStorage.getItem(localStorageKeys.code)
   const { code } = parseURLSearch()
   const gitstarsCode = storageCode || code
 
   if (gitstarsCode) {
+    window.localStorage.setItem(localStorageKeys.code, gitstarsCode)
+
     if (code) {
       let href = window.location.href.replace(/code=[^&]+/, '')
       if (href[href.length - 1] === '?') href = href.slice(0, -1)
       window.history.replaceState({}, null, href)
-    } else {
-      window.localStorage.setItem(GITSTARS_CODE, gitstarsCode)
     }
 
-    const { access_token } = await getGitstarsAccessToken({
+    const { access_token: accessToken } = await getGitstarsAccessToken({
       code: gitstarsCode,
       client_id: clientId,
       client_secret: clientSecret,
     })
+    window.localStorage.setItem(localStorageKeys.accessToken, accessToken)
 
-    window.localStorage.setItem(GITSTARS_ACCESS_TOKEN, access_token)
-
-    /* eslint-disable camelcase */
-    return access_token
+    return accessToken
   } else {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`
   }
@@ -60,7 +54,7 @@ async function accessTokenProcess () {
 
 accessTokenProcess()
   .then(accessToken => {
-    const gitstarsUser = window.localStorage.getItem(GITSTARS_USER)
+    const gitstarsUser = window.localStorage.getItem(localStorageKeys.user)
 
     /**
      * 使用 axios 调用接口时做了请求拦截（api.js）
@@ -69,9 +63,7 @@ accessTokenProcess()
     window._gitstars = { accessToken }
     window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : getUserInfo()
 
-    if (!gitstarsUser) {
-      window.localStorage.setItem(GITSTARS_USER, JSON.stringify(window._gitstars.user))
-    }
+    if (!gitstarsUser) window.localStorage.setItem(localStorageKeys.user, JSON.stringify(window._gitstars.user))
   })
   .then(() => {
     /* eslint-disable no-new */

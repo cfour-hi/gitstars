@@ -1,7 +1,7 @@
 <template>
   <header class="repo-readme__header">
-    <h3 v-if="Object.keys(activeRepo).length" class="repo-title">
-      <a :href="activeRepo.html_url" target="_blank">
+    <h3 v-if="visible" class="repo-title">
+      <a :href="activeRepo.html_url" target="_blank" rel="noopener noreferrer">
         <i class="fa fa-fw fa-lg fa-github" aria-hidden="true"></i>
       </a>
       <span>{{ activeRepo.owner.login }} / {{ activeRepo.name }}</span>
@@ -22,19 +22,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
-  name: 'RepoReadmeHeader',
+  name: 'repo-readme-header',
+  props: {
+    visible: { type: Boolean, default: false },
+    activeRepo: { type: Object, required: true },
+  },
   data () {
     return {
       tagName: '',
     }
   },
   computed: {
-    ...mapState(['activeRepo']),
     currentRepoUntaggedTags () {
-      return this.$store.state.customTags
+      return this.$store.state.tag.tags
         .filter(tag => !this.activeRepo._customTags.find(({ id }) => id === tag.id))
         .map(({ name }) => name)
     },
@@ -47,7 +48,7 @@ export default {
         .map(name => ({ value: name })))
     },
     handleAddRepoTag () {
-      this.$store.dispatch('addRepoCustomTag', this.tagName.trim())
+      this.$store.dispatch('repo/addRepoTag', this.tagName.trim())
       this.tagName = ''
     },
   },

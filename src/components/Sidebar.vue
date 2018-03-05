@@ -6,47 +6,29 @@
         <img src="../assets/app-name.png" alt="app name" class="app-name-img">
       </a>
     </header>
-    <tags-nav :tags="defaultTags" class="default-tags" />
+    <tags-nav :tags="defaultTags" class="default-tags"></tags-nav>
     <div class="tag-nav">
-      <tag-nav-header
-        :customTags="customTags"
-        :tagCategorys="tagCategorys"
-        :activeTagCategory="activeTagCategory"
-        :tagNameFormVisible.sync="tagNameFormVisible"
-      />
+      <tag-nav-header :isCustomCategoryActive="isCustomCategoryActive" :tagNameFormVisible.sync="tagNameFormVisible"></tag-nav-header>
       <transition name="slide-down">
-        <new-tag-name-form v-show="tagNameFormVisible" :visible.sync="tagNameFormVisible" />
+        <new-tag-name-form v-show="tagNameFormVisible" :visible.sync="tagNameFormVisible"></new-tag-name-form>
       </transition>
       <transition name="slide-down">
         <div v-show="isEditingTags" class="edit-tag-tip">{{ $t('tips.editTag') }}</div>
       </transition>
       <div class="tag-list__group">
         <transition name="slide-to-left">
-          <draggable
-            v-show="activeTagCategory.id === tagCategorys.custom.id"
-            :list="customTags"
-            :options="dragOptions"
-            :class="{ edit: isEditingTags }"
-            class="custom-tags">
-            <transition-group name="tag-list" tag="ul" class="nav-tags">
-              <TagNav v-for="tag of customTags" :key="tag.id" :tag="tag" editable />
-            </transition-group>
-          </draggable>
+          <custom-tags-nav v-show="isCustomCategoryActive"></custom-tags-nav>
         </transition>
         <transition name="slide-to-right">
-          <tags-nav
-            v-show="activeTagCategory.id === tagCategorys.language.id"
-            :tags="languageTags"
-            class="language-tags"
-          />
+          <tags-nav v-show="activeTagCategory.id === tagCategorys.language.id" :tags="languageTags" class="language-tags"></tags-nav>
         </transition>
       </div>
       <transition name="slide-up">
         <tag-categorys
           v-show="!isEditingTags && !tagNameFormVisible"
           :categorys="Object.values(tagCategorys)"
-          :activeTagCategory.sync="activeTagCategory"
-        />
+          :activeTagCategory.sync="activeTagCategory">
+        </tag-categorys>
       </transition>
       <footer class="sidebar-footer">
         <span>Author&nbsp;:&nbsp;</span>
@@ -58,17 +40,16 @@
 
 <script>
 import { mapState } from 'vuex'
-import Draggable from 'vuedraggable'
 import TagsNav from './TagsNav'
-import TagNav from './TagNav'
 import TagNavHeader from './TagNavHeader'
 import NewTagNameForm from './NewTagNameForm'
+import CustomTagsNav from './CustomTagsNav'
 import TagCategorys from './TagCategorys'
 import appConfig from '../config'
 
 export default {
-  name: 'Sidebar',
-  components: { Draggable, TagNav, TagsNav, TagNavHeader, NewTagNameForm, TagCategorys },
+  name: 'sidebar',
+  components: { TagsNav, TagNavHeader, NewTagNameForm, CustomTagsNav, TagCategorys },
   props: {
     defaultTags: { type: Array, required: true },
     languageTags: { type: Array, required: true },
@@ -77,22 +58,14 @@ export default {
     const { tagCategorys } = appConfig
     return {
       tagCategorys,
-      activeTagCategory: tagCategorys.custom,
+      activeTagCategory: appConfig.tagCategorys.custom,
       tagNameFormVisible: false,
     }
   },
   computed: {
     ...mapState(['isEditingTags']),
-    customTags: {
-      get () {
-        return this.$store.state.customTags
-      },
-      set (value) {
-        this.$store.commit('initCustomTags', value)
-      },
-    },
-    dragOptions () {
-      return { disabled: !this.isEditingTags }
+    isCustomCategoryActive () {
+      return this.activeTagCategory === this.tagCategorys.custom
     },
   },
 }
@@ -149,12 +122,6 @@ export default {
   overflow-x: hidden;
   flex: auto;
   position: relative;
-}
-
-.nav-tags {
-  padding-left: 0;
-  margin: 0;
-  list-style: none;
 }
 
 .language-tags,

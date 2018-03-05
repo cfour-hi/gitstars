@@ -1,15 +1,15 @@
 <template>
   <header id="header">
     <div class="user-info">
-      <a :href="user.html_url" target="_blank"><img :src="user.avatar_url" class="user-avatar"></a>
+      <a :href="user.html_url" target="_blank" rel="noopener noreferrer"><img :src="user.avatar_url" class="user-avatar"></a>
       <h1 class="user-name">
-        <a :href="`${user.html_url}?tab=repositories`" target="_blank">{{ user.name }}’s Starred Repositories</a>
+        <a :href="`${user.html_url}?tab=repositories`" target="_blank" rel="noopener noreferrer">{{ user.name }}’s Starred Repositories</a>
       </h1>
     </div>
     <el-radio-group v-model="currentLanguage" size="mini" @change="handleChangeLanguage">
       <el-radio-button v-for="language of languages" :key="language" :label="$t(language)"></el-radio-button>
     </el-radio-group>
-    <a href="https://github.com/Monine/gitstars" target="_blank" class="octocat-link">
+    <a href="https://github.com/Monine/gitstars" target="_blank" class="octocat-link" rel="noopener noreferrer">
       <svg width="60" height="60" viewBox="0 0 250 250" aria-hidden="true" class="octocat">
         <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
         <path class="octocat-arm" d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor"></path>

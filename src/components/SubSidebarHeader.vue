@@ -3,11 +3,11 @@
     <label class="search-label">
       <i class="fa fa-search" aria-hidden="true"></i>
       <input
-        v-model="searchValue"
+        :value="searchValue"
         :placeholder="`${$t('developer')} | ${$t('repositoryName')} @${activeTag.i18nKey ? $t(activeTag.i18nKey) : activeTag.name}`"
         type="text"
         class="search-input"
-        @input="$emit('onChangeSearchValue', searchValue)">
+        @input="handleInputSearchValue" />
     </label>
     <el-dropdown :show-timeout="0" :hide-timeout="0" class="sort-drapdown" @command="handleSortRepos">
       <div class="sort-drapdown-link">排序&nbsp;<i class="el-icon-arrow-down"></i></div>
@@ -26,17 +26,22 @@ import { mapState } from 'vuex'
 import appConfig from '../config'
 
 export default {
-  name: 'SubSidebarHeader',
+  name: 'sub-sidebar-header',
+  props: {
+    searchValue: { type: String, default: '' },
+  },
   data () {
     return {
-      searchValue: '',
       repoSorts: appConfig.repoSorts,
     }
   },
   computed: {
-    ...mapState(['activeTag']),
+    ...mapState('tag', { activeTag: 'active' }),
   },
   methods: {
+    handleInputSearchValue (event) {
+      this.$emit('update:searchValue', event.target.value.toLowerCase())
+    },
     handleSortRepos (key) {
       this.$emit('onSwitchRepoSort', key)
     },

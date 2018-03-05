@@ -5,7 +5,7 @@
       <span>{{ $t('tags').toUpperCase() }}</span>
     </h3>
     <transition name="slide-to-left">
-      <div v-show="activeTagCategory.id === tagCategorys.custom.id" class="nav-caption__operate">
+      <div v-show="isCustomCategoryActive" class="nav-caption__operate">
         <div :class="{ disabled: isEditingTags || tagNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewTag">
           <span><i class="fa fa-plus-square" aria-hidden="true"></i>{{ $t('add') }}</span>
         </div>
@@ -32,23 +32,21 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 
 let customTagsClone = null
 
 export default {
-  name: 'TagNavHeader',
+  name: 'tag-nav-header',
   props: {
-    customTags: { type: Array, required: true },
-    tagCategorys: { type: Object, required: true },
-    activeTagCategory: { type: Object, required: true },
+    isCustomCategoryActive: { type: Boolean, default: false },
     tagNameFormVisible: { type: Boolean, default: false },
   },
   computed: {
     ...mapState(['isEditingTags']),
+    ...mapState('tag', { customTags: 'tags' }),
   },
   methods: {
-    ...mapMutations(['toggleIsEditingTags']),
     handleAddNewTag () {
       if (this.isEditingTags || this.tagNameFormVisible) return
       this.$emit('update:tagNameFormVisible', true)
@@ -56,10 +54,10 @@ export default {
     handleEditTags () {
       if (this.tagNameFormVisible || !this.customTags.length) return
       customTagsClone = JSON.parse(JSON.stringify(this.customTags))
-      this.toggleIsEditingTags(true)
+      this.$store.commit('toggleIsEditingTags', true)
     },
     handleCompleteEditTags () {
-      this.toggleIsEditingTags(false)
+      this.$store.commit('toggleIsEditingTags', false)
 
       let isChanged = false
       for (const [index, { id, name }] of customTagsClone.entries()) {
@@ -71,7 +69,8 @@ export default {
       }
       if (!isChanged) return
 
-      this.$store.dispatch('updateGitstarsTag')
+      this.$store.dispatch('updateGitstarsData')
+        .catch(() => this.$store.commit('tag/initTags', customTagsClone))
     },
   },
 }

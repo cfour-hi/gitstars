@@ -82,6 +82,7 @@ export const getRenderedReadme = (data, source) => {
 
 // https://developer.github.com/v3/gists/
 export const saveGitstarsGist = (content) => {
+  // return axios.patch(`/gists/${window._gitstars.gistId + 'a'}`, {
   return axios.patch(`/gists/${window._gitstars.gistId}`, {
     files: {
       [filename]: {

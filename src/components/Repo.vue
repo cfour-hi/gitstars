@@ -1,5 +1,5 @@
 <template>
-  <li class="repo-item" @click="$emit('onSwitchActiveRepo')">
+  <li class="repo-item" @click="handleSwitchActiveRepo">
     <header>
       <h3 class="repo-title">
         <a :href="repo.html_url" target="_blank" rel="noopener noreferrer">{{ repo.owner.login }} / {{ repo.name }}</a>
@@ -24,10 +24,15 @@
 import RepoTag from './RepoTag'
 
 export default {
-  name: 'Repo',
+  name: 'repo',
   components: { RepoTag },
   props: {
     repo: { type: Object, required: true },
+  },
+  methods: {
+    handleSwitchActiveRepo () {
+      this.$store.dispatch('repo/switchActive', this.repo)
+    },
   },
 }
 </script>

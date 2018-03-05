@@ -1,14 +1,8 @@
 <template>
   <div id="subsidebar">
-    <sub-sidebar-header @onChangeSearchValue="handleChangeSearchValue" @onSwitchRepoSort="handleSwitchRepoSort" />
+    <sub-sidebar-header :searchValue.sync="searchValue" @onSwitchRepoSort="handleSwitchRepoSort"></sub-sidebar-header>
     <ul v-show="repos.length" class="repo-list">
-      <repo
-        v-for="repo of repos"
-        :key="repo.id"
-        :class="{ active: repo.id === activeRepo.id }"
-        :repo="repo"
-        @onSwitchActiveRepo="$emit('onSwitchActiveRepo', repo)"
-      />
+      <repo v-for="repo of repos" :key="repo.id" :repo="repo" :class="{ active: repo.id === activeRepo.id }"></repo>
     </ul>
   </div>
 </template>
@@ -20,7 +14,7 @@ import Repo from './Repo'
 import config from '../config'
 
 export default {
-  name: 'SubSidebar',
+  name: 'sub-sidebar',
   components: { SubSidebarHeader, Repo },
   data () {
     return {
@@ -29,18 +23,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['activeRepo']),
+    ...mapState('repo', { activeRepo: 'active' }),
     repos () {
       const { searchValue, sortKey } = this
-      return this.$store.getters.activeTagRepos
+      return this.$store.getters['repo/reposOfTag']
         .filter(repo => repo.owner.login.toLowerCase().includes(searchValue) || repo.name.toLowerCase().includes(searchValue))
         .sort((a, b) => b[sortKey] - a[sortKey])
     },
   },
   methods: {
-    handleChangeSearchValue (value) {
-      this.searchValue = value
-    },
     handleSwitchRepoSort (key) {
       this.sortKey = key
     },

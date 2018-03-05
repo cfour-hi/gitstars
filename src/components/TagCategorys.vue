@@ -6,7 +6,7 @@
       :key="key"
       :class="{ active: category.id === activeTagCategory.id }"
       class="tag-category__item"
-      @click="$emit('update:activeTagCategory', category)">
+      @click="handleSwitchCategory(category)">
       {{ $t(category.i18nKey) }}
     </li>
   </ul>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: 'TagCategorys',
+  name: 'tag-categorys',
   props: {
     categorys: { type: Array, required: true },
     activeTagCategory: { type: Object, required: true },
@@ -28,6 +28,11 @@ export default {
         left: `${index * slidebarWidth}%`,
         width: `${slidebarWidth}%`,
       }
+    },
+  },
+  methods: {
+    handleSwitchCategory (category) {
+      this.$emit('update:activeTagCategory', category)
     },
   },
 }

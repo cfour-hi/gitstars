@@ -5,6 +5,12 @@ const clientSecret = isProduction ? '6fa564cbd46f6bdfa1fb81ddce5503dcbe4ab4c4' :
 export default {
   clientId,
   clientSecret,
+  localStorageKeys: {
+    gistId: 'gitstars_gist_id',
+    accessToken: 'gitstars_access_token',
+    code: 'gitstars_code',
+    user: 'gitstars_user',
+  },
   filename: 'gitstars.json',
   description: `github stars manager for ${process.env.NODE_ENV}`,
   notify: {
