@@ -38,7 +38,7 @@
 
 .el-autocomplete-suggestion.el-popper .popper__arrow {
   left: 50% !important;
-  margin-left: -3px;
+  margin-left: -6px;
 }
 
 .el-autocomplete-suggestion li {

@@ -29,3 +29,15 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.fa-times-circle {
+  font-size: 16px;
+  transition: all 0.1s;
+  cursor: pointer;
+}
+
+.fa-times-circle:hover {
+  transform: scale(1.5);
+}
+</style>

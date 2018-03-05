@@ -98,14 +98,9 @@ export default {
   flex: 0 0 140px;
 }
 
-.nav-caption__group--edit-ok {
-  display: flex;
-  flex: auto;
-}
-
 .nav-caption__operate-btn {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   flex: 0 0 49px;
   padding: 0 10px;
@@ -115,10 +110,6 @@ export default {
   user-select: none;
 }
 
-.nav-caption__operate-btn .fa {
-  margin-right: 3px;
-}
-
 .nav-caption__operate-btn.disabled {
   color: #919191;
   cursor: default;
@@ -126,6 +117,15 @@ export default {
 
 .nav-caption__operate-btn.disabled:hover {
   background-color: transparent;
+}
+
+.nav-caption__operate-btn .fa {
+  margin-right: 5px;
+}
+
+.nav-caption__group--edit-ok {
+  display: flex;
+  flex: auto;
 }
 
 .nav-caption__ok-btn {

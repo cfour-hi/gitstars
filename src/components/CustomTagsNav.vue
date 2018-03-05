@@ -1,6 +1,6 @@
 <template>
   <draggable :list="customTags" :options="dragOptions" class="custom-tags">
-    <transition-group name="tag-list" tag="ul" class="nav-tags">
+    <transition-group name="tag-nav" tag="ul" class="tags-nav">
       <tag-nav-wrap v-for="tag of customTags" :key="tag.id" :tag="tag" is-custom-tag>
         <custom-tag-label :tag="tag" :isEditingTags="isEditingTags"></custom-tag-label>
         <custom-tag-delete-btn :visible="isEditingTags" :tag="tag"></custom-tag-delete-btn>

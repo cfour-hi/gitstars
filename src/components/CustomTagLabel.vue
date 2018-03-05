@@ -70,3 +70,15 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.nav-item__input--name {
+  box-shadow: border-box;
+  width: 100%;
+  border: none;
+  line-height: 1.5;
+  color: #fff;
+  background-color: transparent;
+  outline: none;
+}
+</style>

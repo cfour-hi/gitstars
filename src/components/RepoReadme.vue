@@ -82,3 +82,10 @@ export default {
   height: 28px;
 }
 </style>
+
+<style>
+.markdown-body a:hover {
+  color: #0366d6;
+  text-decoration: none;
+}
+</style>

@@ -7,7 +7,7 @@
       </a>
     </header>
     <tags-nav :tags="defaultTags" class="default-tags"></tags-nav>
-    <div class="tag-nav">
+    <div class="sidebar-main">
       <tag-nav-header :isCustomCategoryActive="isCustomCategoryActive" :tagNameFormVisible.sync="tagNameFormVisible"></tag-nav-header>
       <transition name="slide-down">
         <new-tag-name-form v-show="tagNameFormVisible" :visible.sync="tagNameFormVisible"></new-tag-name-form>
@@ -32,7 +32,7 @@
       </transition>
       <footer class="sidebar-footer">
         <span>Author&nbsp;:&nbsp;</span>
-        <h1 class="author"><a href="https://github.com/Monine" target="_blank" class="author-name">Monine</a></h1>
+        <h1 class="author"><a href="https://github.com/Monine" target="_blank" class="author-name" rel="noopener noreferrer">Monine</a></h1>
       </footer>
     </div>
   </div>
@@ -100,7 +100,7 @@ export default {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.tag-nav {
+.sidebar-main {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -133,16 +133,6 @@ export default {
   height: 100%;
 }
 
-.tag-list-enter,
-.tag-list-leave-active {
-  transform: translateX(-100%);
-}
-
-.tag-list-enter-active,
-.tag-list-leave-active {
-  transition: all 0.3s;
-}
-
 .sidebar-footer {
   z-index: 1;
   display: flex;
@@ -163,5 +153,13 @@ export default {
 
 .author-name {
   color: inherit;
+}
+</style>
+
+<style>
+#sidebar .tags-nav {
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
 }
 </style>

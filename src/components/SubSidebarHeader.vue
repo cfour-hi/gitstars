@@ -98,3 +98,10 @@ export default {
   text-align: center;
 }
 </style>
+
+<style scoped>
+#subsidebar-header__dropdown-menu {
+  padding: 5px 0;
+  margin-top: 0;
+}
+</style>

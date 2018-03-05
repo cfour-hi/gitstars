@@ -20,7 +20,6 @@
 </template>
 
 <script>
-
 const SAVE = 'save'
 const CANCEL = 'cancel'
 const FOCUS = 'focus'
