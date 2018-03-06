@@ -27,12 +27,8 @@ export default {
       languageTags: [],
     }
   },
-  async mounted () {
-    this.$store.dispatch('initGitstars')
-      .then(({ defaultTags, languageTags }) => {
-        this.defaultTags = defaultTags
-        this.languageTags = languageTags
-      })
+  mounted () {
+    this.$store.dispatch('initGitstars').then(tags => Object.assign(this, tags))
   },
 }
 </script>

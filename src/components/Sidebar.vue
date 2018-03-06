@@ -23,9 +23,15 @@
           <tags-nav v-show="activeTagCategory.id === tagCategorys.language.id" :tags="languageTags" class="language-tags"></tags-nav>
         </transition>
       </div>
+      <transition name="telescopic">
+        <div v-show="isLoadedData && !customTags.length && isCustomCategoryActive" class="no-tag vc-p">
+          <i class="fa fa-hand-o-up fa-2x" aria-hidden="true"></i>
+          <p>{{ $t('addTag') }}</p>
+        </div>
+      </transition>
       <transition name="slide-up">
         <tag-categorys
-          v-show="!isEditingTags && !tagNameFormVisible"
+          v-show="isLoadedData && !isEditingTags && !tagNameFormVisible"
           :categorys="Object.values(tagCategorys)"
           :activeTagCategory.sync="activeTagCategory">
         </tag-categorys>
@@ -63,7 +69,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isEditingTags']),
+    ...mapState(['isEditingTags', 'isLoadedData']),
+    ...mapState('tag', { customTags: 'tags' }),
     isCustomCategoryActive () {
       return this.activeTagCategory === this.tagCategorys.custom
     },
@@ -131,6 +138,13 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.no-tag {
+  top: 40%;
+  font-size: 14px;
+  text-align: center;
+  color: #919191;
 }
 
 .sidebar-footer {

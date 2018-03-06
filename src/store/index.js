@@ -15,6 +15,7 @@ export default new Vuex.Store({
     gistId: '',
     isEditingTags: false,
     isUpdatingData: false,
+    isLoadedData: false,
   },
   mutations: {
     initGistId (state, gistId) {
@@ -23,8 +24,11 @@ export default new Vuex.Store({
     toggleIsEditingTags (state, bool = !state.isEditingTags) {
       state.isEditingTags = bool
     },
-    toggleIsUpdatingData (state) {
-      state.isUpdatingData = !state.isUpdatingData
+    toggleIsUpdatingData (state, bool = !state.isUpdatingData) {
+      state.isUpdatingData = bool
+    },
+    toggleIsLoadedData (state, bool = !state.isLoadedData) {
+      state.isLoadedData = bool
     },
   },
   actions: {
@@ -47,6 +51,7 @@ export default new Vuex.Store({
             tag.repos = tag.repos.filter(repo => repo)
           })
 
+          commit('toggleIsLoadedData')
           commit('repo/initRepos', repos)
           commit('tag/initTags', customTags)
 

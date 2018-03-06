@@ -14,7 +14,7 @@
       <el-dropdown-menu slot="dropdown" id="subsidebar-header__dropdown-menu">
         <el-dropdown-item v-for="sort in repoSorts" :key="sort.id" :command="sort.sortKey">
           <i :class="sort.icon" class="fa" aria-hidden="true"></i>
-          <span class="subsidebar-header__dropdown-menu--text">{{ $t(sort.i18nKey) }}</span>
+          <span class="subsidebar-header__dropdown-menu--text">{{ $t(sort.i18nKey) || sort.name }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>

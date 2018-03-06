@@ -74,5 +74,9 @@ export default {
           commit('changeTagName', { tagId, name })
         })
     },
+    deleteTag ({ commit }, tagId) {
+      commit('deleteTag', tagId)
+      commit('repo/deleteReposTag', tagId, { root: true })
+    },
   },
 }

@@ -30,6 +30,6 @@ export default {
   },
   repoSorts: {
     time: { id: 0, sortKey: '_sortTime', name: '时间', i18nKey: 'time', icon: 'fa-clock-o' },
-    star: { id: 1, sortKey: 'stargazers_count', name: 'star', i18nKey: 'star', icon: 'fa-star' },
+    star: { id: 1, sortKey: 'stargazers_count', name: 'star', icon: 'fa-star' },
   },
 }

@@ -1,9 +1,24 @@
 <template>
   <div id="subsidebar">
-    <sub-sidebar-header :searchValue.sync="searchValue" @onSwitchRepoSort="handleSwitchRepoSort"></sub-sidebar-header>
-    <ul v-show="repos.length" class="repo-list">
-      <repo v-for="repo of repos" :key="repo.id" :repo="repo" :class="{ active: repo.id === activeRepo.id }"></repo>
-    </ul>
+    <template v-if="isLoadedData">
+      <sub-sidebar-header :searchValue.sync="searchValue" @onSwitchRepoSort="handleSwitchRepoSort"></sub-sidebar-header>
+      <ul v-show="repos.length" class="repo-list">
+        <repo v-for="repo of repos" :key="repo.id" :repo="repo" :class="{ active: repo.id === activeRepo.id }"></repo>
+      </ul>
+      <div v-show="!repos.length" class="no-match vc-p">
+        <i class="fa fa-bell-o fa-3x" aria-hidden="true"></i>
+        <p class="ttc">{{ $t('noMatchingReposigory') }}</p>
+        <p>
+          <i class="fa fa-hand-o-left fa-lg" aria-hidden="true"></i>
+          <span>{{ $t('switchTagOrAdjustSearch') }}</span>
+          <i class="fa fa-hand-o-up fa-lg" aria-hidden="true"></i>
+        </p>
+      </div>
+    </template>
+    <div v-else class="loader vc-p">
+      <i class="fa fa-cog fa-spin fa-2x"></i>
+      <p class="ttc">{{ $t('gettingStarredRepository') }}</p>
+    </div>
   </div>
 </template>
 
@@ -23,6 +38,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['isLoadedData']),
     ...mapState('repo', { activeRepo: 'active' }),
     repos () {
       const { searchValue, sortKey } = this
@@ -66,5 +82,14 @@ export default {
 
 .repo-list::-webkit-scrollbar-thumb {
   background-color: #e9e9e9;
+}
+
+.loader,
+.no-match {
+  top: 40%;
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+  color: #bfbfbf;
 }
 </style>

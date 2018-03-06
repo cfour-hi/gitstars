@@ -52,6 +52,13 @@ export default {
       const repo = state.repos.find(repo => repo.id === repoId)
       repo._customTags.splice(tagIndex, 1)
     },
+    deleteReposTag (state, tagId) {
+      state.repos.forEach(repo => {
+        const { _customTags: tags } = repo
+        const index = tags.findIndex(tag => tag.id === tagId)
+        if (index >= 0) tags.splice(index, 1)
+      })
+    },
   },
   actions: {
     async switchActive ({ state, commit }, repo) {

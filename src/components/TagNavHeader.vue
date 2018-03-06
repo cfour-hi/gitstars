@@ -5,7 +5,7 @@
       <span>{{ $t('tags').toUpperCase() }}</span>
     </h3>
     <transition name="slide-to-left">
-      <div v-show="isCustomCategoryActive" class="nav-caption__operate">
+      <div v-show="isLoadedData && isCustomCategoryActive" class="nav-caption__operate">
         <div :class="{ disabled: isEditingTags || tagNameFormVisible }" class="nav-caption__operate-btn" @click="handleAddNewTag">
           <span><i class="fa fa-plus-square" aria-hidden="true"></i>{{ $t('add') }}</span>
         </div>
@@ -43,7 +43,7 @@ export default {
     tagNameFormVisible: { type: Boolean, default: false },
   },
   computed: {
-    ...mapState(['isEditingTags']),
+    ...mapState(['isEditingTags', 'isLoadedData']),
     ...mapState('tag', { customTags: 'tags' }),
   },
   methods: {

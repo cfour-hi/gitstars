@@ -24,7 +24,7 @@ export default {
     },
     handleConfirmDeleteTag () {
       document.body.click()
-      this.$store.commit('tag/deleteTag', this.tag.id)
+      this.$store.dispatch('tag/deleteTag', this.tag.id)
     },
   },
 }
