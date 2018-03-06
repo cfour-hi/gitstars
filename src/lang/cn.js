@@ -9,6 +9,8 @@ export default {
   custom: '自定义',
   language: '语言',
   developer: '开发者',
+  sort: '排序',
+  time: '时间',
 
   addTag: '@:add标签',
   addNewTag: '新增标签',

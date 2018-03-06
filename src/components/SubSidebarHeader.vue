@@ -9,12 +9,12 @@
         class="search-input"
         @input="handleInputSearchValue" />
     </label>
-    <el-dropdown :show-timeout="0" :hide-timeout="0" class="sort-drapdown" @command="handleSortRepos">
-      <div class="sort-drapdown-link">排序&nbsp;<i class="el-icon-arrow-down"></i></div>
+    <el-dropdown class="sort-drapdown" @command="handleSortRepos">
+      <div class="sort-drapdown-link">{{ $t('sort') }}&nbsp;<i class="el-icon-arrow-down"></i></div>
       <el-dropdown-menu slot="dropdown" id="subsidebar-header__dropdown-menu">
         <el-dropdown-item v-for="sort in repoSorts" :key="sort.id" :command="sort.sortKey">
           <i :class="sort.icon" class="fa" aria-hidden="true"></i>
-          <span class="subsidebar-header__dropdown-menu--text">{{ sort.name }}</span>
+          <span class="subsidebar-header__dropdown-menu--text">{{ $t(sort.i18nKey) }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -96,6 +96,7 @@ export default {
 .sort-drapdown-link {
   line-height: 44px;
   text-align: center;
+  text-transform: uppercase;
 }
 
 #subsidebar-header__dropdown-menu {

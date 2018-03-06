@@ -9,6 +9,8 @@ export default {
   custom: 'custom',
   language: 'language',
   developer: 'Developer',
+  sort: 'sort',
+  time: 'time',
 
   addTag: 'Add Tag',
   addNewTag: 'Add New Tag',
