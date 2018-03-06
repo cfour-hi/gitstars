@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Notification } from 'element-ui'
-import config from './config'
+import appConfig from './config'
 
 axios.defaults.baseURL = 'https://api.github.com'
 
@@ -17,22 +17,19 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(({ data }) => {
   return data
 }, err => {
-  if (err.__CANCEL__) return Promise.reject(err)
-
   let message = err.message
   const { response = {} } = err
-  const { status, statusText, data } = response
+  const { config, data, status, statusText } = response
 
-  if (data) message = data.message
-  Notification.error({
-    message,
-    title: `${status} ${statusText}`,
-    showClose: false,
-  })
+  if (!err.__CANCEL__ && !/(\/repos\/).+(\/readme)/.test(config.url)) {
+    if (data) message = data.message
+    Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
+  }
+
   return Promise.reject(err)
 })
 
-const { filename, description, starredReposPerPage } = config
+const { filename, description, starredReposPerPage } = appConfig
 
 export const getGitstarsAccessToken = params => axios.post('https://gh-oauth.imsun.net', params)
 

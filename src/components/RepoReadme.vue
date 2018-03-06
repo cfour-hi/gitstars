@@ -2,8 +2,12 @@
   <div class="content">
     <section class="repo-readme">
       <repo-readme-header v-show="isSelectedRepo" :visible="isSelectedRepo" :activeRepo="activeRepo"></repo-readme-header>
-      <article v-show="readme" v-html="readme" class="markdown-body"></article>
+      <article v-show="readme && !isReadmeError" v-html="readme" class="markdown-body"></article>
     </section>
+    <div v-if="isReadmeError" class="readme-error vc-p">
+      <i class="fa fa-exclamation-circle fa-3x" aria-hidden="true"></i>
+      <p class="readme-error-text">{{ readme.status }} {{ readme.statusText }}</p>
+    </div>
     <section v-show="!readme" class="waiting vc-p">
       <h4 class="readme">README.md</h4>
       <p class="loader">
@@ -28,6 +32,9 @@ export default {
     ...mapState('repo', { readme: 'readme', activeRepo: 'active' }),
     isSelectedRepo () {
       return !!Object.keys(this.activeRepo).length
+    },
+    isReadmeError () {
+      return typeof this.readme !== 'string'
     },
   },
 }
@@ -62,6 +69,18 @@ export default {
 
 .markdown-body::-webkit-scrollbar {
   width: 8px;
+}
+
+.readme-error {
+  top: 45%;
+  font-size: 36px;
+  text-align: center;
+  font-weight: 700;
+  color: #d9d9d9;
+}
+
+.readme-error-text {
+  margin-top: 0.5em;
 }
 
 .waiting {

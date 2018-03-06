@@ -68,8 +68,8 @@ export default {
         // 包含中文内容的 base64 解码
         const readme = await getRenderedReadme(decodeURIComponent(escape(atob(content))), renderedReadmeSource)
         commit('changeReadme', readme)
-      } catch (err) {
-        throw err
+      } catch ({ response }) {
+        if (response) commit('changeReadme', response)
       }
     },
     addRepoTag ({ state, commit, dispatch, rootState }, tagName) {
