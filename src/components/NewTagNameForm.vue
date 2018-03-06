@@ -55,7 +55,7 @@ export default {
     handleAddTag () {
       this.$store.dispatch('tag/addTag', this.name.trim())
         .then(() => this.handleCancelAddTag())
-        .catch(err => void err)
+        .catch(() => this.$refs.nameInput.focus())
     },
     handleCancelAddTag () {
       this.btnState = CANCEL
