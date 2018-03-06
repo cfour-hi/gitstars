@@ -1,6 +1,6 @@
 import i18n from '@/i18n'
 import appConfig from '@/config'
-import { validateTagName, notifyInfo } from '@/helper'
+import { validateTagName, notifyInfo, notifyWarn } from '@/helper'
 
 export default {
   namespaced: true,
@@ -48,23 +48,23 @@ export default {
     },
   },
   actions: {
-    async addTag ({ state, commit, dispatch, rootState }, tagName) {
+    async addTag ({ state, commit, dispatch, rootState }, tag) {
       if (rootState.isUpdatingData) {
         const message = i18n.t('update.uncompleted')
         notifyInfo(message)
         throw new Error(message)
       }
 
-      return validateTagName(state.tags, tagName)
-        .then(name => {
-          const tag = { id: Date.now(), name, repos: [] }
-          commit('addTag', tag)
+      if (typeof tag === 'string') tag = { id: Date.now(), name: tag, repos: [] }
 
+      return validateTagName(state.tags, tag.name)
+        .then(name => {
+          commit('addTag', tag)
           dispatch('updateGitstarsData', { message: `${i18n.t('addTag')}: ${name}` }, { root: true })
             .catch(() => commit('popTag'))
         })
         .catch(({ message }) => {
-          Notification.warning(Object.assign({ message }, appConfig.notify))
+          notifyWarn(message)
           throw new Error(message)
         })
     },

@@ -80,3 +80,14 @@ export default {
   padding: 10px;
 }
 </style>
+
+<style>
+.el-autocomplete-suggestion.el-popper .popper__arrow {
+  left: 50% !important;
+  margin-left: -6px;
+}
+
+.el-autocomplete-suggestion li {
+  padding: 0 10px;
+}
+</style>

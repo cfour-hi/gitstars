@@ -82,9 +82,7 @@ export default {
           const newTag = { id: Date.now(), name, repos: [activeRepo.id] }
 
           commit('addRepoTag', tag || newTag)
-          tag
-            ? commit('tag/addTagRepo', { tagId: tag.id, repoId: activeRepo.id }, { root: true })
-            : commit('tag/addTag', newTag, { root: true })
+          tag ? commit('tag/addTagRepo', { tagId: tag.id, repoId: activeRepo.id }, { root: true }) : commit('tag/addTag', newTag, { root: true })
 
           dispatch('updateGitstarsData', {
             title: `${activeRepo.owner.login} / ${activeRepo.name}`,

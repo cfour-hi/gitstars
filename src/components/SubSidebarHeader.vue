@@ -97,11 +97,35 @@ export default {
   line-height: 44px;
   text-align: center;
 }
-</style>
 
-<style scoped>
 #subsidebar-header__dropdown-menu {
   padding: 5px 0;
   margin-top: 0;
+}
+
+.el-dropdown-menu {
+  padding: 5px 0;
+  margin-top: -5px;
+}
+
+.el-dropdown-menu__item {
+  display: flex;
+  align-items: center;
+  width: 50px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 2;
+}
+
+.el-dropdown-menu__item .fa {
+  flex: 0 0 16px;
+}
+
+.subsidebar-header__dropdown-menu--text {
+  flex: auto;
+  text-align: center;
+  text-align-last: justify;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 </style>

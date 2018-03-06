@@ -35,35 +35,3 @@
 .popover-footer .el-button {
   text-transform: capitalize;
 }
-
-.el-autocomplete-suggestion.el-popper .popper__arrow {
-  left: 50% !important;
-  margin-left: -6px;
-}
-
-.el-autocomplete-suggestion li {
-  padding: 0 10px;
-}
-
-
-#subsidebar-header__dropdown-menu .el-dropdown-menu__item {
-  display: flex;
-  align-items: center;
-  width: 50px;
-  padding: 0 10px;
-  font-size: 12px;
-  line-height: 2;
-}
-
-#subsidebar-header__dropdown-menu .el-dropdown-menu__item .fa {
-  flex: 0 0 16px;
-  margin-top: 1px;
-}
-
-.subsidebar-header__dropdown-menu--text {
-  flex: auto;
-  text-align: center;
-  text-align-last: justify;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
