@@ -1,8 +1,7 @@
 import axios from 'axios'
-import { Notification } from 'element-ui'
 import i18n from '@/i18n'
 import appConfig from '@/config'
-import { validateTagName, notifyInfo } from '@/helper'
+import { validateTagName, notifyInfo, notifyWarn } from '@/helper'
 import { getRepoReadme, getRenderedReadme } from '../api'
 
 let repoReadmeSource = axios.CancelToken.source()
@@ -80,7 +79,7 @@ export default {
       }
     },
     addRepoTag ({ state, commit, dispatch, rootState }, tagName) {
-      if (rootState.isUpdatingData) return notifyInfo(i18n.t('update.uncompleted'))
+      if (rootState.isUpdatingData) return notifyInfo({ message: i18n.t('update.uncompleted') })
 
       const { active: activeRepo } = state
       validateTagName(activeRepo._customTags, tagName)
@@ -97,13 +96,13 @@ export default {
           }, { root: true })
             .catch(() => {
               commit('popRepoTag')
-              tag ? commit('tag/popTagRepo', tag.id, { root: true }) : commit('tag/popTag', { root: true })
+              tag ? commit('tag/popTagRepo', tag.id, { root: true }) : commit('tag/popTag', null, { root: true })
             })
         })
-        .catch(({ message }) => Notification.warning(Object.assign({ message }, appConfig.notify)))
+        .catch(({ message }) => notifyWarn({ message }))
     },
     deleteRepoTag ({ state, commit, dispatch, rootState }, { repoId, tagId }) {
-      if (rootState.isUpdatingData) return notifyInfo(i18n.t('update.uncompleted'))
+      if (rootState.isUpdatingData) return notifyInfo({ message: i18n.t('update.uncompleted') })
 
       const repo = state.repos.find(repo => repo.id === repoId)
       const tagIndex = repo._customTags.findIndex(tag => tag.id === tagId)

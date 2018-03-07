@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     handleToggleTag () {
-      if (this.isEditingTags) return notifyInfo(this.$t('canNotSwitchTagWhenEdit'))
+      if (this.isEditingTags) return notifyInfo({ message: this.$t('canNotSwitchTagWhenEdit') })
       this.$store.commit('tag/switchActive', this.tag)
     },
     handleDeleteTag () {

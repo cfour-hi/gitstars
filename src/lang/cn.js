@@ -24,14 +24,15 @@ export default {
   clickLeftStarredRepoToView: '点击左侧 Starred 仓库查看',
   noMatchingReposigory: '没有匹配仓库',
   switchTagOrAdjustSearch: '切换标签 或 调整搜索',
-  gettingStarredRepository: '正在获取 Starred 仓库...',
+  gettingStarredRepository: '正在获取 Starred 仓库 ...',
   canNotSwitchTagWhenEdit: '@:edit.default状态下不能切换标签',
   areYouSure: '确定删除',
+  failedGetData: '获取数据失败',
 
   update: {
     default: '更新',
-    wait: '正在@:update.default，请稍候...',
-    uncompleted: '前置@:update.default尚未完成，请稍候...',
+    wait: '正在@:update.default，请稍候 ...',
+    uncompleted: '前置@:update.default尚未完成，请稍候 ...',
     completed: '@:update.default成功',
     failed: '@:update.default失败',
   },
@@ -41,5 +42,6 @@ export default {
   },
   tips: {
     editTag: '双击标签修改名称 | 拖拽标签排列顺序',
+    refreshPage: '建议刷新页面',
   },
 }

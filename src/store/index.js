@@ -6,7 +6,7 @@ import repo from './repo'
 import i18n from '@/i18n'
 import appConfig from '@/config'
 import { saveGitstarsGist } from '@/api'
-import { loadReposAndLanguageTags, loadGitstarsData } from '@/helper'
+import { loadReposAndLanguageTags, loadGitstarsData, formatReposTag, notifySuccess, notifyWarn, notifyError } from '@/helper'
 
 if (process.env.NODE_ENV !== 'production') Vue.use(Vuex)
 
@@ -34,22 +34,9 @@ export default new Vuex.Store({
   actions: {
     initGitstars ({ commit, dispatch }) {
       return Promise.all([loadReposAndLanguageTags(), loadGitstarsData()])
-        .then(([{ repos, languageTags }, content]) => {
-          let isTagReposIncludeInvalidId = false
+        .then(async ([{ repos, languageTags }, content]) => {
           const { tags: customTags } = content
-
-          customTags.forEach(tag => {
-            tag.repos.forEach((repoId, index, tagRepos) => {
-              const repo = repos.find(({ id }) => id === repoId)
-              if (repo) {
-                repo._customTags.push(tag)
-              } else {
-                isTagReposIncludeInvalidId = true
-                tagRepos[index] = undefined
-              }
-            })
-            tag.repos = tag.repos.filter(repo => repo)
-          })
+          formatReposTag(repos, customTags)
 
           commit('toggleIsLoadedData')
           commit('repo/initRepos', repos)
@@ -58,15 +45,14 @@ export default new Vuex.Store({
           appConfig.defaultTags.untagged.repos = repos.filter(repo => !repo._customTags.length).map(repo => repo.id)
           const defaultTags = Object.values(appConfig.defaultTags)
 
-          if (isTagReposIncludeInvalidId) dispatch('updateGitstarsData')
-
           return { defaultTags, languageTags }
         })
+        .catch(() => notifyWarn({ title: i18n.t('failedGetData'), message: i18n.t('tips.refreshPage') }))
     },
     updateGitstarsData ({ state, commit }, notify) {
       commit('toggleIsUpdatingData')
 
-      const _notify = Object.assign({}, notify || {}, appConfig.notify)
+      // const _notify = Object.assign({}, notify, appConfig.notify)
       const loadingNotify = Notification.info(Object.assign({}, appConfig.notify, {
         iconClass: 'fa fa-cog fa-spin fa-fw',
         message: i18n.t('update.wait'),
@@ -77,12 +63,12 @@ export default new Vuex.Store({
 
       return saveGitstarsGist(gist)
         .then(() => {
-          Notification.success(notify ? _notify : Object.assign({ message: i18n.t('update.completed') }, appConfig.notify))
+          notifySuccess(notify || { message: i18n.t('update.completed') })
           window.localStorage.setItem(window._gitstars.gistId, JSON.stringify(gist))
         })
         .catch(() => {
           const message = i18n.t('update.failed')
-          Notification.error(notify ? _notify : Object.assign({ message }, appConfig.notify))
+          notifyError(notify || { message })
           throw new Error(message)
         })
         .finally(() => {

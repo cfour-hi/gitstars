@@ -1,6 +1,6 @@
 import i18n from '@/i18n'
 import appConfig from '@/config'
-import { validateTagName, notifyInfo, notifyWarn } from '@/helper'
+import { validateTagName, formatReposTag, notifyInfo, notifyWarn } from '@/helper'
 
 export default {
   namespaced: true,
@@ -48,10 +48,14 @@ export default {
     },
   },
   actions: {
+    resetTags ({ commit, rootState }, tags) {
+      commit('initTags', tags)
+      formatReposTag(rootState.repo.repos, tags)
+    },
     async addTag ({ state, commit, dispatch, rootState }, tag) {
       if (rootState.isUpdatingData) {
         const message = i18n.t('update.uncompleted')
-        notifyInfo(message)
+        notifyInfo({ message })
         throw new Error(message)
       }
 
@@ -64,7 +68,7 @@ export default {
             .catch(() => commit('popTag'))
         })
         .catch(({ message }) => {
-          notifyWarn(message)
+          notifyWarn({ message })
           throw new Error(message)
         })
     },

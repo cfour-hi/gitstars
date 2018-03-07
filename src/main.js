@@ -53,7 +53,7 @@ async function accessTokenProcess () {
 }
 
 accessTokenProcess()
-  .then(accessToken => {
+  .then(async accessToken => {
     const gitstarsUser = window.localStorage.getItem(localStorageKeys.user)
 
     /**
@@ -61,7 +61,7 @@ accessTokenProcess()
      * 请求拦截需要使用到 window._gitstars.accessToken
      */
     window._gitstars = { accessToken }
-    window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : getUserInfo()
+    window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
 
     if (!gitstarsUser) window.localStorage.setItem(localStorageKeys.user, JSON.stringify(window._gitstars.user))
   })

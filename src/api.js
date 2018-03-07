@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Notification } from 'element-ui'
+// import { Notification } from 'element-ui'
 import appConfig from './config'
 
 axios.defaults.baseURL = 'https://api.github.com'
@@ -17,14 +17,14 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(({ data }) => {
   return data
 }, err => {
-  let message = err.message
-  const { response = {} } = err
-  const { config, data, status, statusText } = response
+  // let message = err.message
+  // const { response = {} } = err
+  // const { config, data, status, statusText } = response
 
-  if (!err.__CANCEL__ && !/(\/repos\/).+(\/readme)/.test(config.url)) {
-    if (data) message = data.message
-    Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
-  }
+  // if (!err.__CANCEL__ && !/(\/repos\/).+(\/readme)/.test(config.url)) {
+  //   if (data) message = data.message
+  //   Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
+  // }
 
   return Promise.reject(err)
 })
@@ -40,7 +40,7 @@ export const getUserInfo = () => axios.get(`/user`)
 export const createGitstarsGist = content => {
   return axios.post('/gists', {
     description,
-    public: true,
+    // public: true,
     files: {
       [filename]: {
         content: JSON.stringify(content),

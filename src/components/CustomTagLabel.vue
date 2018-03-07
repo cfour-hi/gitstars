@@ -39,7 +39,7 @@ export default {
     handleEditTagName () {
       if (!this.isEditingTags) return
 
-      preName = this.name
+      this.name = preName = this.tag.name
       this.isEditing = true
       this.$nextTick(() => this.$refs[this.ref].focus())
     },
@@ -61,7 +61,7 @@ export default {
           isChangeTagNameByEnter = true
           this.isEditing = false
         })
-        .catch(({ message }) => notifyWarn(message))
+        .catch(({ message }) => notifyWarn({ message }))
     },
     handleCancelEditTagName () {
       this.isEditing = false

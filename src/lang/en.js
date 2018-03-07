@@ -24,14 +24,15 @@ export default {
   clickLeftStarredRepoToView: 'Click left starred repository to view',
   noMatchingReposigory: 'No matching repository',
   switchTagOrAdjustSearch: 'Switch Tag or Adjust Search',
-  gettingStarredRepository: 'Getting starred repositories...',
+  gettingStarredRepository: 'Getting starred repositories ...',
   canNotSwitchTagWhenEdit: 'Edit state can not switch tag',
   areYouSure: 'Are you sure',
+  failedGetData: 'Failed to get data',
 
   update: {
     default: 'update',
     wait: 'Updating. please wait...',
-    uncompleted: 'Pre-upgrade has not been completed, please wait...',
+    uncompleted: 'Pre-upgrade has not been completed, please wait ...',
     completed: 'Update completed',
     failed: 'Update failed',
   },
@@ -41,5 +42,6 @@ export default {
   },
   tips: {
     editTag: 'Double-click change name | Drag sort order',
+    refreshPage: 'Recommend to refresh the page',
   },
 }
