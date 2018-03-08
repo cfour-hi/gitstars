@@ -26,7 +26,7 @@
 import { mapState } from 'vuex'
 import SubSidebarHeader from './SubSidebarHeader'
 import Repo from './Repo'
-import config from '../config'
+import config from '@/config'
 
 export default {
   name: 'sub-sidebar',

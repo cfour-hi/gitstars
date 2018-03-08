@@ -3,14 +3,7 @@
     <el-tag :class="{ clickable: !isEditingTags }" size="small" class="tag">
       <span>{{ tag.name }}</span>
       <el-popover :title="`${$t('areYouSure')}？`" placement="right" @hide="handleHidePopover">
-        <i
-          v-show="!isEditingTags"
-          :class="{ active: active }"
-          slot="reference"
-          class="tag-delete-btn"
-          @click.stop="handleDeleteTag">
-          &times;
-        </i>
+        <i v-show="!isEditingTags" :class="{ active: active }" slot="reference" class="tag-delete-btn" @click.stop="handleDeleteTag">&times;</i>
         <footer class="popover-footer">
           <el-button size="mini" @click="handleCancelDeleteTag">{{ $t('no') }}</el-button>
           <el-button type="primary" size="mini" @click="handleConfirmDeleteTag">{{ $t('yes') }}</el-button>

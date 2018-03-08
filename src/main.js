@@ -13,7 +13,8 @@ import './element-ui'
 
 Vue.config.productionTip = false
 
-if (process.env.NODE_ENV === 'development') {
+// TOFIX: 如何更加优雅？
+if (process.env.NODE_ENV !== 'production') {
   require('normalize.css')
   require('font-awesome/css/font-awesome.css')
   require('github-markdown-css')
@@ -59,6 +60,8 @@ accessTokenProcess()
     /**
      * 使用 axios 调用接口时做了请求拦截（api.js）
      * 请求拦截需要使用到 window._gitstars.accessToken
+     * 所以下面代码两行代码不能写在一起：`window._gitstars = { accessToken, user: gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo() }`
+     * getUserInfo 接口调用时无法获取到 window._gitstars.accessToken 的值
      */
     window._gitstars = { accessToken }
     window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()

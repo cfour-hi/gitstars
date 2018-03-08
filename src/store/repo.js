@@ -64,6 +64,21 @@ export default {
       commit('switchActive', repo)
       commit('changeReadme', '')
 
+      /**
+       * 用户快速切换 repository 时会导致 readme 内容错误
+       * 因为 Github Api 返回的结果在时间上是不确定的
+       *
+       * 假设用户快速切换 repository 的顺序是 A > B > C
+       * 可能存在 Repo A 的 readme 内容经过 3s 才返回
+       * 而 Repo C 的 readme 内容经过 1s 就返回（暂时不管 B）
+       * 也就是说 1s 中之后 readme 区域内容显示为 Repo C readme 内容（暂时没问题）
+       * 而再过 2s 之后 Repo A readme 内容返回（问题出现）
+       * 然后 readme 区域内容会更换为 Repo A readme 内容
+       * 此时 Repo C 为活动状态但 readme 内容为 Repo A readme 内容（错误）
+       *
+       * 解决方法就是当用户切换 repository 时就取消上个 repository （如果有）正在获取 readme 内容的 api
+       * axios 提供 Cancellation 方案处理取消 api 请求
+       */
       repoReadmeSource.cancel()
       renderedReadmeSource.cancel()
       repoReadmeSource = axios.CancelToken.source()

@@ -23,11 +23,7 @@ export default {
     sliderStyle () {
       const slidebarWidth = 100 / this.categorys.length
       const index = this.categorys.findIndex(category => category.id === this.activeTagCategory.id)
-
-      return {
-        left: `${index * slidebarWidth}%`,
-        width: `${slidebarWidth}%`,
-      }
+      return { left: `${index * slidebarWidth}%`, width: `${slidebarWidth}%` }
     },
   },
   methods: {

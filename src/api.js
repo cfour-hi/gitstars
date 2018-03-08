@@ -31,6 +31,7 @@ axios.interceptors.response.use(({ data }) => {
 
 const { filename, description, starredReposPerPage } = appConfig
 
+// 感谢 imsun (https://github.com/imsun) 提供获取 access token 服务
 export const getGitstarsAccessToken = params => axios.post('https://gh-oauth.imsun.net', params)
 
 // https://developer.github.com/v3/users/#get-the-authenticated-user
@@ -38,6 +39,7 @@ export const getUserInfo = () => axios.get(`/user`)
 
 // https://developer.github.com/v3/gists/#create-a-gist
 export const createGitstarsGist = content => {
+  // Gitstars v2 修改 public 属性为 false（API 默认）
   return axios.post('/gists', {
     description,
     // public: true,

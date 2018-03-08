@@ -51,7 +51,7 @@ import TagNavHeader from './TagNavHeader'
 import NewTagNameForm from './NewTagNameForm'
 import CustomTagsNav from './CustomTagsNav'
 import TagCategorys from './TagCategorys'
-import appConfig from '../config'
+import appConfig from '@/config'
 
 export default {
   name: 'sidebar',
