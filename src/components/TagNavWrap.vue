@@ -7,6 +7,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { notifyInfo } from '@/helper'
 
 export default {
   name: 'tag-nav-wrap',
@@ -20,7 +21,7 @@ export default {
   },
   methods: {
     handleSwitchActiveTag () {
-      if (this.isEditingTags) return
+      if (this.isEditingTags) return notifyInfo({ message: this.$t('canNotSwitchTagWhenEdit') })
       this.$store.commit('tag/switchActive', this.tag)
     },
   },
