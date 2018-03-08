@@ -5,7 +5,6 @@
 ## 技术栈
 
 - vue
-- vue-router
 - vuex
 - element-ui
 - axios
