@@ -50,8 +50,3 @@ export default {
   position: relative;
 }
 </style>
-
-<style>
-@import "./css/app.css";
-@import "./css/element-ui.css";
-</style>
