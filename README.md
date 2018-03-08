@@ -26,12 +26,6 @@
 { id: Number, name: String, repos: Array }
 
 // repos 成员是 repository id
-
-/**
- * 其实语言标签的 repos 不需要使用 Immutable List 类型
- * 因为语言标签和它的 repos 成员都无法再 Gitstars 中被修改
- * 但考虑的数据结构和类型的一致所以还是使用 List 类型数据
-*/
 ```
 
 ### repository
