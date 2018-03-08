@@ -3,26 +3,26 @@
   padding: 15px 20px 15px 15px;
 }
 
-.el-notification__icon {
+.el-notification .el-notification__icon {
   width: 21px;
   height: 21px;
   font-size: 21px;
   transform: none;
 }
 
-.el-notification__icon.fa {
+.el-notification .el-notification__icon.fa {
   font-family: FontAwesome !important;
 }
 
-.el-notification__icon.fa-cog::before {
+.el-notification .el-notification__icon.fa-cog::before {
   content: '\f013';
 }
 
-.el-notification__title {
+.el-notification .el-notification__title {
   line-height: 1.8;
 }
 
-.el-notification__content {
+.el-notification .el-notification__content {
   margin: 0;
   line-height: 24px;
 }

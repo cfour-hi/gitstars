@@ -16,13 +16,16 @@ export default {
     readme: '',
   },
   getters: {
+    untaggedRepos (state) {
+      return state.repos.filter(repo => !repo._customTags.length)
+    },
     reposOfTag (state, getters, rootState) {
       const { repos } = state
       const { active: tag } = rootState.tag
       const { categoryId, id: tagId, name: tagName } = tag
 
       if (tagId === defaultTags.all.id) return repos
-      if (tagId === defaultTags.untagged.id) return repos.filter(repo => !repo._customTags.length)
+      if (tagId === defaultTags.untagged.id) return getters.untaggedRepos
       if (categoryId === tagCategorys.language.id) return repos.filter(repo => repo.language === tagName)
 
       return repos.filter(repo => repo._customTags.find(_tag => _tag.id === tag.id))

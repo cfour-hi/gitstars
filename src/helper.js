@@ -22,8 +22,6 @@ export const loadReposAndLanguageTags = async (page = 1) => {
   const languageTags = []
 
   repos.forEach(({ id: repoId, language }) => {
-    appConfig.defaultTags.all.repos.push(repoId)
-
     if (!language) return
 
     const languageTag = languageTags.find(tag => tag.name === language)

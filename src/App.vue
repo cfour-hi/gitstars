@@ -18,14 +18,23 @@ import SubSidebar from './components/SubSidebar'
 import RepoReadme from './components/RepoReadme'
 import appConfig from './config'
 
+const { defaultTags } = appConfig
+
 export default {
   name: 'App',
   components: { LayoutSidebar, LayoutHeader, SubSidebar, RepoReadme },
   data () {
     return {
-      defaultTags: Object.values(appConfig.defaultTags),
       languageTags: [],
     }
+  },
+  computed: {
+    defaultTags () {
+      return [
+        Object.assign({}, defaultTags.all, { repos: this.$store.state.repo.repos }),
+        Object.assign({}, defaultTags.untagged, { repos: this.$store.getters['repo/untaggedRepos'] }),
+      ]
+    },
   },
   mounted () {
     this.$store.dispatch('initGitstars').then(tags => Object.assign(this, tags))
@@ -49,4 +58,9 @@ export default {
   flex: auto;
   position: relative;
 }
+</style>
+
+<style>
+@import './css/element-ui.css';
+@import './css/app.css';
 </style>

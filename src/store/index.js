@@ -32,27 +32,23 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    initGitstars ({ commit, dispatch }) {
+    initGitstars ({ commit }) {
       return Promise.all([loadReposAndLanguageTags(), loadGitstarsData()])
-        .then(async ([{ repos, languageTags }, content]) => {
-          const { tags: customTags } = content
-          formatReposTag(repos, customTags)
+        .then(([{ repos, languageTags }, content]) => {
+          const { tags } = content
+          formatReposTag(repos, tags)
 
-          commit('toggleIsLoadedData')
           commit('repo/initRepos', repos)
-          commit('tag/initTags', customTags)
+          commit('tag/initTags', tags)
+          commit('toggleIsLoadedData')
 
-          appConfig.defaultTags.untagged.repos = repos.filter(repo => !repo._customTags.length).map(repo => repo.id)
-          const defaultTags = Object.values(appConfig.defaultTags)
-
-          return { defaultTags, languageTags }
+          return { languageTags }
         })
         .catch(() => notifyWarn({ title: i18n.t('failedGetData'), message: i18n.t('tips.refreshPage') }))
     },
     updateGitstarsData ({ state, commit }, notify) {
       commit('toggleIsUpdatingData')
 
-      // const _notify = Object.assign({}, notify, appConfig.notify)
       const loadingNotify = Notification.info(Object.assign({}, appConfig.notify, {
         iconClass: 'fa fa-cog fa-spin fa-fw',
         message: i18n.t('update.wait'),

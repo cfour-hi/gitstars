@@ -2,8 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import 'babel-polyfill'
 import '@/polyfill'
-import '@/css/element-ui.css'
-import '@/css/app.css'
 import Vue from 'vue'
 import store from '@/store'
 import '@/element-ui'
@@ -15,7 +13,6 @@ import appConfig from '@/config'
 
 Vue.config.productionTip = false
 
-// TOFIX: 如何更加优雅？
 if (process.env.NODE_ENV !== 'production') {
   require('normalize.css')
   require('font-awesome/css/font-awesome.css')
