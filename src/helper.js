@@ -7,12 +7,13 @@ import { getStarredRepos, getGitstarsGist, getUserGists, createGitstarsGist } fr
 export const loadReposAndLanguageTags = async (page = 1) => {
   const repos = []
   let reposByPage = []
+  let sortNum = 999999999
 
   do {
     reposByPage = await getStarredRepos(page++)
     reposByPage.forEach((repo, index) => {
       repo._customTags = []
-      repo[appConfig.repoSorts.time.sortKey] = reposByPage.length - index
+      repo[appConfig.repoSorts.time.sortKey] = sortNum--
     })
     repos.push(...reposByPage)
   } while (reposByPage.length === appConfig.starredReposPerPage)
