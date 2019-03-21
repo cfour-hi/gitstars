@@ -38,11 +38,18 @@ async function accessTokenProcess () {
       window.history.replaceState({}, null, href)
     }
 
-    const { access_token: accessToken } = await getGitstarsAccessToken({
+    // const { access_token: accessToken } = await getGitstarsAccessToken({
+    const response = await getGitstarsAccessToken({
       code: gitstarsCode,
       client_id: clientId,
       client_secret: clientSecret,
     })
+    const result = {}
+    response.split('&').forEach(item => {
+      const [key, value] = item.split('=')
+      result[key] = value
+    })
+    const { access_token: accessToken } = result
     window.localStorage.setItem(localStorageKeys.accessToken, accessToken)
 
     return accessToken
