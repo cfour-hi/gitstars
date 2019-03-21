@@ -23,7 +23,7 @@
 import config from '@/config'
 
 export default {
-  name: 'header',
+  name: 'app-header',
   data () {
     const { messages, locale } = this.$i18n
     return {
