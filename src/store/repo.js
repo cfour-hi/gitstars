@@ -2,11 +2,14 @@ import axios from 'axios'
 import i18n from '@/i18n'
 import appConfig from '@/config'
 import { validateTagName, notifyInfo, notifyWarn } from '@/helper'
-import { getRepoReadme, getRenderedReadme } from '../api'
+// import { getRepoReadme, getRenderedReadme } from '../api'
+import { getRepoReadme } from '../api'
 
 let repoReadmeSource = axios.CancelToken.source()
 let renderedReadmeSource = axios.CancelToken.source()
 const { defaultTags, tagCategorys } = appConfig
+const showdown = require('showdown')
+const converter = new showdown.Converter()
 
 export default {
   namespaced: true,
@@ -90,7 +93,8 @@ export default {
       try {
         const { content } = await getRepoReadme(repo.owner.login, repo.name, repoReadmeSource)
         // 包含中文内容的 base64 解码
-        const readme = await getRenderedReadme(decodeURIComponent(escape(atob(content))), renderedReadmeSource)
+        // const readme = await getRenderedReadme(decodeURIComponent(escape(atob(content))), renderedReadmeSource)
+        const readme = converter.makeHtml(decodeURIComponent(escape(atob(content))))
         commit('changeReadme', readme)
       } catch ({ response }) {
         if (response) commit('changeReadme', response)
