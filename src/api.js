@@ -4,36 +4,53 @@ import appConfig from './config'
 
 axios.defaults.baseURL = 'https://api.github.com'
 
-axios.interceptors.request.use(config => {
-  if (config.url.includes('http')) return config
+axios.interceptors.request.use(
+  config => {
+    if (config.url.includes('http')) return config
 
-  config.url += config.url.includes('?') ? '&' : '?'
-  config.url += `access_token=${window._gitstars.accessToken}`
-  return config
-}, err => {
-  return Promise.reject(err)
-})
+    config.url += config.url.includes('?') ? '&' : '?'
+    // config.url += `access_token=${window._gitstars.accessToken}`
+    config.headers.Authorization = `token ${window._gitstars.accessToken}`
+    return config
+  },
+  err => {
+    return Promise.reject(err)
+  },
+)
 
-axios.interceptors.response.use(({ data }) => {
-  return data
-}, err => {
-  // let message = err.message
-  // const { response = {} } = err
-  // const { config, data, status, statusText } = response
+axios.interceptors.response.use(
+  res => {
+    console.log(res)
+    return res.data
+  },
+  err => {
+    // let message = err.message
+    // const { response = {} } = err
+    // const { config, data, status, statusText } = response
 
-  // if (!err.__CANCEL__ && !/(\/repos\/).+(\/readme)/.test(config.url)) {
-  //   if (data) message = data.message
-  //   Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
-  // }
+    // if (!err.__CANCEL__ && !/(\/repos\/).+(\/readme)/.test(config.url)) {
+    //   if (data) message = data.message
+    //   Notification.error({ message, title: `${status} ${statusText}`, showClose: false })
+    // }
 
-  return Promise.reject(err)
-})
+    return Promise.reject(err)
+  },
+)
 
 const { filename, description, starredReposPerPage } = appConfig
 
 // 感谢 imsun (https://github.com/imsun) 提供获取 access token 服务
 // export const getGitstarsAccessToken = params => axios.post('https://gh-oauth.imsun.net', params)
-export const getGitstarsAccessToken = data => axios.post('https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token', data)
+export const getGitstarsAccessToken = data =>
+  axios.post(
+    'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token',
+    data,
+    {
+      headers: {
+        origin: 'x-requested-with',
+      },
+    },
+  )
 
 // https://developer.github.com/v3/users/#get-the-authenticated-user
 export const getUserInfo = () => axios.get(`/user`)
@@ -56,7 +73,8 @@ export const createGitstarsGist = content => {
 export const getGitstarsGist = id => axios.get(`/gists/${id}`)
 
 // https://developer.github.com/v3/gists/#list-a-users-gists
-export const getUserGists = () => axios.get(`/users/${window._gitstars.user.login}/gists`)
+export const getUserGists = () =>
+  axios.get(`/users/${window._gitstars.user.login}/gists`)
 
 // https://developer.github.com/v3/activity/starring/#list-repositories-being-starred
 export const getStarredRepos = page => {
@@ -65,7 +83,8 @@ export const getStarredRepos = page => {
 }
 
 // https://developer.github.com/v3/repos/contents/#get-the-readme
-export const getRepoReadme = (login, name, source) => axios.get(`/repos/${login}/${name}/readme`, { cancelToken: source.token })
+export const getRepoReadme = (login, name, source) =>
+  axios.get(`/repos/${login}/${name}/readme`, { cancelToken: source.token })
 
 // https://developer.github.com/v3/markdown/#render-a-markdown-document-in-raw-mode
 export const getRenderedReadme = (data, source) => {
@@ -81,7 +100,7 @@ export const getRenderedReadme = (data, source) => {
 }
 
 // https://developer.github.com/v3/gists/
-export const saveGitstarsGist = (content) => {
+export const saveGitstarsGist = content => {
   // return axios.patch(`/gists/${window._gitstars.gistId + 'a'}`, {
   return axios.patch(`/gists/${window._gitstars.gistId}`, {
     files: {

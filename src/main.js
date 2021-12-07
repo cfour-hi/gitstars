@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const { clientId, clientSecret, localStorageKeys } = appConfig
 
-async function accessTokenProcess () {
+async function accessTokenProcess() {
   const accessToken = window.localStorage.getItem(localStorageKeys.accessToken)
 
   if (accessToken) return accessToken
@@ -69,11 +69,24 @@ accessTokenProcess()
      * getUserInfo 接口调用时无法获取到 window._gitstars.accessToken 的值
      */
     window._gitstars = { accessToken }
-    window._gitstars.user = gitstarsUser ? JSON.parse(gitstarsUser) : await getUserInfo()
+    window._gitstars.user = gitstarsUser
+      ? JSON.parse(gitstarsUser)
+      : await getUserInfo()
 
-    if (!gitstarsUser) window.localStorage.setItem(localStorageKeys.user, JSON.stringify(window._gitstars.user))
+    if (!gitstarsUser) {
+      window.localStorage.setItem(
+        localStorageKeys.user,
+        JSON.stringify(window._gitstars.user),
+      )
+    }
   })
   .then(() => {
     /* eslint-disable no-new */
-    new Vue({ store, i18n, el: '#app', template: '<App/>', components: { App } })
+    new Vue({
+      store,
+      i18n,
+      el: '#app',
+      template: '<App/>',
+      components: { App },
+    })
   })
