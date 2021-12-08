@@ -29,8 +29,8 @@ jobs:
       # Runs a single command using the runners shell
       - name: Install and Build
         run: |
-          npm i
-          npm run build
+          yarn
+          yarn build
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
