@@ -45,11 +45,11 @@ export const getGitstarsAccessToken = data =>
   axios.post(
     'https://znlbwo.xyz/cors/https://github.com/login/oauth/access_token',
     data,
-    {
-      headers: {
-        origin: 'x-requested-with',
-      },
-    },
+    // {
+    //   headers: {
+    //     origin: 'x-requested-with',
+    //   },
+    // },
   )
 
 // https://developer.github.com/v3/users/#get-the-authenticated-user
