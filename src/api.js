@@ -43,7 +43,7 @@ const { filename, description, starredReposPerPage } = appConfig
 // export const getGitstarsAccessToken = params => axios.post('https://gh-oauth.imsun.net', params)
 export const getGitstarsAccessToken = data =>
   axios.post(
-    'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token',
+    'https://znlbwo.xyz/cors/https://github.com/login/oauth/access_token',
     data,
     {
       headers: {
