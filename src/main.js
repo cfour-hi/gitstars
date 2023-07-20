@@ -1,6 +1,4 @@
 import 'virtual:svg-icons-register';
-import './style.css';
-import './main.css';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
@@ -11,7 +9,6 @@ import { useUserStore } from '@/store/user';
 import SvgIcon from '@/components/svg-icon.vue';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import { throttle } from 'lodash';
-import { registerDirectives } from '@/directives';
 
 function onResize() {
   let fontSize = window.innerWidth / 100;
@@ -36,7 +33,6 @@ async function initApp() {
   app.use(createPinia());
   app.use(VueVirtualScroller);
   app.component(SvgIcon.name, SvgIcon);
-  registerDirectives(app);
 
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {

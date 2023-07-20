@@ -19,25 +19,42 @@
       />
     </div>
 
-    <div v-tooltip:right.tooltip="'仓库更新中'">
+    <div
+      :aria-label="sortTypeLabel"
+      role="tooltip"
+      data-microtip-position="top"
+      class="ml-2.5 cursor-pointer text-sm"
+    >
       <svg-icon
-        v-show="repositoryStore.all.length !== 0 && repositoryStore.loading"
-        name="loading"
-        class="ml-2.5 animate-spin text-sm"
-      />
+        :name="tagStore.sortType"
+        @click="handleChangeSortType"
+      ></svg-icon>
+    </div>
+
+    <div
+      v-show="repositoryStore.all.length !== 0 && repositoryStore.loading"
+      aria-label="仓库更新中"
+      role="tooltip"
+      data-microtip-position="top"
+      class="ml-2.5 text-sm"
+    >
+      <svg-icon name="loading" class="animate-spin" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRepositoryStore } from '@/store/repository';
 import { useTagStore } from '@/store/tag';
 import { debounce } from 'lodash';
+import { REPO_SORT_TYPE } from '@/constants';
 
 const tagStore = useTagStore();
 const repositoryStore = useRepositoryStore();
 const refInput = ref(null);
+
+const sortTypeLabel = computed(() => REPO_SORT_TYPE[tagStore.sortType].label);
 
 const handleInputRepositoryName = debounce(({ target }) => {
   repositoryStore.$patch({ filterText: target.value });
@@ -46,5 +63,13 @@ const handleInputRepositoryName = debounce(({ target }) => {
 function handleClickClose() {
   repositoryStore.$patch({ filterText: '' });
   refInput.value.value = '';
+}
+
+function handleChangeSortType() {
+  const newSortType =
+    tagStore.sortType === REPO_SORT_TYPE.time.value
+      ? REPO_SORT_TYPE.star.value
+      : REPO_SORT_TYPE.time.value;
+  tagStore.$patch({ sortType: newSortType });
 }
 </script>

@@ -1,10 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --primary: #948aec;
   --secondary: #76d0a3;
   --scrollbar-thumb: #cbd5e1;
 }
-
-@tailwind base;
 
 /* Firefox */
 * {
@@ -22,11 +24,31 @@
   border-radius: 0.375rem;
 }
 
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  color: #333;
+  background-image: linear-gradient(45deg, #948aec 0%, #76d0a3 100%);
+}
+
+svg {
+  display: inline-block;
+}
+
+@font-face {
+  font-family: 'gitstars';
+  font-weight: 400;
+  src: url('/gitstars.woff2') format('woff2');
+  font-display: swap;
+}
+
 .brand-text {
   background: linear-gradient(45deg, var(--primary), var(--secondary));
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-@tailwind components;
-@tailwind utilities;

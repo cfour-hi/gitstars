@@ -22,3 +22,6 @@ import { useUserStore } from '@/store/user';
 
 const userStore = useUserStore();
 </script>
+
+<style src="./styles/app.css"></style>
+<style src="./styles/microtip.css"></style>

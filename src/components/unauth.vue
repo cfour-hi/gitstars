@@ -33,13 +33,8 @@ const authURL = `https://github.com/login/oauth/authorize?client_id=${
 }&redirect_uri=${location.origin}&scope=gist,repo`;
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .unauth {
-  background: {
-    image: url(/example-gitstars.png);
-    size: contain;
-    repeat: no-repeat;
-    position: center;
-  }
+  background: url(/example-gitstars.png) no-repeat center contain;
 }
 </style>
