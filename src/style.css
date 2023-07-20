@@ -1,0 +1,32 @@
+:root {
+  --primary: #948aec;
+  --secondary: #76d0a3;
+  --scrollbar-thumb: #cbd5e1;
+}
+
+@tailwind base;
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent var(--scrollbar-thumb);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 0.375rem;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 0.375rem;
+}
+
+.brand-text {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,22 @@
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  color: #333;
+  background-image: linear-gradient(45deg, #948aec 0%, #76d0a3 100%);
+}
+
+svg {
+  display: inline-block;
+}
+
+@font-face {
+  font-family: 'gitstars';
+  font-weight: 400;
+  src: url('/gitstars.woff2') format('woff2');
+  font-display: swap;
+}
