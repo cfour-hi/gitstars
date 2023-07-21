@@ -55,10 +55,7 @@ async function resolveToken() {
   if (!code) return;
 
   removeURLCode();
-  const result = await getToken(code);
-  // const { access_token } = await getToken(code);
-  // 返回的是 & 分割的字符串，需要自己解析
-  const access_token = result.split('&')[0].split('=')[1];
+  const { access_token } = await getToken(code);
   if (!access_token) return;
 
   localStorage.setItem(TOKEN_KEY, access_token);
