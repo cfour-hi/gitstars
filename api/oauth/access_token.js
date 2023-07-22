@@ -26,7 +26,7 @@ app.post('/api/oauth/access_token', async (req, res) => {
   const client_id = req.body.client_id;
   // 从环境变量或其他安全存储中获取 client_secret
   const client_secret = process.env.CLIENT_SECRET;
-
+  console.log(client_secret);
   try {
     const response = await axios.post('https://github.com/login/oauth/access_token', {
       client_id,
