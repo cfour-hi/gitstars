@@ -1,7 +1,13 @@
-const axios = require('axios');
-const express = require('express');
-const bodyParser = require('body-parser');
-const { v4 } = require('uuid');
+// const axios = require('axios');
+// const express = require('express');
+// const bodyParser = require('body-parser');
+// const { v4 } = require('uuid');
+
+// 切换为import
+import axios from 'axios';
+import express from 'express';
+import bodyParser from 'body-parser';
+import { v4 } from 'uuid';
 
 const app = express();
 
