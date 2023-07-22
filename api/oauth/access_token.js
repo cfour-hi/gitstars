@@ -1,10 +1,10 @@
 import axios from 'axios';
 import express from 'express';
-// import bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 
 const app = express();
 
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 
 app.post('/api/oauth/access_token', async (req, res) => {
   const code = req.body.code;
