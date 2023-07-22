@@ -7,6 +7,13 @@ const app = express();
 // 使用 body-parser middleware 解析 JSON 请求体
 app.use(bodyParser.json());
 
+app.get('/api', (req, res) => {
+  const path = `/api/item/${v4()}`;
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
+});
+
 app.post('/api/oauth/access_token', async (req, res) => {
   const code = req.body.code;
   const client_id = req.body.client_id;
