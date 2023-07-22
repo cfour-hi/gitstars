@@ -47,4 +47,6 @@ app.post('/api/oauth/access_token', async (req, res) => {
   }
 });
 
-module.exports = app
+// 导出app
+export default app;
+
