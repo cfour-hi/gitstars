@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 module.exports = async (req, res) => {
   // 获取请求参数
