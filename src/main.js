@@ -28,6 +28,22 @@ function removeURLCode() {
   history.replaceState({}, null, href);
 }
 
+async function resolveToken() {
+  const searchParams = new URLSearchParams(location.search);
+  const code = searchParams.get('code');
+  if (!code) return;
+
+  removeURLCode();
+  const { access_token } = await getToken(code);
+  if (!access_token) return;
+
+  localStorage.setItem(TOKEN_KEY, access_token);
+
+  const userStore = useUserStore();
+  userStore.$patch({ token: access_token });
+  await userStore.resolveUserinfo();
+}
+
 async function initApp() {
   const app = createApp(App);
   app.use(createPinia());
@@ -47,22 +63,6 @@ async function initApp() {
 
   window.addEventListener('resize', throttle(onResize, 300));
   onResize();
-}
-
-async function resolveToken() {
-  const searchParams = new URLSearchParams(location.search);
-  const code = searchParams.get('code');
-  if (!code) return;
-
-  removeURLCode();
-  const { access_token } = await getToken(code);
-  if (!access_token) return;
-
-  localStorage.setItem(TOKEN_KEY, access_token);
-
-  const userStore = useUserStore();
-  userStore.$patch({ token: access_token });
-  await userStore.resolveUserinfo();
 }
 
 initApp();

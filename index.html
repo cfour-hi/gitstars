@@ -6,9 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base target="_blank" />
     <title>Gitstars</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+
+      #app {
+        height: 100%;
+        display: flex;
+        color: #333;
+      }
+
+      .loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 48px;
+        height: 48px;
+        margin-top: -48px;
+        margin-left: -24px;
+        border: 5px solid;
+        border-color: #948aec transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <span class="loader"></span>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
