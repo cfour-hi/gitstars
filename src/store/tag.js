@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { TAG_TYPE, REPO_SORT_TYPE } from '@/constants';
+import { TAG_TYPE, TAG_SORT_TYPE } from '@/constants';
 import { useRepositoryStore } from './repository';
 
 /**
@@ -65,7 +65,7 @@ export const useTagStore = defineStore('tag', {
     /**
      * tag 排序
      */
-    sortType: REPO_SORT_TYPE.time.value,
+    sortType: TAG_SORT_TYPE.amountDown.value,
     /**
      * Topics
      */

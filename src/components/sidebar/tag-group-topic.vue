@@ -20,7 +20,7 @@
 import { computed } from 'vue';
 import { useTagStore } from '@/store/tag';
 import { useUserStore } from '@/store/user';
-import { TAG_TYPE } from '@/constants';
+import { TAG_TYPE, TAG_SORT_TYPE } from '@/constants';
 import TagItem from './tag-item.vue';
 
 const tagStore = useTagStore();
@@ -33,7 +33,13 @@ const topicList = computed(() => {
     .map((key) => ({
       label: key,
       count: tagStore.topicMap[key].length,
-    }));
+    }))
+    .sort((a, b) => {
+      if (tagStore.sortType === TAG_SORT_TYPE.amountUp.value) {
+        return a.count - b.count;
+      }
+      return b.count - a.count;
+    });
 });
 
 const itemSize = computed(() => {

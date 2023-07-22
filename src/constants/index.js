@@ -19,3 +19,15 @@ export const REPO_SORT_TYPE = {
     label: '按 Star 数量排序',
   },
 };
+export const TAG_SORT_TYPE = {
+  amountDown: {
+    icon: 'sort-amount-down',
+    label: '降序排序',
+    value: 'amountDown',
+  },
+  amountUp: {
+    icon: 'sort-amount-up',
+    label: '升序排序',
+    value: 'amountUp',
+  },
+};
