@@ -79,11 +79,10 @@ watch(
   },
   { deep: true },
 );
-
 watch(
   () => tagStore.repositories,
   () => {
-    refRepositoryList.value.$el.scrollTo({ top: 0 });
+    refRepositoryList.value?.$el.scrollTo({ top: 0 });
   },
 );
 
