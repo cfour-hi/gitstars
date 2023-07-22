@@ -18,23 +18,21 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useTopicStore } from '@/store/topic';
 import { useTagStore } from '@/store/tag';
 import { useUserStore } from '@/store/user';
 import { TAG_TYPE } from '@/constants';
 import TagItem from './tag-item.vue';
 
-const topicStore = useTopicStore();
 const tagStore = useTagStore();
 const userStore = useUserStore();
 
 const topicList = computed(() => {
   const filterText = tagStore.filterText.toLowerCase();
-  return Object.keys(topicStore.topicMap)
+  return Object.keys(tagStore.topicMap)
     .filter((key) => key.toLowerCase().includes(filterText))
     .map((key) => ({
       label: key,
-      count: topicStore.topicMap[key].length,
+      count: tagStore.topicMap[key].length,
     }));
 });
 

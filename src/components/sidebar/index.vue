@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import TagItem from './tag-item.vue';
 import TagSearch from './tag-search.vue';
 import TagGroupTopic from './tag-group-topic.vue';
@@ -62,6 +62,14 @@ const userStore = useUserStore();
 const tagStore = useTagStore();
 const repositoryStore = useRepositoryStore();
 const refTagGroup = ref(null);
+
+watch(
+  () => repositoryStore.all,
+  () => {
+    tagStore.analyze();
+  },
+  { deep: true },
+);
 
 function handleClickTagAll() {
   tagStore.$patch({ selected: '' });

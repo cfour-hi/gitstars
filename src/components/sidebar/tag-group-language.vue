@@ -12,21 +12,19 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useLanguageStore } from '@/store/language';
 import { useTagStore } from '@/store/tag';
 import { TAG_TYPE } from '@/constants';
 import TagItem from './tag-item.vue';
 
-const languageStore = useLanguageStore();
 const tagStore = useTagStore();
 
 const languageList = computed(() => {
   const filterText = tagStore.filterText.toLowerCase();
-  return Object.keys(languageStore.languageMap)
+  return Object.keys(tagStore.languageMap)
     .filter((key) => key.toLowerCase().includes(filterText))
     .map((key) => ({
       label: key,
-      count: languageStore.languageMap[key].length,
+      count: tagStore.languageMap[key].length,
     }));
 });
 

@@ -26,13 +26,13 @@
       class="ml-2.5 cursor-pointer text-sm"
     >
       <svg-icon
-        :name="tagStore.sortType"
+        :name="repositoryStore.sortType"
         @click="handleChangeSortType"
       ></svg-icon>
     </div>
 
     <div
-      v-show="repositoryStore.all.length !== 0 && repositoryStore.loading"
+      v-if="repositoryStore.all.length !== 0 && repositoryStore.loading"
       aria-label="仓库更新中"
       role="tooltip"
       data-microtip-position="top"
@@ -54,7 +54,9 @@ const tagStore = useTagStore();
 const repositoryStore = useRepositoryStore();
 const refInput = ref(null);
 
-const sortTypeLabel = computed(() => REPO_SORT_TYPE[tagStore.sortType].label);
+const sortTypeLabel = computed(
+  () => REPO_SORT_TYPE[repositoryStore.sortType].label,
+);
 
 const handleInputRepositoryName = debounce(({ target }) => {
   repositoryStore.$patch({ filterText: target.value });
@@ -67,9 +69,9 @@ function handleClickClose() {
 
 function handleChangeSortType() {
   const newSortType =
-    tagStore.sortType === REPO_SORT_TYPE.time.value
+    repositoryStore.sortType === REPO_SORT_TYPE.time.value
       ? REPO_SORT_TYPE.star.value
       : REPO_SORT_TYPE.time.value;
-  tagStore.$patch({ sortType: newSortType });
+  repositoryStore.$patch({ sortType: newSortType });
 }
 </script>
