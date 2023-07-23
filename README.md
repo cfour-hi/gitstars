@@ -33,3 +33,7 @@ Repository 的主编程语言。
 Github 会统计分析 Repository 的文件，确定 Repository 的主编程语言。
 
 ![](public/example-languages.png)
+
+## Vercel 部署
+
+[WIKI Vercel 部署](https://github.com/cfour-hi/gitstars/wiki/Vercel-%E9%83%A8%E7%BD%B2)
