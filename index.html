@@ -10,6 +10,7 @@
       html,
       body {
         height: 100%;
+        overflow: hidden;
       }
 
       #app {
@@ -47,7 +48,26 @@
   <body>
     <div id="app">
       <span class="loader"></span>
+
+      <div
+        style="display: none"
+        class="app-error fixed left-1/2 top-1/2 inline-block -translate-x-1/2 -translate-y-full bg-white"
+      >
+        <div class="mb-8 text-7xl font-bold text-[#948aec]">Sorry...</div>
+        <div class="mb-2 text-[#76d0a3]">出现一些异常，请刷新页面。</div>
+        <div class="text-gray-400">"<span class="error-content"></span>"</div>
+      </div>
     </div>
+    <script>
+      function onAppError(err) {
+        document.querySelector('.app-error').style.display = 'block';
+        var errorContent = err.message + '.';
+        if (err.response?.statusText) {
+          errorContent += ` ${err.response.statusText}`;
+        }
+        document.querySelector('.error-content').textContent = errorContent;
+      }
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -21,21 +21,21 @@ const toConfig = () => {
         '@': path.resolve(__dirname, 'src'),
       },
     },
-    server: {
+  };
+
+  if (isDev) {
+    config.server = {
       https: {
         key: './cert/localhost.key',
         cert: './cert/localhost.crt',
       },
       host: true,
       port: '30000',
-    },
-  };
-
-  if (isDev) {
-    config.server.proxy = {
-      '/api': {
-        target: envLocal.VITE_API_PROXY,
-        changeOrigin: true,
+      proxy: {
+        '/api': {
+          target: envLocal.VITE_API_PROXY,
+          changeOrigin: true,
+        },
       },
     };
   }
