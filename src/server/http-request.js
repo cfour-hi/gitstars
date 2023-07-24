@@ -18,4 +18,16 @@ httpRequestGithub.interceptors.request.use((config) => {
   config.headers.Authorization = `token ${userStore.token}`;
   return config;
 });
-httpRequestGithub.interceptors.response.use((res) => res.data);
+
+httpRequestGithub.interceptors.response.use(
+  (res) => res.data,
+  (err) => {
+    // access_token 失效
+    if (err.response.status === 401) {
+      localStorage.clear();
+      location.reload();
+    }
+
+    return Promise.reject(err);
+  },
+);

@@ -50,10 +50,10 @@ async function resolveToken() {
     throw new Error(res);
   }
 
-  localStorage.setItem(TOKEN_KEY, access_token);
+  localStorage.setItem(TOKEN_KEY, res.access_token);
 
   const userStore = useUserStore();
-  userStore.$patch({ token: access_token });
+  userStore.$patch({ token: res.access_token });
   await userStore.resolveUserinfo();
 }
 
