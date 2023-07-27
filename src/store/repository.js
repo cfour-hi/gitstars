@@ -1,28 +1,69 @@
 import { defineStore } from 'pinia';
-import { getStarredRepos } from '@/server/github';
+import { getStarredRepositories } from '@/server/github';
 import { STARRED_REPOS, REPO_SORT_TYPE, TAG_TYPE } from '@/constants';
 import { useTagStore } from '@/store/tag';
 
 /**
  * 通过 HTTP 获取 repositories
- * @param {Array} list 渐进式添加 repositories 数据，让用户更快得到反馈
+ * 渐进式添加 repositories 数据，让用户更快得到反馈
+ * @param {Array} repositories
  * @returns
  */
-async function _resolveRepositories(list = []) {
+async function _resolveRepositories(repositories) {
+  const hasLocalCache = repositories.length > 0;
   const MAX_PAGE = 9999;
   const PER_PAGE = 100;
+  const tmpRepositories = [];
+  let flagReplacedCache = false;
+
   for (let i = 1; i < MAX_PAGE; i++) {
-    const repositories = await getStarredRepos({
+    const data = await getStarredRepositories({
       per_page: PER_PAGE,
       page: i,
     });
-    list.push(...repositories);
+    tmpRepositories.push(...data);
 
-    if (repositories.length < PER_PAGE) {
+    if (hasLocalCache) {
+      if (tmpRepositories.length >= repositories.length) {
+        /**
+         * 有本地缓存的情况下
+         * 采用 “对比替换” 策略
+         * 当接口获取的数据量 >= 本地缓存的数据量
+         * 更新为接口的数据
+         */
+        if (flagReplacedCache) {
+          repositories.push(...data);
+        } else {
+          repositories.splice(0, repositories.length);
+          repositories.push(...tmpRepositories);
+          flagReplacedCache = true;
+        }
+        localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
+      }
+    } else {
+      /**
+       * 无本地缓存的情况下
+       * 采用 “增量缓存” 策略
+       * 每次从接口获取数据都存储到 localStorage
+       */
+      repositories.push(...data);
+      localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
+    }
+
+    if (data.length < PER_PAGE) {
+      /**
+       * 当用户删除了一些 Repository 并且本地有（全量）缓存
+       * 当接口全部的数据量 < 本地缓存的数据量
+       * 更新为接口数据
+       */
+      if (tmpRepositories.length < repositories.length) {
+        repositories.push(...tmpRepositories);
+        localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
+      }
       break;
     }
   }
-  return list;
+  return repositories;
 }
 
 export const useRepositoryStore = defineStore('repository', {
@@ -135,20 +176,17 @@ export const useRepositoryStore = defineStore('repository', {
      */
     async resolveRepositories() {
       this.loading = true;
-      let localRepos = localStorage.getItem(STARRED_REPOS);
-      if (localRepos) {
-        localRepos = JSON.parse(localRepos);
-        this.all = localRepos;
+      let localRepositories = localStorage.getItem(STARRED_REPOS);
+      if (localRepositories) {
+        localRepositories = JSON.parse(localRepositories);
+        this.all = localRepositories;
 
         // 开发环境默认不通过 HTTP 更新 repositories
         if (!import.meta.env.DEV) {
-          const tmp = await _resolveRepositories();
-          this.all = tmp;
-          localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
+          await _resolveRepositories(this.all);
         }
       } else {
         await _resolveRepositories(this.all);
-        localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
       }
       this.loading = false;
     },

@@ -4,7 +4,7 @@ export async function getUserInfo() {
   return httpRequestGithub.get('/user');
 }
 
-export async function getStarredRepos(params) {
+export async function getStarredRepositories(params) {
   return httpRequestGithub.get('/user/starred', { params });
 }
 
