@@ -23,7 +23,7 @@
       :aria-label="sortTypeLabel"
       role="tooltip"
       data-microtip-position="top"
-      class="ml-2.5 cursor-pointer text-sm"
+      class="ml-2.5 cursor-pointer text-sm text-gray-400"
     >
       <svg-icon
         :name="repositoryStore.sortType"
@@ -38,7 +38,7 @@
       data-microtip-position="top"
       class="ml-2.5 text-sm"
     >
-      <svg-icon name="loading" class="animate-spin" />
+      <svg-icon name="loading" class="animate-spin text-gray-400" />
     </div>
   </div>
 </template>

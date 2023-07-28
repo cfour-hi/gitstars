@@ -15,7 +15,7 @@ export const httpRequestGithub = axios.create({
 
 httpRequestGithub.interceptors.request.use((config) => {
   const userStore = useUserStore();
-  config.headers.Authorization = `token ${userStore.token}`;
+  config.headers.Authorization = `Bearer ${userStore.token}`;
   return config;
 });
 

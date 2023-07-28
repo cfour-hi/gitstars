@@ -2,16 +2,20 @@
   <div class="flex items-center justify-between font-bold text-[#948aec]">
     <h2 class="hover:underline">
       <a :href="repository.html_url" rel="noopener noreferrer">
-        <span>{{ repository.owner.login }} / {{ repository.name }}</span>
+        <span
+          >{{ repository.owner.login }} / {{ repository.name }}
+          <svg-icon name="share" class="text-xs"
+        /></span>
       </a>
     </h2>
 
     <a
       v-if="repository.homepage"
       :href="repository.homepage"
+      class="flex h-6 w-6 items-center justify-center rounded-full hover:bg-[#948aec] hover:text-white"
       rel="noopener noreferrer"
     >
-      <svg-icon name="link" class="ml-2" />
+      <svg-icon name="link" />
     </a>
   </div>
 
@@ -35,15 +39,17 @@
 
   <div class="flex justify-between text-xs font-bold text-[#76d0a3]">
     <div>
-      <span class="mr-3 inline-flex items-center">
+      <span class="inline-flex items-center">
         <svg-icon name="star-fill" class="mr-1" />
         <span>{{ repository.stargazers_count }}</span>
       </span>
-      <span class="inline-flex items-center">
+
+      <span class="ml-3 inline-flex items-center">
         <svg-icon name="branch" class="mr-1" />
         <span>{{ repository.forks_count }}</span>
       </span>
     </div>
+
     <span>{{ repository.language }}</span>
   </div>
 </template>

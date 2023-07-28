@@ -10,17 +10,14 @@
           <svg-icon name="logo" class="mr-1" />
           {{ BRAND }}
         </h1>
-        <!-- <div class="leading-loose">
-        <p>Gitstars 是一个 Github 仓库分类工具</p>
-        <p>能够通过 topic 和 language 对仓库进行分类</p>
-        <p>帮助使用者快速找到自己 star 的仓库</p>
-      </div> -->
-        <a class="block text-center" :href="authURL" target="_self">
-          <button
-            class="cursor-pointer rounded bg-[#948aec] p-3 text-base text-white hover:bg-[#948aeccc]"
-          >
-            GitHub APP 授权登录
-          </button>
+
+        <a
+          class="mx-auto flex w-56 items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-center text-base hover:bg-gray-200 hover:underline"
+          :href="authURL"
+          target="_self"
+        >
+          <svg-icon name="github" class="mr-2 text-xl" />
+          <span>GitHub APP 授权登录</span>
         </a>
       </div>
     </div>

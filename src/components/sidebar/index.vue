@@ -40,6 +40,7 @@
         Author：
         <h1>
           {{ userStore.userinfo.html_url.split('/').pop() }}
+          <svg-icon name="share" class="text-xs text-[#76d0a3]" />
         </h1>
       </a>
     </footer>

@@ -12,12 +12,15 @@
         rel="noopener noreferrer"
         class="ml-3 text-xl font-bold text-[#948aec] hover:underline"
       >
-        {{ userinfo.name }}'s Starred Repositories
+        <h2>
+          {{ userinfo.name }}'s Starred Repositories
+          <svg-icon name="share" class="text-sm" />
+        </h2>
       </a>
     </div>
 
     <a :href="BRAND_URI">
-      <svg-icon name="github" class="cursor-pointer text-2xl" />
+      <svg-icon name="github" class="text-2xl hover:opacity-50" />
     </a>
   </header>
 </template>
