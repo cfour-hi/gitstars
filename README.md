@@ -34,16 +34,6 @@ Github 会统计分析 Repository 的文件，确定 Repository 的主编程语�
 
 ![](public/example-languages.png)
 
-## 现有问题
-
-### [issues38](https://github.com/cfour-hi/gitstars/issues/38) - Github 授权后页面一直处于加载中，无法进入主页面。
-
-原因：GitHub 授权后获取 access_token 失败
-
-![](https://user-images.githubusercontent.com/8335856/255381635-b0911e89-53d3-466a-8e52-bd3edb0fad3a.png)
-
-GitHub API 20.205.243.166 节点偶现连接超时，暂时没有想到好的解决方案，希望有大佬能提供支持。
-
 ## Vercel 部署
 
 [WIKI Vercel 部署](https://github.com/cfour-hi/gitstars/wiki/Vercel-%E9%83%A8%E7%BD%B2)
