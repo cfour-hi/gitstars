@@ -4,66 +4,55 @@ import { STARRED_REPOS, REPO_SORT_TYPE, TAG_TYPE } from '@/constants';
 import { useTagStore } from '@/store/tag';
 
 /**
- * 通过 HTTP 获取 repositories
- * 渐进式添加 repositories 数据，让用户更快得到反馈
- * @param {Array} repositories
+ * 通过 HTTP 获取 repositories 并更新
+ * Github 接口使用 HTTP2 协议，无并发限制
+ *
+ * @param {Array} storeRepositories
  * @returns
  */
-async function _resolveRepositories(repositories) {
-  const hasLocalCache = repositories.length > 0;
-  const MAX_PAGE = 9999;
-  const PER_PAGE = 100;
-  const tmpRepositories = [];
-  let flagReplacedCache = false;
+async function handlerRsolveRepositories(storeRepositories) {
+  const PAGE_SIZE = 100;
+  const PARALLEL_NUM = 10;
+  const STEP_SIZE = PAGE_SIZE * PARALLEL_NUM;
+  let parallelRequests = [];
+  let page = 1;
+  let repositoryIndex = 0;
 
-  for (let i = 1; i < MAX_PAGE; i++) {
-    const data = await getStarredRepositories({
-      per_page: PER_PAGE,
-      page: i,
-    });
-    tmpRepositories.push(...data);
+  do {
+    parallelRequests.push(
+      getStarredRepositories({ page, per_page: PAGE_SIZE }),
+    );
 
-    if (hasLocalCache) {
-      if (tmpRepositories.length >= repositories.length) {
-        /**
-         * 有本地缓存的情况下
-         * 采用 “对比替换” 策略
-         * 当接口获取的数据量 >= 本地缓存的数据量
-         * 更新为接口的数据
-         */
-        if (flagReplacedCache) {
-          repositories.push(...data);
+    if (page % PARALLEL_NUM === 0) {
+      const httpRepositories = (await Promise.all(parallelRequests)).flat();
+      parallelRequests = [];
+
+      for (let i = 0; i < httpRepositories.length; i += 1) {
+        const httpRepo = httpRepositories[i];
+        const storeRepo = storeRepositories[repositoryIndex];
+
+        if (storeRepo) {
+          if (storeRepo.id !== httpRepo.id) {
+            const storeRepoIndex = storeRepositories.findIndex(
+              ({ id }) => id === httpRepo.id,
+            );
+            if (storeRepoIndex >= 0) {
+              storeRepositories.splice(storeRepoIndex, 1);
+            }
+            storeRepositories.splice(repositoryIndex, 0, httpRepo);
+          }
         } else {
-          repositories.splice(0, repositories.length);
-          repositories.push(...tmpRepositories);
-          flagReplacedCache = true;
+          storeRepositories.splice(repositoryIndex, 0, httpRepo);
         }
-        localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
+        repositoryIndex += 1;
       }
-    } else {
-      /**
-       * 无本地缓存的情况下
-       * 采用 “增量缓存” 策略
-       * 每次从接口获取数据都存储到 localStorage
-       */
-      repositories.push(...data);
-      localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
-    }
-
-    if (data.length < PER_PAGE) {
-      /**
-       * 当用户删除了一些 Repository 并且本地有（全量）缓存
-       * 当接口全部的数据量 < 本地缓存的数据量
-       * 更新为接口数据
-       */
-      if (tmpRepositories.length < repositories.length) {
-        repositories.push(...tmpRepositories);
-        localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
+      if (httpRepositories.length < STEP_SIZE) {
+        storeRepositories.splice(repositoryIndex);
+        break;
       }
-      break;
     }
-  }
-  return repositories;
+    page += 1;
+  } while (true);
 }
 
 export const useRepositoryStore = defineStore('repository', {
@@ -177,16 +166,16 @@ export const useRepositoryStore = defineStore('repository', {
     async resolveRepositories() {
       this.loading = true;
       let localRepositories = localStorage.getItem(STARRED_REPOS);
+
       if (localRepositories) {
         localRepositories = JSON.parse(localRepositories);
         this.all = localRepositories;
+      }
 
-        // 开发环境默认不通过 HTTP 更新 repositories
-        if (!import.meta.env.DEV) {
-          await _resolveRepositories(this.all);
-        }
-      } else {
-        await _resolveRepositories(this.all);
+      // 开发环境默认不通过 HTTP 更新 repositories
+      if (!import.meta.env.DEV) {
+        await handlerRsolveRepositories(this.all);
+        localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
       }
       this.loading = false;
     },
