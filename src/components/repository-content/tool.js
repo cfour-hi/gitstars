@@ -8,7 +8,7 @@ import { GITHUB_COM } from '@/constants';
  */
 export const toRepostoryReadmeHref = (str, { urlPrefix } = {}) => {
   if (str.startsWith('http')) return str;
-  if (str.startsWith('/')) return `${GITHUB_COM}${str}`;
+  // if (str.startsWith('/')) return `${GITHUB_COM}${str}`;
   if (str.startsWith('./')) return `${urlPrefix}${str.slice(1)}`;
   return `${urlPrefix}${str}`;
 };
