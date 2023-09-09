@@ -22,7 +22,7 @@
     </a>
   </div>
 
-  <ul class="flex flex-wrap text-xs text-gray-300" @click="handleClickTopic">
+  <ul v-if="tagStore.tagSrc === TAG_SRC.self" class="flex flex-wrap text-xs text-gray-300" @click="handleClickTopic">
     <li
       v-for="topic in repository.topics"
       :key="topic"
@@ -59,7 +59,7 @@
 
 <script setup>
 import { useTagStore } from '@/store/tag';
-import { TAG_TYPE } from '@/constants';
+import { TAG_SRC, TAG_TYPE } from '@/constants';
 
 defineProps({
   repository: {
