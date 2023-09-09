@@ -6,17 +6,26 @@ Star is easy，可随着 Starred Repositories 增长，在需要使用到某个�
 
 所以拥有自己的 Github Stars Repositories Manager 也算是开发者的必备需求。
 
-之前有使用过市面上的一些相关工具，比如 Astral。虽说能用，但总觉得不顺手、不好用。
-
 Gitstars 由此诞生 🎉
 
 ## Example
 
-![](public/example-gitstars.png)
+<h3 style="text-align: center;">Your Stars</h3>
+
+![](public/example-your-stars.png)
+
+<h3 style="text-align: center;">Github Ranking</h3>
+
+![](public/example-github-ranking.png)
+
+## 特性
+
+- Star 仓库自动根据 Topics 和 Language 进行标签分类；
+- Github 全局仓库 Star 排行榜，各开发语言仓库 Star 排行榜，每日更新；
+- 仓库 README 预览；
+- 快捷跳转 Github 仓库、仓库 Website；
 
 ## 说明
-
-Gitstars 根据 Topics 和 Language 对 Repositories 进行分类，方便快速找到目标 Repository。
 
 ### 什么是 Topics？
 
