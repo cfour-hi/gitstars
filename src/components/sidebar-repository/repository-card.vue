@@ -1,7 +1,10 @@
 <template>
   <div class="flex items-center justify-between font-bold text-[#948aec]">
     <h2 class="hover:underline">
-      <a :href="repository.html_url" rel="noopener noreferrer">
+      <a
+        :href="`https://github.com/${repository.owner.login}/${repository.name}`"
+        rel="noopener noreferrer"
+      >
         <span
           >{{ repository.owner.login }} / {{ repository.name }}
           <svg-icon name="share" class="text-xs"
