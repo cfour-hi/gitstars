@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-0 flex-auto flex-col">
+  <div class="relative flex h-0 flex-auto flex-col">
     <TagItem
       :tag="{
         label: '全部',
@@ -11,28 +11,36 @@
       @click="handleClickTagAll"
     />
 
-    <TagSearch @input="handleInputSearch">
-      <template #suffix>
-        <div
-          :aria-label="sortType.label"
-          role="tooltip"
-          data-microtip-position="top"
-          class="ml-2 flex-none cursor-pointer"
-          @click="handleChangeSortType"
-        >
-          <svg-icon :name="sortType.icon" />
-        </div>
-      </template>
-    </TagSearch>
+    <template v-if="repositoryStore.all.length > 0">
+      <TagSearch @input="handleInputSearch">
+        <template #suffix>
+          <div
+            :aria-label="sortType.label"
+            role="tooltip"
+            data-microtip-position="top"
+            class="ml-2 flex-none cursor-pointer"
+            @click="handleChangeSortType"
+          >
+            <svg-icon :name="sortType.icon" />
+          </div>
+        </template>
+      </TagSearch>
 
-    <section class="flex-auto overflow-auto">
-      <TagListLanguage
-        v-show="tagStore.selectedTagTypeNav === TAG_TYPE.language"
-      />
-      <TagListTopic v-show="tagStore.selectedTagTypeNav === TAG_TYPE.topic" />
-    </section>
+      <section class="flex-auto overflow-auto">
+        <TagListLanguage
+          v-show="tagStore.selectedTagTypeNav === TAG_TYPE.language"
+        />
+        <TagListTopic v-show="tagStore.selectedTagTypeNav === TAG_TYPE.topic" />
+      </section>
 
-    <TagTypeNav v-show="tagStore.tagSrc === TAG_SRC.self" />
+      <TagTypeNav />
+    </template>
+
+    <svg-icon
+      v-else
+      name="loading"
+      class="absolute left-1/2 top-1/3 -ml-3 animate-spin text-2xl text-gray-300"
+    />
   </div>
 </template>
 

@@ -1,5 +1,7 @@
 <template>
-  <section class="flex h-9 flex-none items-center px-5 text-xs">
+  <section
+    class="flex h-9 flex-none items-center border-t border-solid border-t-gray-700 px-5 text-xs"
+  >
     <span class="flex-none">
       <svg-icon name="search" class="" />
       <span class="mx-2">搜索</span>

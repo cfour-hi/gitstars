@@ -33,7 +33,11 @@
     </div>
 
     <div
-      v-if="repositoryStore.all.length !== 0 && repositoryStore.loading"
+      v-if="
+        tagStore.tagSrc === TAG_SRC.self &&
+        repositoryStore.all.length !== 0 &&
+        repositoryStore.loading
+      "
       aria-label="仓库更新中"
       role="tooltip"
       data-microtip-position="top"
