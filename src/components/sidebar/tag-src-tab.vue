@@ -5,24 +5,29 @@
     <li
       v-for="nav in navList"
       :key="nav"
-      :class="{ selected: nav === tagStore.selectedNav }"
+      :class="{ selected: nav === tagStore.tagSrc }"
       class="h-full w-1/3 flex-auto cursor-pointer border-r border-solid border-gray-500 text-center capitalize leading-8 last:border-none"
       @click="handleClickNav(nav)"
     >
-      {{ nav }}s
+      {{ labels[nav] }}
     </li>
   </ul>
 </template>
 
 <script setup>
 import { useTagStore } from '@/store/tag';
-import { TAG_TYPE } from '@/constants';
+import { TAG_SRC } from '@/constants';
 
-const navList = Object.values(TAG_TYPE);
+const labels = {
+  [TAG_SRC.self]: 'Your Stars',
+  [TAG_SRC.github]: 'Github Ranking',
+};
+
+const navList = Object.values(TAG_SRC);
 const tagStore = useTagStore();
 
 function handleClickNav(nav) {
-  tagStore.$patch({ selectedNav: nav });
+  tagStore.$patch({ tagSrc: nav });
 }
 </script>
 

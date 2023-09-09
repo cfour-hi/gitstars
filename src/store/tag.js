@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { TAG_TYPE, TAG_SORT_TYPE } from '@/constants';
+import { TAG_TYPE, TAG_SORT_TYPE, TAG_SRC } from '@/constants';
 import { useRepositoryStore } from './repository';
 
 /**
@@ -43,21 +43,27 @@ function analyzeLanguages() {
 export const useTagStore = defineStore('tag', {
   state: () => ({
     /**
-     * 当前选中 tag 类型
-     * topic 和 language 可能相同
-     * 需要此标识判断 tag 是否处于 active 状态
+     * tag 来源
+     *  1. 自己 star 的仓库
+     *  2. Github 排行榜
      */
-    selectedType: '',
+    tagSrc: TAG_SRC.self,
     /**
      * 当前选中 tag
      * topic 或 language
      */
-    selected: '',
+    selectedTag: '',
     /**
-     * 当前选中 nav 类型
-     * sidebar 底部 Topics 和 Languages active 状态
+     * 当前选中 tag 类型
+     * topic 和 language 的 tag 名可能相同
+     * 需要此标识判断当前选中的 tag 是属于什么类型
      */
-    selectedNav: TAG_TYPE.topic,
+    selectedTagType: '',
+    /**
+     * 当前选中 tag 类别
+     * 用于 sidebar 底部 Topics 和 Languages 的高亮状态
+     */
+    selectedTagTypeNav: TAG_TYPE.topic,
     /**
      * tag 搜索内容
      */

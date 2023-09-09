@@ -26,8 +26,8 @@
       :data-topic="topic"
       :class="{
         'selected-tag':
-          tagStore.selectedType === TAG_TYPE.topic &&
-          tagStore.selected === topic,
+          tagStore.selectedTagType === TAG_TYPE.topic &&
+          tagStore.selectedTag === topic,
       }"
       class="mr-1 mt-1 rounded-full border border-solid border-gray-300 px-2 hover:border-[#948aec] hover:bg-[#948aec] hover:!text-white"
     >
@@ -74,9 +74,9 @@ function handleClickTopic(e) {
     if (!elTag) return;
   }
   tagStore.$patch({
-    selectedType: TAG_TYPE.topic,
-    selectedNav: TAG_TYPE.topic,
-    selected: elTag.dataset.topic,
+    selectedTagTypeNav: TAG_TYPE.topic,
+    selectedTagType: TAG_TYPE.topic,
+    selectedTag: elTag.dataset.topic,
   });
 }
 </script>

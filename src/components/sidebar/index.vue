@@ -9,25 +9,10 @@
       </h1>
     </a>
 
-    <TagItem
-      :tag="{
-        label: '全部',
-        icon: 'all-application',
-        value: repositoryStore.all.length,
-      }"
-      :class="{ selected: !tagStore.selected }"
-      class="mr-1 flex-none"
-      @click="handleClickTagAll"
-    />
+    <TagSrcTab />
 
-    <TagSearch />
-
-    <section ref="refTagGroup" class="flex-auto overflow-auto">
-      <TagGroupLanguage v-show="tagStore.selectedNav === TAG_TYPE.language" />
-      <TagGroupTopic v-show="tagStore.selectedNav === TAG_TYPE.topic" />
-    </section>
-
-    <TagNav />
+    <TagSrcTabSelf v-show="tagStore.tagSrc === TAG_SRC.self" />
+    <TagSrcGithub v-show="tagStore.tagSrc === TAG_SRC.github" />
 
     <footer
       class="brand-text h-8 flex-none border-t border-solid border-white/10 text-sm font-bold"
@@ -48,33 +33,15 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import TagItem from './tag-item.vue';
-import TagSearch from './tag-search.vue';
-import TagGroupTopic from './tag-group-topic.vue';
-import TagGroupLanguage from './tag-group-language.vue';
-import TagNav from './tag-nav.vue';
+import TagSrcTab from './tag-src-tab.vue';
+import TagSrcTabSelf from './tag-src-self/index.vue';
+import TagSrcGithub from './tag-src-github.vue';
 import { useUserStore } from '@/store/user';
 import { useTagStore } from '@/store/tag';
-import { useRepositoryStore } from '@/store/repository';
-import { BRAND, TAG_TYPE, BRAND_URI } from '@/constants';
+import { BRAND, BRAND_URI, TAG_SRC } from '@/constants';
 
 const userStore = useUserStore();
 const tagStore = useTagStore();
-const repositoryStore = useRepositoryStore();
-const refTagGroup = ref(null);
-
-watch(
-  () => repositoryStore.all,
-  () => {
-    tagStore.analyze();
-  },
-  { deep: true },
-);
-
-function handleClickTagAll() {
-  tagStore.$patch({ selected: '' });
-}
 </script>
 
 <style scoped>

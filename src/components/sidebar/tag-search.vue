@@ -2,10 +2,10 @@
   <section class="flex h-9 flex-none items-center px-5 text-xs">
     <span class="flex-none">
       <svg-icon name="search" class="" />
-      <span class="ml-2">搜索</span>
+      <span class="mx-2">搜索</span>
     </span>
 
-    <span class="relative mx-2 flex-auto">
+    <span class="relative flex-auto">
       <input
         ref="refInput"
         type="text"
@@ -20,43 +20,26 @@
       />
     </span>
 
-    <div
-      :aria-label="sortType.label"
-      role="tooltip"
-      data-microtip-position="top"
-      class="flex-none cursor-pointer"
-      @click="handleChangeSortType"
-    >
-      <svg-icon :name="sortType.icon" />
-    </div>
+    <slot name="suffix" />
   </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useTagStore } from '@/store/tag';
 import { debounce } from 'lodash';
-import { TAG_SORT_TYPE } from '@/constants';
+
+const emit = defineEmits(['input']);
 
 const tagStore = useTagStore();
 const refInput = ref(null);
 
-const sortType = computed(() => TAG_SORT_TYPE[tagStore.sortType]);
-
 const handleInputFilterTag = debounce(({ target }) => {
-  tagStore.$patch({ filterText: target.value });
+  emit('input', target.value);
 }, 300);
 
 function handleClickClose() {
-  tagStore.$patch({ filterText: '' });
   refInput.value.value = '';
-}
-
-function handleChangeSortType() {
-  const newSortType =
-    tagStore.sortType === TAG_SORT_TYPE.amountDown.value
-      ? TAG_SORT_TYPE.amountUp.value
-      : TAG_SORT_TYPE.amountDown.value;
-  tagStore.$patch({ sortType: newSortType });
+  emit('input', '');
 }
 </script>
