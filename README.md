@@ -6,26 +6,26 @@ Star is easy，可随着 Starred Repositories 增长，在需要使用到某个�
 
 所以拥有自己的 Github Stars Repositories Manager 也算是开发者的必备需求。
 
-Gitstars 由此诞生 🎉
+Gitstars 由此诞生 💡
 
-## 发现好项目：Gitstars Ranking（2023-09-09）
+## 👀 发现好项目：Gitstars Ranking（2023-09-09）
 
 <strong>Gitstars Ranking</strong>：帮助你发现 Github Stars 数量排名前 100 的好项目，支持各种编程语言分类，每日更新。
 
 ![](public/example-github-ranking.png)
 
-## 快速找到自己 Star 的仓库：Your Stars
+## 🚀 快速找到自己 Star 的仓库：Your Stars
 
 <strong>Your Stars</strong>：整理你的 Stars 仓库，根据 Topics 和 Language 进行分类，帮助你快速找到目标项目。
 
 ![](public/example-your-stars.png)
 
-## 其它特性
+## 👻 其它特性
 
 - README.md 预览：无需跳转到 Github 查看 README.md，在 Gitstars 即可查看。
 - 链接直达：Github 仓库、项目 Webiste；
 
-## 说明
+## 📖 说明
 
 ### Topics：仓库的标签集
 
@@ -39,6 +39,6 @@ Github 会统计分析 Repository 的文件，确定 Repository 的主编程语�
 
 ![](public/example-languages.png)
 
-## Vercel 部署
+## 🤖 Vercel 部署
 
 [WIKI Vercel 部署](https://github.com/cfour-hi/gitstars/wiki/Vercel-%E9%83%A8%E7%BD%B2)

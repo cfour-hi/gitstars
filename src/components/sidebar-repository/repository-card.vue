@@ -1,15 +1,19 @@
 <template>
   <div class="flex items-center justify-between font-bold text-[#948aec]">
-    <h2 class="hover:underline">
+    <h2>
+      <span
+        v-if="medalMap[repository.ranking]"
+        v-html="medalMap[repository.ranking]"
+        class="mr-1"
+      ></span>
       <a
         :href="`https://github.com/${repository.owner.login}/${repository.name}`"
         rel="noopener noreferrer"
+        class="hover:underline"
       >
-        <span
-          >{{ repository.owner.login }} / {{ repository.name }}
-          <svg-icon name="share" class="text-xs"
-        /></span>
+        {{ repository.owner.login }} / {{ repository.name }}
       </a>
+      <svg-icon name="share" class="ml-1 text-xs" />
     </h2>
 
     <a
@@ -22,7 +26,11 @@
     </a>
   </div>
 
-  <ul v-if="tagStore.tagSrc === TAG_SRC.self" class="flex flex-wrap text-xs text-gray-300" @click="handleClickTopic">
+  <ul
+    v-if="tagStore.tagSrc === TAG_SRC.self"
+    class="flex flex-wrap text-xs text-gray-300"
+    @click="handleClickTopic"
+  >
     <li
       v-for="topic in repository.topics"
       :key="topic"
@@ -68,6 +76,11 @@ defineProps({
   },
 });
 
+const medalMap = {
+  1: '&#129351;',
+  2: '&#129352;',
+  3: '&#129353;',
+};
 const tagStore = useTagStore();
 
 function handleClickTopic(e) {
