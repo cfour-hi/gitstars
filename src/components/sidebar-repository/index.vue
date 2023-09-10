@@ -2,9 +2,7 @@
   <div
     class="relative w-96 flex-none border-r border-solid border-r-gray-300 bg-white"
   >
-    <RepositorySearch
-      v-show="repositoryStore.filteredRepositories.length > 0"
-    />
+    <RepositorySearch />
 
     <DynamicScroller
       ref="refRepositoryList"
