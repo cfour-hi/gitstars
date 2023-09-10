@@ -8,36 +8,32 @@ Star is easy，可随着 Starred Repositories 增长，在需要使用到某个�
 
 Gitstars 由此诞生 🎉
 
-## Example
+## 发现好项目：Gitstars Ranking（2023-09-09）
 
-<h3 style="text-align: center;">Your Stars</h3>
-
-![](public/example-your-stars.png)
-
-<h3 style="text-align: center;">Github Ranking</h3>
+<strong>Gitstars Ranking<strong>：帮助你发现 Github Stars 数量排名前 100 的好项目，支持各种编程语言分类，每日更新。
 
 ![](public/example-github-ranking.png)
 
-## 特性
+## 快速找到自己 Star 的仓库：Your Stars
 
-- Star 仓库自动根据 Topics 和 Language 进行标签分类；
-- Github 全局仓库 Star 排行榜，各开发语言仓库 Star 排行榜，每日更新；
-- 仓库 README 预览；
-- 快捷跳转 Github 仓库、仓库 Website；
+<strong>Your Stars</strong>：整理你的 Stars 仓库，根据 Topics 和 Language 进行分类，帮助你快速找到目标项目。
+
+![](public/example-your-stars.png)
+
+## 其它特性
+
+- README.md 预览：无需跳转到 Github 查看 README.md，在 Gitstars 即可查看。
+- 链接直达：Github 仓库、项目 Webiste；
 
 ## 说明
 
-### 什么是 Topics？
-
-Repository 的标签集。
+### Topics：仓库的标签集
 
 标签集由 Repository 作者定义，一般都是与 Repository 相关的关键词，大多以英文为主。
 
 ![](public/example-topics.png)
 
-### 什么是 Language？
-
-Repository 的主编程语言。
+### Language：仓库的主编程语言
 
 Github 会统计分析 Repository 的文件，确定 Repository 的主编程语言。
 
