@@ -10,7 +10,7 @@ Gitstars 由此诞生 🎉
 
 ## 发现好项目：Gitstars Ranking（2023-09-09）
 
-<strong>Gitstars Ranking<strong>：帮助你发现 Github Stars 数量排名前 100 的好项目，支持各种编程语言分类，每日更新。
+<strong>Gitstars Ranking</strong>：帮助你发现 Github Stars 数量排名前 100 的好项目，支持各种编程语言分类，每日更新。
 
 ![](public/example-github-ranking.png)
 
