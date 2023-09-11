@@ -38,6 +38,6 @@ const authURL = `https://github.com/login/oauth/authorize?client_id=${
 }
 
 .wrapper {
-  background: url(/example-gitstars.png) no-repeat center/contain;
+  background: url(/example-your-stars.png) no-repeat center/contain;
 }
 </style>

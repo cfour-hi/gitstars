@@ -27,8 +27,8 @@
   </div>
 
   <ul
-    v-if="tagStore.tagSrc === TAG_SRC.self"
     class="flex flex-wrap text-xs text-gray-300"
+    :class="{ disabled: disableTopic }"
     @click="handleClickTopic"
   >
     <li
@@ -37,10 +37,11 @@
       :data-topic="topic"
       :class="{
         'selected-tag':
+          !disableTopic &&
           tagStore.selectedTagType === TAG_TYPE.topic &&
           tagStore.selectedTag === topic,
       }"
-      class="mr-1 mt-1 rounded-full border border-solid border-gray-300 px-2 hover:border-[#948aec] hover:bg-[#948aec] hover:!text-white"
+      class="tag-topic mr-1 mt-1 rounded-full border border-solid border-gray-300 px-2 hover:border-[#948aec] hover:bg-[#948aec] hover:!text-white"
     >
       {{ topic }}
     </li>
@@ -66,6 +67,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useTagStore } from '@/store/tag';
 import { TAG_SRC, TAG_TYPE } from '@/constants';
 
@@ -82,8 +84,11 @@ const medalMap = {
   3: '&#129353;',
 };
 const tagStore = useTagStore();
+const disableTopic = computed(() => tagStore.tagSrc !== TAG_SRC.self);
 
 function handleClickTopic(e) {
+  if (disableTopic.value) return;
+
   let elTag = e.target;
   while (!elTag.dataset.topic) {
     elTag = elTag.parentElement;
@@ -101,5 +106,9 @@ function handleClickTopic(e) {
 .selected-tag {
   border-color: var(--primary);
   color: var(--primary);
+}
+
+.disabled .tag-topic {
+  cursor: not-allowed;
 }
 </style>

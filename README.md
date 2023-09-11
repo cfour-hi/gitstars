@@ -1,5 +1,7 @@
 ![](public/brand.png)
 
+## 🎯 背景
+
 Github 作为开发者的第一社交平台，拥有数不胜数的优秀开源项目，给工作和学习带来巨大方便，遇到自己需要或是喜爱的项目只需点击 Star 便可收入囊中。
 
 Star is easy，可随着 Starred Repositories 增长，在需要使用到某个项目时难免记不清叫什么，而 Github 又只提供简单的搜索，找到目标 Starred Repository 竟也成了件小小的麻烦事。
@@ -22,8 +24,8 @@ Gitstars 由此诞生 💡
 
 ## 👻 其它特性
 
-- README.md 预览：无需跳转到 Github 查看 README.md，在 Gitstars 即可查看。
-- 链接直达：Github 仓库、项目 Webiste；
+- <strong>README.md 预览</strong>：无需跳转到 Github 查看 README.md，在 Gitstars 即可查看。
+- <strong>链接直达</strong>：Github 仓库、项目 Webiste；
 
 ## 📖 说明
 
