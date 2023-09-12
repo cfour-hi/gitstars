@@ -2,33 +2,28 @@ export const config = {
   runtime: 'edge',
 };
 
-async function toJSON(body) {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  const chunks = [];
-
-  async function read() {
-    const { done, value } = await reader.read();
-    if (done) {
-      return JSON.parse(chunks.join(''));
-    }
-
-    const chunk = decoder.decode(value, { stream: true });
-    chunks.push(chunk);
-    return read();
+export default async (request, context) => {
+  if (request.method === 'OPTIONS') {
+    return new Response('OK', {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+        'Access-Control-Allow-Headers':
+          'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+      },
+    });
   }
 
-  return read();
-}
+  const requestBody = await request.json();
+  console.log('requestBody', requestBody);
 
-export default async (request) => {
-  const requestBodyJson = await toJSON(request.body);
   try {
     const res = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
       body: JSON.stringify({
-        code: requestBodyJson.code,
-        client_id: requestBodyJson.client_id,
+        code: requestBody.code,
+        client_id: requestBody.client_id,
         client_secret: process.env.VITE_GITSTARS_CLIENT_SECRET,
       }),
       headers: {
@@ -37,7 +32,15 @@ export default async (request) => {
       },
     });
     const data = await res.json();
-    return new Response(JSON.stringify(data));
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+        'Access-Control-Allow-Headers':
+          'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+      },
+    });
   } catch (e) {
     console.error(e);
     return new Response(e.message);
