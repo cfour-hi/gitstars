@@ -1,3 +1,7 @@
+export const config = {
+  runtime: 'edge',
+};
+
 async function toJSON(body) {
   const reader = body.getReader();
   const decoder = new TextDecoder();
