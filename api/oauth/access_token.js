@@ -21,28 +21,7 @@ async function toJSON(body) {
   return read();
 }
 
-async function allowCors(fn) {
-  return async (req, res) => {
-    // res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-    );
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-    );
-    if (req.method === 'OPTIONS') {
-      res.status(200).end();
-      return;
-    }
-    return await fn(req, res);
-  };
-}
-
-async function handler(request) {
-  console.log('handler request', request.body);
+export default async (request) => {
   const requestBodyJson = await toJSON(request.body);
   try {
     const res = await fetch('https://github.com/login/oauth/access_token', {
@@ -63,6 +42,4 @@ async function handler(request) {
     console.error(e);
     return new Response(e.message);
   }
-}
-
-export default allowCors(handler);
+};
