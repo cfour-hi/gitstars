@@ -2,21 +2,20 @@ export const config = {
   runtime: 'edge',
 };
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'OPTIONS,POST',
+};
+
 export default async (request, context) => {
   if (request.method === 'OPTIONS') {
     return new Response('OK', {
       status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-        'Access-Control-Allow-Headers':
-          'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-      },
+      headers: CORS_HEADERS,
     });
   }
 
   const requestBody = await request.json();
-  console.log('requestBody', requestBody);
 
   try {
     const res = await fetch('https://github.com/login/oauth/access_token', {
@@ -31,15 +30,11 @@ export default async (request, context) => {
         Accept: 'application/json',
       },
     });
+
     const data = await res.json();
     return new Response(JSON.stringify(data), {
       status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-        'Access-Control-Allow-Headers':
-          'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-      },
+      headers: CORS_HEADERS,
     });
   } catch (e) {
     console.error(e);
