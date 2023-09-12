@@ -17,15 +17,14 @@ export default async (request, context) => {
   }
 
   const requestBody = await request.json();
+  if (!requestBody.client_secret) {
+    requestBody.client_secret = process.env.VITE_GITSTARS_CLIENT_SECRET;
+  }
 
   try {
     const res = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
-      body: JSON.stringify({
-        code: requestBody.code,
-        client_id: requestBody.client_id,
-        client_secret: process.env.VITE_GITSTARS_CLIENT_SECRET,
-      }),
+      body: JSON.stringify(requestBody),
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
