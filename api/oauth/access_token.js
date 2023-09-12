@@ -7,7 +7,7 @@ export default async (request, context) => {
     return new Response('OK', {
       status: 200,
       headers: {
-        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
         'Access-Control-Allow-Headers':
           'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
@@ -35,7 +35,7 @@ export default async (request, context) => {
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: {
-        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
         'Access-Control-Allow-Headers':
           'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
