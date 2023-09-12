@@ -19,10 +19,8 @@ async function toJSON(body) {
 
 async function allowCors(fn) {
   return async (req, res) => {
-    // res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-    // another common pattern
-    // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
     res.setHeader(
       'Access-Control-Allow-Methods',
       'GET,OPTIONS,PATCH,DELETE,POST,PUT',
@@ -35,11 +33,13 @@ async function allowCors(fn) {
       res.status(200).end();
       return;
     }
+    console.log('allowCors req', req);
     return await fn(req, res);
   };
 }
 
 async function handler(request) {
+  console.log('handler request', request);
   const requestBodyJson = await toJSON(request.body);
   try {
     const res = await fetch('https://github.com/login/oauth/access_token', {
