@@ -33,13 +33,13 @@ async function allowCors(fn) {
       res.status(200).end();
       return;
     }
-    console.log('allowCors req', req);
+    console.log('allowCors req', req.body);
     return await fn(req, res);
   };
 }
 
 async function handler(request) {
-  console.log('handler request', request);
+  console.log('handler request', request.body);
   const requestBodyJson = await toJSON(request.body);
   try {
     const res = await fetch('https://github.com/login/oauth/access_token', {
