@@ -5,7 +5,7 @@
       class="broder-b-gray-300 flex h-9 items-center border-b border-solid px-4"
     >
       <a
-        :href="selectedRepository?.html_url"
+        :href="toRepositoryHref(selectedRepository)"
         class="inline-flex items-center hover:underline"
         rel="noopener noreferrer"
       >
@@ -117,6 +117,9 @@ watchEffect(async () => {
     refReadme.value.scrollTo({ top: 0 });
   });
 });
+
+const toRepositoryHref = (repository) =>
+  `https://github.com/${repository.owner.login}/${repository.name}`;
 </script>
 
 <style src="github-markdown-css/github-markdown-light.css"></style>
