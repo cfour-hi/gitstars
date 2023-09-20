@@ -1,5 +1,13 @@
 ![](public/brand.png)
 
+<div align="center">
+
+简体中文 / [English](./README-EN.md)
+
+Github Stars 存储库管理器
+
+</div>
+
 ## 🎯 背景
 
 Github 作为开发者的第一社交平台，拥有数不胜数的优秀开源项目，给工作和学习带来巨大方便，遇到自己需要或是喜爱的项目只需点击 Star 便可收入囊中。
