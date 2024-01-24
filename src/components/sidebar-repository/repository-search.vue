@@ -4,7 +4,7 @@
       <svg-icon name="search" class="absolute left-2 top-2 text-gray-400" />
 
       <input
-        placeholder="开发者 | 仓库名 | 描述"
+        :placeholder="$t('repo.filterTip', { div: '|' })"
         ref="refInput"
         type="text"
         class="h-7 w-full flex-auto rounded-full bg-white px-6 outline-none"
@@ -20,8 +20,8 @@
     </div>
 
     <div
-      v-show="tagStore.tagSrc === TAG_SRC.self"
-      :aria-label="sortTypeLabel"
+      v-show="tagStore.tagSrc === 'star'"
+      :aria-label="$t(`repo.sort.${repositoryStore.sortType}`)"
       role="tooltip"
       data-microtip-position="top"
       class="ml-2.5 cursor-pointer text-sm text-gray-400"
@@ -34,11 +34,11 @@
 
     <div
       v-if="
-        tagStore.tagSrc === TAG_SRC.self &&
+        tagStore.tagSrc === 'star' &&
         repositoryStore.all.length !== 0 &&
         repositoryStore.loading
       "
-      aria-label="仓库更新中"
+      :aria-label="$t('repo.updating')"
       role="tooltip"
       data-microtip-position="top"
       class="ml-2.5 text-sm"
@@ -49,19 +49,14 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRepositoryStore } from '@/store/repository';
 import { useTagStore } from '@/store/tag';
 import { debounce } from 'lodash';
-import { REPO_SORT_TYPE, TAG_SRC } from '@/constants';
 
 const tagStore = useTagStore();
 const repositoryStore = useRepositoryStore();
 const refInput = ref(null);
-
-const sortTypeLabel = computed(
-  () => REPO_SORT_TYPE[repositoryStore.sortType].label,
-);
 
 const handleInputRepositoryName = debounce(({ target }) => {
   repositoryStore.$patch({ filterText: target.value });
@@ -73,10 +68,7 @@ function handleClickClose() {
 }
 
 function handleChangeSortType() {
-  const newSortType =
-    repositoryStore.sortType === REPO_SORT_TYPE.time.value
-      ? REPO_SORT_TYPE.star.value
-      : REPO_SORT_TYPE.time.value;
+  const newSortType = repositoryStore.sortType === 'time' ? 'star' : 'time';
   repositoryStore.$patch({ sortType: newSortType });
 }
 </script>

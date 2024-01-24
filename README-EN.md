@@ -4,11 +4,11 @@
 
 [简体中文](./README.md) / English
 
-Github Stars Repositories Manager
+Github Stars Repositories Manager, A must-have repository management tool for developers
 
 </div>
 
-## 🎯 Background
+## 🎯 Situation
 
 As the first social platform for developers, Github has countless excellent open source projects, which brings great convenience to work and study. When you encounter a project you need or like, just click Star to get it.
 

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { getStarredRepositories } from '@/server/github';
-import { STARRED_REPOS, REPO_SORT_TYPE, TAG_TYPE, TAG_SRC } from '@/constants';
+import { STARRED_REPOS } from '@/constants';
 import { useTagStore } from '@/store/tag';
 import { useRankingStore } from '@/store/ranking';
 
@@ -78,7 +78,7 @@ export const useRepositoryStore = defineStore('repository', {
      * repositories 排序
      * time 或 star
      */
-    sortType: REPO_SORT_TYPE.time.value,
+    sortType: 'time',
   }),
 
   getters: {
@@ -90,7 +90,7 @@ export const useRepositoryStore = defineStore('repository', {
       const tagStore = useTagStore();
       const rankingStore = useRankingStore();
 
-      if (tagStore.tagSrc === TAG_SRC.self) {
+      if (tagStore.tagSrc === 'star') {
         if (!tagStore.selectedTag) {
           /**
            * 当前未选中 tag
@@ -101,7 +101,7 @@ export const useRepositoryStore = defineStore('repository', {
            * 导致 tag 数据累加（错误）
            */
           repositoriesTmp = [...state.all];
-        } else if (tagStore.selectedTagType === TAG_TYPE.topic) {
+        } else if (tagStore.selectedTagType === 'topic') {
           /**
            * 当前选中的 tag 属于 Topics
            * 从 topicMap 找到 tag 及其对应的 repositories id
@@ -112,7 +112,7 @@ export const useRepositoryStore = defineStore('repository', {
               repositoryIds.includes(repository.id),
             );
           }
-        } else if (tagStore.selectedTagType === TAG_TYPE.language) {
+        } else if (tagStore.selectedTagType === 'language') {
           /**
            * 当前选中的 tag 属于 Languages
            * 从 languageMap 找到 tag 及其对应的 repositories id
@@ -124,7 +124,7 @@ export const useRepositoryStore = defineStore('repository', {
             );
           }
         }
-      } else if (tagStore.tagSrc === TAG_SRC.github) {
+      } else if (tagStore.tagSrc === 'ranking') {
         if (rankingStore.selectedLanguage) {
           repositoriesTmp = [
             ...(rankingStore.languageMap[rankingStore.selectedLanguage] ?? []),
@@ -153,9 +153,9 @@ export const useRepositoryStore = defineStore('repository', {
        * 只需处理按 star 数量排序
        */
       if (
-        tagStore.tagSrc === TAG_SRC.self &&
+        tagStore.tagSrc === 'star' &&
         repositoriesTmp.length > 0 &&
-        state.sortType === REPO_SORT_TYPE.star.value
+        state.sortType === 'star'
       ) {
         repositoriesTmp.sort((a, b) => b.stargazers_count - a.stargazers_count);
       }
@@ -190,7 +190,7 @@ export const useRepositoryStore = defineStore('repository', {
       }
 
       // 开发环境默认不通过 HTTP 更新 repositories
-      if (!import.meta.env.DEV) {
+      if (!import.meta.env.DEV || this.all.length === 0) {
         await handlerRsolveRepositories(this.all);
         localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
       }

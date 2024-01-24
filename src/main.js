@@ -3,12 +3,13 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import { TOKEN_KEY } from '@/constants';
+import { TOKEN_KEY, LANG_KEY } from '@/constants';
 import { getToken } from '@/server/gitstars';
 import { useUserStore } from '@/store/user';
 import SvgIcon from '@/components/svg-icon.vue';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import { throttle } from 'lodash';
+import { createI18nByLocale } from './i18n';
 
 function onResize() {
   let fontSize = window.innerWidth / 100;
@@ -57,9 +58,15 @@ async function initApp() {
   app.use(VueVirtualScroller);
   app.component(SvgIcon.name, SvgIcon);
 
+  const userStore = useUserStore();
+  const lang = localStorage.getItem(LANG_KEY);
+
+  if (lang) userStore.$patch({ lang });
+  app.use(createI18nByLocale(userStore.lang));
+
   const token = localStorage.getItem(TOKEN_KEY);
+
   if (token) {
-    const userStore = useUserStore();
     userStore.$patch({ token });
     await userStore.resolveUserinfo();
   } else {

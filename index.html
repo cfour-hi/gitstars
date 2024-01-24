@@ -1,73 +1,77 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base target="_blank" />
-    <title>Gitstars</title>
-    <style>
-      html,
-      body {
-        height: 100%;
-        overflow: hidden;
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description"
+    content="Github Stars Repositories Manager, A must-have repository management tool for developers">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base target="_blank" />
+  <title>Gitstars</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #app {
+      height: 100%;
+      display: flex;
+      color: #333;
+    }
+
+    .loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 48px;
+      height: 48px;
+      margin-top: -48px;
+      margin-left: -24px;
+      border: 5px solid;
+      border-color: #948aec transparent;
+      border-radius: 50%;
+      display: inline-block;
+      box-sizing: border-box;
+      animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+      0% {
+        transform: rotate(0deg);
       }
 
-      #app {
-        height: 100%;
-        display: flex;
-        color: #333;
+      100% {
+        transform: rotate(360deg);
       }
+    }
+  </style>
+</head>
 
-      .loader {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 48px;
-        height: 48px;
-        margin-top: -48px;
-        margin-left: -24px;
-        border: 5px solid;
-        border-color: #948aec transparent;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: rotation 1s linear infinite;
-      }
+<body>
+  <div id="app">
+    <span class="loader"></span>
 
-      @keyframes rotation {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="app">
-      <span class="loader"></span>
-
-      <div
-        style="display: none"
-        class="app-error fixed left-1/2 top-1/2 inline-block -translate-x-1/2 -translate-y-full bg-white"
-      >
-        <div class="mb-8 text-7xl font-bold text-[#948aec]">Sorry...</div>
-        <div class="mb-2 text-[#76d0a3]">出现一些异常，请刷新页面。</div>
-        <div class="text-gray-400">"<span class="error-content"></span>"</div>
-      </div>
+    <div style="display: none"
+      class="app-error fixed left-1/2 top-1/2 inline-block -translate-x-1/2 -translate-y-full bg-white">
+      <div class="mb-8 text-7xl font-bold text-[#948aec]">Sorry...</div>
+      <div class="mb-2 text-[#76d0a3]">出现一些异常，请刷新页面。</div>
+      <div class="text-gray-400">"<span class="error-content"></span>"</div>
     </div>
-    <script>
-      function onAppError(err) {
-        document.querySelector('.app-error').style.display = 'block';
-        var errorContent = err.message + '.';
-        if (err.response?.statusText) {
-          errorContent += ` ${err.response.statusText}`;
-        }
-        document.querySelector('.error-content').textContent = errorContent;
+  </div>
+  <script>
+    function onAppError(err) {
+      document.querySelector('.app-error').style.display = 'block';
+      var errorContent = err.message + '.';
+      if (err.response?.statusText) {
+        errorContent += ` ${err.response.statusText}`;
       }
-    </script>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+      document.querySelector('.error-content').textContent = errorContent;
+    }
+  </script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>

@@ -4,7 +4,7 @@
   >
     <span class="flex-none">
       <svg-icon name="search" class="" />
-      <span class="mx-2">搜索</span>
+      <span class="mx-2">{{ $t('search') }}</span>
     </span>
 
     <span class="relative flex-auto">

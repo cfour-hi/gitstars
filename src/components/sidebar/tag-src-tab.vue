@@ -3,7 +3,7 @@
     class="broder-solid flex h-8 flex-none justify-between border-t border-gray-600 text-xs"
   >
     <li
-      v-for="tab in tabList"
+      v-for="tab in ['star', 'ranking']"
       :key="tab"
       :class="{
         selected: tab === tagStore.tagSrc,
@@ -12,7 +12,7 @@
       class="h-full w-1/3 flex-auto cursor-pointer border-r border-solid border-gray-500 text-center capitalize leading-8 last:border-none"
       @click="handleClickTab(tab)"
     >
-      {{ labels[tab] }}
+      {{ $t(`category.${tab}`) }}
       <svg-icon
         v-show="toTabLoading(tab)"
         name="loading"
@@ -24,27 +24,20 @@
 
 <script setup>
 import { useTagStore } from '@/store/tag';
-import { TAG_SRC } from '@/constants';
 import { useRankingStore } from '@/store/ranking';
 
-const labels = {
-  [TAG_SRC.self]: 'Your Stars',
-  [TAG_SRC.github]: 'Github Ranking',
-};
-
-const tabList = Object.values(TAG_SRC);
 const tagStore = useTagStore();
 const rankingStore = useRankingStore();
 
 const toTabLoading = (tab) => {
-  if (tab === TAG_SRC.github) {
+  if (tab === 'ranking') {
     return !rankingStore.languageMap.all;
   }
   return false;
 };
 
 function handleClickTab(tab) {
-  if (tab === TAG_SRC.github && !rankingStore.languageMap.all) return;
+  if (tab === 'ranking' && !rankingStore.languageMap.all) return;
   tagStore.$patch({ tagSrc: tab });
 }
 </script>

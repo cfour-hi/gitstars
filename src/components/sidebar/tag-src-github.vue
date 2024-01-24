@@ -2,7 +2,7 @@
   <div class="flex h-0 flex-auto flex-col">
     <TagItem
       :tag="{
-        label: '全部',
+        label: $t('all'),
         icon: 'all-application',
       }"
       :class="{ selected: !rankingStore.selectedLanguage }"

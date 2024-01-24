@@ -38,7 +38,7 @@
       :class="{
         'selected-tag':
           !disableTopic &&
-          tagStore.selectedTagType === TAG_TYPE.topic &&
+          tagStore.selectedTagType === 'topic' &&
           tagStore.selectedTag === topic,
       }"
       class="tag-topic mr-1 mt-1 rounded-full border border-solid border-gray-300 px-2 hover:border-[#948aec] hover:bg-[#948aec] hover:!text-white"
@@ -69,7 +69,6 @@
 <script setup>
 import { computed } from 'vue';
 import { useTagStore } from '@/store/tag';
-import { TAG_SRC, TAG_TYPE } from '@/constants';
 
 defineProps({
   repository: {
@@ -84,7 +83,7 @@ const medalMap = {
   3: '&#129353;',
 };
 const tagStore = useTagStore();
-const disableTopic = computed(() => tagStore.tagSrc !== TAG_SRC.self);
+const disableTopic = computed(() => tagStore.tagSrc !== 'star');
 
 function handleClickTopic(e) {
   if (disableTopic.value) return;
@@ -95,8 +94,8 @@ function handleClickTopic(e) {
     if (!elTag) return;
   }
   tagStore.$patch({
-    selectedTagTypeNav: TAG_TYPE.topic,
-    selectedTagType: TAG_TYPE.topic,
+    selectedTagTypeNav: 'topic',
+    selectedTagType: 'topic',
     selectedTag: elTag.dataset.topic,
   });
 }

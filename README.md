@@ -4,7 +4,7 @@
 
 简体中文 / [English](./README-EN.md)
 
-Github Stars 存储库管理器
+Github Stars 存储库管理器，开发者必备的存储库管理工具。
 
 </div>
 

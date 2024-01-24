@@ -27,7 +27,9 @@
         v-if="!selectedRepository"
         class="flex items-center justify-center text-sm"
       >
-        <svg-icon name="hand-left" class="mr-1 text-base" />点击左侧仓库查看
+        <svg-icon name="hand-left" class="mr-1 text-base" />{{
+          $t('readmeTip')
+        }}
       </p>
       <svg-icon v-show="loading" name="loading" class="animate-spin text-2xl" />
     </div>

@@ -1,5 +1,4 @@
 import { useTagStore } from '@/store/tag';
-import { TAG_SORT_TYPE } from '@/constants';
 
 export const useTag = () => {
   const tagStore = useTagStore();
@@ -13,7 +12,7 @@ export const useTag = () => {
         count: tagMap[key].length,
       }))
       .sort((a, b) => {
-        if (tagStore.sortType === TAG_SORT_TYPE.amountUp.value) {
+        if (tagStore.sortType === 'ascend') {
           return a.count - b.count;
         }
         return b.count - a.count;

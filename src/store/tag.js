@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { TAG_TYPE, TAG_SORT_TYPE, TAG_SRC } from '@/constants';
 import { useRepositoryStore } from './repository';
 
 /**
@@ -47,7 +46,7 @@ export const useTagStore = defineStore('tag', {
      *  1. 自己 star 的仓库
      *  2. Github 排行榜
      */
-    tagSrc: TAG_SRC.self,
+    tagSrc: 'star',
     /**
      * 当前选中 tag
      * topic 或 language
@@ -63,7 +62,7 @@ export const useTagStore = defineStore('tag', {
      * 当前选中 tag 类别
      * 用于 sidebar 底部 Topics 和 Languages 的高亮状态
      */
-    selectedTagTypeNav: TAG_TYPE.topic,
+    selectedTagTypeNav: 'topic',
     /**
      * tag 搜索内容
      */
@@ -71,7 +70,7 @@ export const useTagStore = defineStore('tag', {
     /**
      * tag 排序
      */
-    sortType: TAG_SORT_TYPE.amountDown.value,
+    sortType: 'descend',
     /**
      * Topics
      */

@@ -12,12 +12,12 @@
         </h1>
 
         <a
-          class="mx-auto flex w-56 items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-center text-base hover:bg-gray-200 hover:underline"
+          class="mx-auto flex w-72 items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-center text-base hover:bg-gray-200 hover:underline"
           :href="authURL"
           target="_self"
         >
           <svg-icon name="github" class="mr-2 text-xl" />
-          <span>GitHub APP 授权登录</span>
+          <span>{{ $t('loginTip') }}</span>
         </a>
       </div>
     </div>

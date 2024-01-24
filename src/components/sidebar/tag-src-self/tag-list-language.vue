@@ -14,11 +14,10 @@
 import { computed } from 'vue';
 import { useTagStore } from '@/store/tag';
 import { useTag } from '@/hooks/tag';
-import { TAG_TYPE } from '@/constants';
 import TagItem from '../tag-item.vue';
 
 const tagStore = useTagStore();
 const { toTagList, onSelectTag } = useTag();
 const tagList = computed(() => toTagList(tagStore.languageMap));
-const handleSelectTag = onSelectTag(TAG_TYPE.language);
+const handleSelectTag = onSelectTag('language');
 </script>

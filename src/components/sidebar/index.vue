@@ -11,8 +11,8 @@
 
     <TagSrcTab />
 
-    <TagSrcTabSelf v-show="tagStore.tagSrc === TAG_SRC.self" />
-    <TagSrcGithub v-show="tagStore.tagSrc === TAG_SRC.github" />
+    <TagSrcTabSelf v-show="tagStore.tagSrc === 'star'" />
+    <TagSrcGithub v-show="tagStore.tagSrc === 'ranking'" />
 
     <footer
       class="brand-text h-8 flex-none border-t border-solid border-white/10 text-sm font-bold"
@@ -38,7 +38,7 @@ import TagSrcTabSelf from './tag-src-self/index.vue';
 import TagSrcGithub from './tag-src-github.vue';
 import { useUserStore } from '@/store/user';
 import { useTagStore } from '@/store/tag';
-import { BRAND, BRAND_URI, TAG_SRC } from '@/constants';
+import { BRAND, BRAND_URI } from '@/constants';
 
 const userStore = useUserStore();
 const tagStore = useTagStore();
