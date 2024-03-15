@@ -47,7 +47,14 @@
     </li>
   </ul>
 
-  <div class="my-3 text-xs text-[#666]">{{ repository.description }}</div>
+  <div class="my-2 text-xs text-[#666]">
+    {{ repository.description }}
+  </div>
+
+  <div class="mb-2 text-xs font-bold text-[#666]">
+    Updated
+    {{ formatUpdatedTime(repository.updated_at) }} ago
+  </div>
 
   <div class="flex justify-between text-xs font-bold text-[#76d0a3]">
     <div>
@@ -99,6 +106,38 @@ function handleClickTopic(e) {
     selectedTagType: TAG_TYPE.topic,
     selectedTag: elTag.dataset.topic,
   });
+}
+
+function formatUpdatedTime(lastTime) {
+  const last = new Date(lastTime);
+  const now = new Date();
+
+  const msDiff = Math.abs(now - last);
+  const dayDiff = Math.floor(msDiff / 1000 / (24 * 60 * 60));
+  const monthDiff = Math.floor(dayDiff / 30);
+  const yearDiff = Math.floor(monthDiff / 12);
+
+  if (yearDiff > 1) {
+    return `${yearDiff} years`;
+  }
+
+  if (yearDiff === 1) {
+    return `${yearDiff} year`;
+  }
+
+  if (monthDiff > 1) {
+    return `${monthDiff} months`;
+  }
+
+  if (monthDiff === 1) {
+    return `${monthDiff} month`;
+  }
+
+  if (dayDiff > 1) {
+    return `${dayDiff} days`;
+  }
+
+  return `1 day`;
 }
 </script>
 
