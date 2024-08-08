@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { defineStore } from 'pinia';
 import { getStarredRepositories } from '@/server/github';
 import { STARRED_REPOS } from '@/constants';
@@ -11,13 +12,11 @@ import { useRankingStore } from '@/store/ranking';
  * @param {Array} storeRepositories
  * @returns
  */
-async function handlerRsolveRepositories(storeRepositories) {
+async function rsolveRepositoriesByHTTP(page = 1) {
   const PAGE_SIZE = 100;
   const PARALLEL_NUM = 10;
   const STEP_SIZE = PAGE_SIZE * PARALLEL_NUM;
-  let parallelRequests = [];
-  let page = 1;
-  let repositoryIndex = 0;
+  const parallelRequests = [];
 
   do {
     parallelRequests.push(
@@ -26,31 +25,13 @@ async function handlerRsolveRepositories(storeRepositories) {
 
     if (page % PARALLEL_NUM === 0) {
       const httpRepositories = (await Promise.all(parallelRequests)).flat();
-      parallelRequests = [];
 
-      for (let i = 0; i < httpRepositories.length; i += 1) {
-        const httpRepo = httpRepositories[i];
-        const storeRepo = storeRepositories[repositoryIndex];
-
-        if (storeRepo) {
-          if (storeRepo.id !== httpRepo.id) {
-            const storeRepoIndex = storeRepositories.findIndex(
-              ({ id }) => id === httpRepo.id,
-            );
-            if (storeRepoIndex >= 0) {
-              storeRepositories.splice(storeRepoIndex, 1);
-            }
-            storeRepositories.splice(repositoryIndex, 0, httpRepo);
-          }
-        } else {
-          storeRepositories.splice(repositoryIndex, 0, httpRepo);
-        }
-        repositoryIndex += 1;
+      if (httpRepositories.length === STEP_SIZE) {
+        return httpRepositories.concat(
+          await rsolveRepositoriesByHTTP(page + 1),
+        );
       }
-      if (httpRepositories.length < STEP_SIZE) {
-        storeRepositories.splice(repositoryIndex);
-        break;
-      }
+      return httpRepositories;
     }
     page += 1;
   } while (true);
@@ -189,11 +170,20 @@ export const useRepositoryStore = defineStore('repository', {
         this.all = localRepositories;
       }
 
-      // 开发环境默认不通过 HTTP 更新 repositories
-      if (!import.meta.env.DEV || this.all.length === 0) {
-        await handlerRsolveRepositories(this.all);
-        localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
-      }
+      nextTick(async () => {
+        // 开发环境默认不通过 HTTP 更新 repositories
+        if (!import.meta.env.DEV || this.all.length === 0) {
+          const repos = await rsolveRepositoriesByHTTP();
+          // 先清空，避免新老数据 DIFF 过程中更新 DOM 导致页面崩溃
+          this.all = [];
+
+          nextTick(() => {
+            this.all = repos;
+            localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
+          });
+        }
+      });
+
       this.loading = false;
     },
   },
