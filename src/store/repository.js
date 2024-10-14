@@ -5,6 +5,9 @@ import { STARRED_REPOS } from '@/constants';
 import { useTagStore } from '@/store/tag';
 import { useRankingStore } from '@/store/ranking';
 
+const PAGE_SIZE = 100;
+const PARALLEL_NUM = 2;
+
 /**
  * 通过 HTTP 获取 repositories 并更新
  * Github 接口使用 HTTP2 协议，无并发限制
@@ -13,28 +16,20 @@ import { useRankingStore } from '@/store/ranking';
  * @returns
  */
 async function rsolveRepositoriesByHTTP(page = 1) {
-  const PAGE_SIZE = 100;
-  const PARALLEL_NUM = 10;
-  const STEP_SIZE = PAGE_SIZE * PARALLEL_NUM;
   const parallelRequests = [];
 
-  do {
+  for (let i = 0; i < PARALLEL_NUM; i += 1) {
     parallelRequests.push(
       getStarredRepositories({ page, per_page: PAGE_SIZE }),
     );
-
-    if (page % PARALLEL_NUM === 0) {
-      const httpRepositories = (await Promise.all(parallelRequests)).flat();
-
-      if (httpRepositories.length === STEP_SIZE) {
-        return httpRepositories.concat(
-          await rsolveRepositoriesByHTTP(page + 1),
-        );
-      }
-      return httpRepositories;
-    }
     page += 1;
-  } while (true);
+  }
+  const httpRepositories = (await Promise.all(parallelRequests)).flat();
+
+  if (httpRepositories.length === PAGE_SIZE * PARALLEL_NUM) {
+    return httpRepositories.concat(await rsolveRepositoriesByHTTP(page));
+  }
+  return httpRepositories;
 }
 
 export const useRepositoryStore = defineStore('repository', {
@@ -172,16 +167,16 @@ export const useRepositoryStore = defineStore('repository', {
 
       nextTick(async () => {
         // 开发环境默认不通过 HTTP 更新 repositories
-        if (!import.meta.env.DEV || this.all.length === 0) {
-          const repos = await rsolveRepositoriesByHTTP();
-          // 先清空，避免新老数据 DIFF 过程中更新 DOM 导致页面崩溃
-          this.all = [];
+        // if (!import.meta.env.DEV || this.all.length === 0) {
+        const repos = await rsolveRepositoriesByHTTP();
+        // 先清空，避免新老数据 DIFF 过程中更新 DOM 导致页面崩溃
+        this.all = [];
 
-          nextTick(() => {
-            this.all = repos;
-            localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
-          });
-        }
+        nextTick(() => {
+          this.all = repos;
+          localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
+        });
+        // }
       });
 
       this.loading = false;
