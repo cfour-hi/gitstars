@@ -1,0 +1,19 @@
+networks:
+  nas_network:
+    external: true
+services:
+  gitstar:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: gitstars
+    container_name: gitstar
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      nas_network:
+        aliases:
+          - gitstars
+    volumes:
+      - ${VOLUME_LOCATION}/gitstars_log:/var/log

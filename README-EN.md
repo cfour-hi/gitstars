@@ -50,3 +50,6 @@ Github will statistically analyze the files of the Repository and determine the 
 ## 🤖 Vercel deployment
 
 [WIKI Vercel deployment](https://github.com/cfour-hi/gitstars/wiki/Vercel-%E9%83%A8%E7%BD%B2)
+
+## docker deployment
+ Download the source code, switch to 'docker/' and run 'docker compose up -d', or switch to the project directory and run 'docker build -t gitstars -f docker/Dockerfile.', or 'docker pull ghcr.io/yu-7/gitstars:latest', docker's environment variables can be referred to env.sample

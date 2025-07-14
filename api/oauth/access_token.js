@@ -16,7 +16,7 @@ export default async (request, context) => {
     });
   }
 
-  const requestBody = await request.json();
+  const requestBody = request.body;
   if (!requestBody.client_secret) {
     requestBody.client_secret = process.env.VITE_GITSTARS_CLIENT_SECRET;
   }
@@ -32,10 +32,12 @@ export default async (request, context) => {
     });
 
     const data = await res.json();
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: CORS_HEADERS,
-    });
+    console.log(JSON.stringify(data));
+    // return new Response(JSON.stringify(data), {
+    //   status: 200,
+    //   headers: CORS_HEADERS,
+    // });
+    return context.send(data);
   } catch (e) {
     console.error(e);
     return new Response(e.message);

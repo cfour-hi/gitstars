@@ -52,3 +52,6 @@ Github 会统计分析 Repository 的文件，确定 Repository 的主编程语�
 ## 🤖 Vercel 部署
 
 [WIKI Vercel 部署](https://github.com/cfour-hi/gitstars/wiki/Vercel-%E9%83%A8%E7%BD%B2)
+
+## docker 部署
+下载源码，切换到`docker/`下运行`docker compose up -d`,或者切换到项目更目录运行`docker build -t gitstars -f docker/Dockerfile .`，也可以 `docker pull ghcr.io/yu-7/gitstars:latest`, docker 的环境变量可以参考 env.sample
