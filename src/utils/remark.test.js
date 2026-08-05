@@ -4,6 +4,7 @@ import {
   getRepositoryRemark,
   normalizeRemarkPayload,
   repositoryMatchesRemark,
+  repositoryMatchesSelectedRemark,
   setRepositoryRemark,
   toRemarkGistPayload,
   toRemarkTagList,
@@ -98,5 +99,11 @@ describe('remark utilities', () => {
     ];
 
     expect(findRemarkGist(gists).id).toBe('target');
+  });
+
+  it('matches the selected remark repository by stable repository id', () => {
+    expect(repositoryMatchesSelectedRemark(repo, '123')).toBe(true);
+    expect(repositoryMatchesSelectedRemark(repo, '456')).toBe(false);
+    expect(repositoryMatchesSelectedRemark(repo, '')).toBe(false);
   });
 });

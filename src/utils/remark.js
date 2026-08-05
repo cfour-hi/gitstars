@@ -55,6 +55,12 @@ export function repositoryMatchesRemark(repository, remarks, filterText) {
   return Boolean(filterText && remark.includes(filterText.toLowerCase()));
 }
 
+export function repositoryMatchesSelectedRemark(repository, selectedTag) {
+  return Boolean(
+    selectedTag && String(repository.id) === String(selectedTag),
+  );
+}
+
 export function toRemarkGistPayload(remarks) {
   return {
     description: REMARK_GIST_DESCRIPTION,
