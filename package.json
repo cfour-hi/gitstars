@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "vitest",
     "preview": "vite preview",
     "deploy": "vite build && cp -r dist/* /var/www/gitstars"
   },
@@ -27,8 +26,7 @@
     "prettier-plugin-tailwindcss": "^0.2.6",
     "tailwindcss": "^3.3.0",
     "vite": "^4.1.5",
-    "vite-plugin-svg-icons": "^2.0.1",
-    "vitest": "^0.34.6"
+    "vite-plugin-svg-icons": "^2.0.1"
   },
   "engines": {
     "npm": ">=8.0.0 <9.0.0",
