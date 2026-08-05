@@ -12,6 +12,19 @@ export default {
     star: 'Your Stars',
     ranking: 'Github Ranking',
   },
+  tag: {
+    language: 'Languages',
+    topic: 'Topics',
+    remark: 'Remark',
+  },
+  remark: {
+    label: 'Remark',
+    placeholder: 'Add a private note for this repository',
+    saving: 'Saving remark',
+    saved: 'Remark saved',
+    loadFailed: 'Failed to load remarks',
+    saveFailed: 'Failed to save remark',
+  },
   repo: {
     filterTip: 'Developer {div} Repository Name {div} Description',
     sort: {

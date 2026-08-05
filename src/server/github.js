@@ -12,6 +12,22 @@ export async function getRepositoryReadme(params) {
   return httpRequestGithub.get(`/repos/${params.owner}/${params.name}/readme`);
 }
 
+export async function getGists(params) {
+  return httpRequestGithub.get('/gists', { params });
+}
+
+export async function getGist(gistId) {
+  return httpRequestGithub.get(`/gists/${gistId}`);
+}
+
+export async function createGist(data) {
+  return httpRequestGithub.post('/gists', data);
+}
+
+export async function updateGist(gistId, data) {
+  return httpRequestGithub.patch(`/gists/${gistId}`, data);
+}
+
 export async function getReadmeByMarkdown(content) {
   return httpRequestGithub.post('/markdown', {
     text: content,

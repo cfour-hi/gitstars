@@ -12,6 +12,19 @@ export default {
     star: '你的星标',
     ranking: 'Github 排行榜',
   },
+  tag: {
+    language: 'Languages',
+    topic: 'Topics',
+    remark: 'Remark',
+  },
+  remark: {
+    label: '备注',
+    placeholder: '为这个项目添加私人备注',
+    saving: '备注保存中',
+    saved: '备注已保存',
+    loadFailed: '备注加载失败',
+    saveFailed: '备注保存失败',
+  },
   repo: {
     filterTip: '开发者 {div} 仓库名 {div} 描述',
     sort: {

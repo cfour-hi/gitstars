@@ -23,6 +23,7 @@
             item.topics,
             item.description,
             item.language,
+            remarkStore.toRemark(item.id),
           ]"
           :data-repository-id="item.id"
           :data-index="index"
@@ -49,9 +50,11 @@ import RepositoryCard from './repository-card.vue';
 import RepositorySearch from './repository-search.vue';
 import { useRepositoryStore } from '@/store/repository';
 import { useTagStore } from '@/store/tag';
+import { useRemarkStore } from '@/store/remark';
 
 const repositoryStore = useRepositoryStore();
 const tagStore = useTagStore();
+const remarkStore = useRemarkStore();
 const refRepositoryList = ref(null);
 
 watch(

@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+docs
 
 node_modules
 dist
@@ -24,3 +25,5 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+.pnpm-store
+.github

@@ -4,6 +4,11 @@ import { getStarredRepositories } from '@/server/github';
 import { STARRED_REPOS } from '@/constants';
 import { useTagStore } from '@/store/tag';
 import { useRankingStore } from '@/store/ranking';
+import { useRemarkStore } from '@/store/remark';
+import {
+  repositoryMatchesRemark,
+  repositoryMatchesSelectedRemark,
+} from '@/utils/remark';
 
 const PAGE_SIZE = 100;
 const PARALLEL_NUM = 2;
@@ -65,6 +70,7 @@ export const useRepositoryStore = defineStore('repository', {
       let repositoriesTmp = [];
       const tagStore = useTagStore();
       const rankingStore = useRankingStore();
+      const remarkStore = useRemarkStore();
 
       if (tagStore.tagSrc === 'star') {
         if (!tagStore.selectedTag) {
@@ -99,6 +105,10 @@ export const useRepositoryStore = defineStore('repository', {
               repositoryIds.includes(repository.id),
             );
           }
+        } else if (tagStore.selectedTagType === 'remark') {
+          repositoriesTmp = state.all.filter((repository) =>
+            repositoryMatchesSelectedRemark(repository, tagStore.selectedTag),
+          );
         }
       } else if (tagStore.tagSrc === 'ranking') {
         if (rankingStore.selectedLanguage) {
@@ -119,7 +129,13 @@ export const useRepositoryStore = defineStore('repository', {
           (repository) =>
             repository.owner.login.toLowerCase().includes(filterText) ||
             repository.name.toLowerCase().includes(filterText) ||
-            repository.description?.toLowerCase().includes(filterText),
+            repository.description?.toLowerCase().includes(filterText) ||
+            (tagStore.tagSrc === 'star' &&
+              repositoryMatchesRemark(
+                repository,
+                remarkStore.remarks,
+                filterText,
+              )),
         );
       }
 
