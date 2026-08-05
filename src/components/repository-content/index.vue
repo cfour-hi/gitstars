@@ -65,7 +65,9 @@
       v-html="readme"
       ref="refReadme"
       class="markdown-body overflow-y-auto p-5 text-sm"
-      :style="{ height: canEditRemark ? 'calc(100% - 10.5rem)' : 'calc(100% - 2.75rem)' }"
+      :style="{
+        height: canEditRemark ? 'calc(100% - 10.5rem)' : 'calc(100% - 2.75rem)',
+      }"
     />
   </div>
 </template>

@@ -56,9 +56,7 @@ export function repositoryMatchesRemark(repository, remarks, filterText) {
 }
 
 export function repositoryMatchesSelectedRemark(repository, selectedTag) {
-  return Boolean(
-    selectedTag && String(repository.id) === String(selectedTag),
-  );
+  return Boolean(selectedTag && String(repository.id) === String(selectedTag));
 }
 
 export function toRemarkPreview(remark, maxLength = 80) {

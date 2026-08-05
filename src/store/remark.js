@@ -57,8 +57,7 @@ export const useRemarkStore = defineStore('remark', {
         if (!gist) return;
 
         const fullGist = await getGist(gist.id);
-        const content =
-          fullGist.files?.[REMARK_GIST_FILENAME]?.content || '';
+        const content = fullGist.files?.[REMARK_GIST_FILENAME]?.content || '';
 
         this.gistId = fullGist.id;
         this.remarks = normalizeRemarkPayload(JSON.parse(content)).remarks;
