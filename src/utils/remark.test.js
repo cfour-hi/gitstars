@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  findRemarkGist,
   getRepositoryRemark,
   normalizeRemarkPayload,
   repositoryMatchesRemark,
   setRepositoryRemark,
+  toRemarkGistPayload,
   toRemarkTagList,
 } from './remark';
 
@@ -65,5 +67,36 @@ describe('remark utilities', () => {
         remark: 'Private notes',
       },
     ]);
+  });
+
+  it('builds the private Gist payload with the stable remarks filename', () => {
+    const remarks = setRepositoryRemark({}, repo, 'Synced note');
+
+    expect(toRemarkGistPayload(remarks)).toEqual({
+      description: 'Gitstars remarks',
+      public: false,
+      files: {
+        'gitstars-remarks.json': {
+          content: JSON.stringify({ version: 1, remarks }, null, 2),
+        },
+      },
+    });
+  });
+
+  it('finds the Gitstars remarks Gist by description and filename', () => {
+    const gists = [
+      {
+        id: 'other',
+        description: 'Other data',
+        files: { 'gitstars-remarks.json': {} },
+      },
+      {
+        id: 'target',
+        description: 'Gitstars remarks',
+        files: { 'gitstars-remarks.json': { content: '{}' } },
+      },
+    ];
+
+    expect(findRemarkGist(gists).id).toBe('target');
   });
 });

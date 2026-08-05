@@ -55,6 +55,26 @@ export function repositoryMatchesRemark(repository, remarks, filterText) {
   return Boolean(filterText && remark.includes(filterText.toLowerCase()));
 }
 
+export function toRemarkGistPayload(remarks) {
+  return {
+    description: REMARK_GIST_DESCRIPTION,
+    public: false,
+    files: {
+      [REMARK_GIST_FILENAME]: {
+        content: JSON.stringify({ version: 1, remarks }, null, 2),
+      },
+    },
+  };
+}
+
+export function findRemarkGist(gists) {
+  return gists.find(
+    (gist) =>
+      gist.description === REMARK_GIST_DESCRIPTION &&
+      gist.files?.[REMARK_GIST_FILENAME],
+  );
+}
+
 export function toRemarkTagList(repositories, remarks, filterText = '') {
   const lowerFilterText = filterText.toLowerCase();
 
