@@ -61,6 +61,12 @@ export function repositoryMatchesSelectedRemark(repository, selectedTag) {
   );
 }
 
+export function toRemarkPreview(remark, maxLength = 80) {
+  const value = `${remark || ''}`.trim();
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, maxLength - 3)}...`;
+}
+
 export function toRemarkGistPayload(remarks) {
   return {
     description: REMARK_GIST_DESCRIPTION,

@@ -18,6 +18,32 @@
       </a>
     </header>
 
+    <section
+      v-if="canEditRemark"
+      class="border-b border-solid border-gray-200 bg-gray-50 px-4 py-3"
+    >
+      <div
+        class="mb-1 flex items-center justify-between text-xs font-bold text-gray-500"
+      >
+        <span>{{ $t('remark.label') }}</span>
+        <span v-if="remarkStore.saving">{{ $t('remark.saving') }}</span>
+        <span v-else-if="remarkStore.error" class="text-red-500">
+          {{ $t(remarkStore.error) }}
+        </span>
+        <span v-else-if="remarkStore.savedAt" class="text-[#76d0a3]">
+          {{ $t('remark.saved') }}
+        </span>
+      </div>
+
+      <textarea
+        v-model="remarkText"
+        :placeholder="$t('remark.placeholder')"
+        rows="3"
+        class="w-full resize-y rounded border border-solid border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-[#948aec]"
+        @input="handleInputRemark"
+      />
+    </section>
+
     <div
       v-show="!readme"
       class="relative top-1/3 mx-auto w-60 text-center text-gray-300"
@@ -39,22 +65,41 @@
       v-html="readme"
       ref="refReadme"
       class="markdown-body overflow-y-auto p-5 text-sm"
-      style="height: calc(100% - 2.75rem)"
+      :style="{ height: canEditRemark ? 'calc(100% - 10.5rem)' : 'calc(100% - 2.75rem)' }"
     />
   </div>
 </template>
 
 <script setup>
-import { watchEffect, ref, nextTick } from 'vue';
+import { computed, watchEffect, ref, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRepositoryStore } from '@/store/repository';
+import { useRemarkStore } from '@/store/remark';
+import { useTagStore } from '@/store/tag';
 import { getRepositoryReadme, getReadmeByMarkdown } from '@/server/github';
 import { toRepostoryReadmeHref } from './tool';
 
 const { selectedRepository } = storeToRefs(useRepositoryStore());
+const remarkStore = useRemarkStore();
+const tagStore = useTagStore();
 const readme = ref('');
 const refReadme = ref(null);
 const loading = ref(false);
+const remarkText = ref('');
+const canEditRemark = computed(
+  () => tagStore.tagSrc === 'star' && selectedRepository.value,
+);
+
+watchEffect(() => {
+  remarkText.value = selectedRepository.value
+    ? remarkStore.toRemark(selectedRepository.value.id)
+    : '';
+});
+
+function handleInputRemark() {
+  if (!selectedRepository.value) return;
+  remarkStore.updateRemark(selectedRepository.value, remarkText.value);
+}
 
 watchEffect(async () => {
   if (!selectedRepository.value) return;

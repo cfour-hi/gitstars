@@ -9,7 +9,7 @@
       class="h-full w-1/3 flex-auto cursor-pointer border-r border-solid border-gray-500 text-center capitalize leading-8 last:border-none"
       @click="handleClickNav(nav)"
     >
-      {{ nav }}{{ nav === 'remark' ? '' : 's' }}
+      {{ $t(`tag.${nav}`) }}
     </li>
   </ul>
 </template>

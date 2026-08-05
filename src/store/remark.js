@@ -93,6 +93,8 @@ export const useRemarkStore = defineStore('remark', {
 
     updateRemark(repository, value) {
       this.remarks = setRepositoryRemark(this.remarks, repository, value);
+      this.savedAt = '';
+      this.error = '';
       this.cacheRemarks();
       persistRemarks(this);
     },

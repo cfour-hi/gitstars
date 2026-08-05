@@ -7,6 +7,7 @@ import {
   repositoryMatchesSelectedRemark,
   setRepositoryRemark,
   toRemarkGistPayload,
+  toRemarkPreview,
   toRemarkTagList,
 } from './remark';
 
@@ -105,5 +106,10 @@ describe('remark utilities', () => {
     expect(repositoryMatchesSelectedRemark(repo, '123')).toBe(true);
     expect(repositoryMatchesSelectedRemark(repo, '456')).toBe(false);
     expect(repositoryMatchesSelectedRemark(repo, '')).toBe(false);
+  });
+
+  it('clips long remark previews without changing short text', () => {
+    expect(toRemarkPreview('Short note')).toBe('Short note');
+    expect(toRemarkPreview('a'.repeat(90))).toBe(`${'a'.repeat(77)}...`);
   });
 });

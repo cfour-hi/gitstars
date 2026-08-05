@@ -49,6 +49,13 @@
 
   <div class="my-3 text-xs text-[#666]">{{ repository.description }}</div>
 
+  <div
+    v-if="remarkPreview"
+    class="mb-3 rounded border border-solid border-[#948aec33] bg-[#948aec0d] px-2 py-1 text-xs text-[#555]"
+  >
+    {{ remarkPreview }}
+  </div>
+
   <div class="flex justify-between text-xs font-bold text-[#76d0a3]">
     <div>
       <span class="inline-flex items-center">
@@ -69,8 +76,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useTagStore } from '@/store/tag';
+import { useRemarkStore } from '@/store/remark';
+import { toRemarkPreview } from '@/utils/remark';
 
-defineProps({
+const props = defineProps({
   repository: {
     type: Object,
     required: true,
@@ -83,7 +92,11 @@ const medalMap = {
   3: '&#129353;',
 };
 const tagStore = useTagStore();
+const remarkStore = useRemarkStore();
 const disableTopic = computed(() => tagStore.tagSrc !== 'star');
+const remarkPreview = computed(() =>
+  toRemarkPreview(remarkStore.toRemark(props.repository.id)),
+);
 
 function handleClickTopic(e) {
   if (disableTopic.value) return;
