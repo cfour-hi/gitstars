@@ -47,7 +47,8 @@ export default async (request, context) => {
     const usesServerClientSecret = !requestBody.client_secret;
 
     if (usesServerClientSecret) {
-      requestBody.client_secret = process.env.VITE_GITSTARS_CLIENT_SECRET;
+      requestBody.client_secret =
+        process.env.GITHUB_CLIENT_SECRET ?? process.env.VITE_GITSTARS_CLIENT_SECRET;
     }
 
     log('info', 'request.parsed', {
