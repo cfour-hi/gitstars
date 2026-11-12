@@ -1,14 +1,28 @@
 .git
 .github
 .vercel
-cert
 .certs
 dist
 node_modules
+docs
+README*.md
+.editorconfig
+.prettierrc
+.prettierignore
+eslint.config.js
+jsconfig.json
+tests
+LICENSE
 
 .env
 .env.*
 !.env.example
+
+# Local TLS certificates, wherever GITSTARS_CERT_DIR points
+*.pem
+*.key
+**/*.pem
+**/*.key
 
 *.log
 .DS_Store

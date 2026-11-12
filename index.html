@@ -1,77 +1,101 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="description"
-    content="Github Stars Repositories Manager, A must-have repository management tool for developers">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <base target="_blank" />
-  <title>Gitstars</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-      overflow: hidden;
-    }
-
-    #app {
-      height: 100%;
-      display: flex;
-      color: #333;
-    }
-
-    .loader {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 48px;
-      height: 48px;
-      margin-top: -48px;
-      margin-left: -24px;
-      border: 5px solid;
-      border-color: #948aec transparent;
-      border-radius: 50%;
-      display: inline-block;
-      box-sizing: border-box;
-      animation: rotation 1s linear infinite;
-    }
-
-    @keyframes rotation {
-      0% {
-        transform: rotate(0deg);
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="description"
+      content="Github Stars Repositories Manager, A must-have repository management tool for developers"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base target="_blank" />
+    <title>Gitstars</title>
+    <script>
+      // App.vue keeps this in sync after mount; set it before the first paint so
+      // English users do not get a Chinese lang attribute for the initial load.
+      // Keep 'gitstars_lang' in sync with LANG_KEY in src/constants/index.js.
+      try {
+        document.documentElement.lang =
+          localStorage.getItem('gitstars_lang') === 'en' ? 'en' : 'zh-CN';
+      } catch (error) {
+        // Ignore unavailable localStorage
+      }
+    </script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
       }
 
-      100% {
-        transform: rotate(360deg);
+      #app {
+        height: 100%;
+        display: flex;
+        color: #333;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div id="app">
-    <span class="loader"></span>
+      .loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 48px;
+        height: 48px;
+        margin-top: -24px;
+        margin-left: -24px;
+        border: 5px solid;
+        border-color: #948aec transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
 
-    <div style="display: none"
-      class="app-error fixed left-1/2 top-1/2 inline-block -translate-x-1/2 -translate-y-full bg-white">
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <span class="loader" aria-hidden="true"></span>
+    </div>
+
+    <!-- Kept outside #app: Vue replaces #app's children on mount, and the error
+       must stay visible after the app has been mounted. role="alert" makes
+       screen readers announce the message when it is displayed. -->
+    <div
+      style="display: none"
+      role="alert"
+      aria-live="assertive"
+      class="app-error fixed left-1/2 top-1/2 inline-block -translate-x-1/2 -translate-y-full bg-white"
+    >
       <div class="mb-8 text-7xl font-bold text-[#948aec]">Sorry...</div>
       <div class="mb-2 text-[#76d0a3]">出现一些异常，请刷新页面。</div>
+      <div class="mb-2 text-[#76d0a3]">
+        Something went wrong. Please refresh the page.
+      </div>
       <div class="text-gray-400">"<span class="error-content"></span>"</div>
     </div>
-  </div>
-  <script>
-    function onAppError(err) {
-      document.querySelector('.app-error').style.display = 'block';
-      var errorContent = err.message + '.';
-      if (err.response?.statusText) {
-        errorContent += ` ${err.response.statusText}`;
-      }
-      document.querySelector('.error-content').textContent = errorContent;
-    }
-  </script>
-  <script type="module" src="/src/main.js"></script>
-</body>
 
+    <script>
+      function onAppError(err) {
+        var errorElement = document.querySelector('.app-error');
+        if (!errorElement) return;
+        errorElement.style.display = 'block';
+        var errorContent = err.message + '.';
+        if (err.response?.statusText) {
+          errorContent += ` ${err.response.statusText}`;
+        }
+        document.querySelector('.error-content').textContent = errorContent;
+      }
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

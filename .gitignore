@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 *.env
+.env.*
+!.env.example
 
 # Editor directories and files
 .vscode/*
@@ -25,3 +27,6 @@ dist-ssr
 *.sw?
 .vercel
 /.certs/
+# Local TLS certificates (GITSTARS_CERT_DIR is configurable)
+*.pem
+*.key

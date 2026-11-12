@@ -1,11 +1,9 @@
 <template>
   <div class="flex items-center justify-between font-bold text-[#948aec]">
     <h2>
-      <span
-        v-if="medalMap[repository.ranking]"
-        v-html="medalMap[repository.ranking]"
-        class="mr-1"
-      ></span>
+      <span v-if="medalMap[repository.ranking]" class="mr-1">{{
+        medalMap[repository.ranking]
+      }}</span>
       <a
         :href="`https://github.com/${repository.owner.login}/${repository.name}`"
         rel="noopener noreferrer"
@@ -19,6 +17,8 @@
     <a
       v-if="repository.homepage"
       :href="repository.homepage"
+      :aria-label="$t('repo.homepage')"
+      :title="$t('repo.homepage')"
       class="flex h-6 w-6 items-center justify-center rounded-full hover:bg-[#948aec] hover:text-white"
       rel="noopener noreferrer"
     >
@@ -31,19 +31,26 @@
     :class="{ disabled: disableTopic }"
     @click="handleClickTopic"
   >
-    <li
-      v-for="topic in repository.topics"
-      :key="topic"
-      :data-topic="topic"
-      :class="{
-        'selected-tag':
+    <li v-for="topic in repository.topics" :key="topic" class="mr-1 mt-1">
+      <button
+        type="button"
+        :data-topic="topic"
+        :disabled="disableTopic"
+        :aria-pressed="
           !disableTopic &&
           tagStore.selectedTagType === 'topic' &&
-          tagStore.selectedTag === topic,
-      }"
-      class="tag-topic mr-1 mt-1 rounded-full border border-solid border-gray-300 px-2 hover:border-[#948aec] hover:bg-[#948aec] hover:!text-white"
-    >
-      {{ topic }}
+          tagStore.selectedTag === topic
+        "
+        :class="{
+          'selected-tag':
+            !disableTopic &&
+            tagStore.selectedTagType === 'topic' &&
+            tagStore.selectedTag === topic,
+        }"
+        class="tag-topic rounded-full border border-solid border-gray-300 px-2 hover:border-[#948aec] hover:bg-[#948aec] hover:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#948aec] disabled:cursor-not-allowed"
+      >
+        {{ topic }}
+      </button>
     </li>
   </ul>
 
@@ -78,9 +85,9 @@ defineProps({
 });
 
 const medalMap = {
-  1: '&#129351;',
-  2: '&#129352;',
-  3: '&#129353;',
+  1: '🥇',
+  2: '🥈',
+  3: '🥉',
 };
 const tagStore = useTagStore();
 const disableTopic = computed(() => tagStore.tagSrc !== 'star');

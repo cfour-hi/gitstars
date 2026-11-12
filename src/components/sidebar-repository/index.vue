@@ -9,13 +9,16 @@
       :items="repositoryStore.filteredRepositories"
       :min-item-size="100"
       key-field="id"
-      class="scrollbar-thumb:bg-slate-300 overflow-y-auto overflow-x-hidden"
+      role="group"
+      :aria-label="$t('repositoryList')"
+      class="overflow-y-auto overflow-x-hidden"
       style="height: calc(100% - 2.25rem)"
       @click="handleClickRepository"
+      @keydown="handleKeydownRepository"
     >
-      <template v-slot="{ item, index, active }">
+      <template v-slot="{ item, active }">
         <DynamicScrollerItem
-          class="cursor-pointer border-b border-solid border-b-gray-300 p-4"
+          class="cursor-pointer border-b border-solid border-b-gray-300 p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#948aec]"
           :item="item"
           :active="active"
           :size-dependencies="[
@@ -25,7 +28,10 @@
             item.language,
           ]"
           :data-repository-id="item.id"
-          :data-index="index"
+          tabindex="0"
+          :aria-current="
+            item.id === repositoryStore.selectedId ? 'true' : undefined
+          "
           :class="{
             selected: item.id === repositoryStore.selectedId,
           }"
@@ -35,11 +41,14 @@
       </template>
     </DynamicScroller>
 
-    <svg-icon
-      v-show="tagStore.tagSrc === 'star' && repositoryStore.all.length === 0"
-      name="loading"
-      class="absolute left-1/2 top-1/3 -ml-3 animate-spin text-2xl text-gray-300"
-    />
+    <span
+      v-show="repositoryStore.loading && repositoryStore.all.length === 0"
+      role="status"
+      :aria-label="$t('loading')"
+      class="absolute left-1/2 top-1/3 -ml-3 text-2xl text-gray-300"
+    >
+      <svg-icon name="loading" class="animate-spin" />
+    </span>
   </div>
 </template>
 
@@ -48,18 +57,22 @@ import { ref, watch } from 'vue';
 import RepositoryCard from './repository-card.vue';
 import RepositorySearch from './repository-search.vue';
 import { useRepositoryStore } from '@/store/repository';
-import { useTagStore } from '@/store/tag';
 
 const repositoryStore = useRepositoryStore();
-const tagStore = useTagStore();
 const refRepositoryList = ref(null);
 
 watch(
   () => repositoryStore.filteredRepositories,
   () => {
     refRepositoryList.value?.$el.scrollTo({ top: 0 });
+    // 刷新时直接替换整个数组，虚拟列表需要重新计算可见项
+    refRepositoryList.value?.forceUpdate?.();
   },
 );
+
+function selectRepository(id) {
+  repositoryStore.$patch({ selectedId: id });
+}
 
 function handleClickRepository(e) {
   let elRepository = e.target;
@@ -67,9 +80,18 @@ function handleClickRepository(e) {
     elRepository = elRepository.parentElement;
     if (!elRepository) return;
   }
-  repositoryStore.$patch({
-    selectedId: Number(elRepository.dataset.repositoryId),
-  });
+  selectRepository(Number(elRepository.dataset.repositoryId));
+}
+
+function handleKeydownRepository(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+
+  // 只在行本身获得焦点时响应，避免拦截行内链接、Topics 按钮的按键
+  const repositoryId = e.target?.dataset?.repositoryId;
+  if (!repositoryId) return;
+
+  e.preventDefault();
+  selectRepository(Number(repositoryId));
 }
 
 repositoryStore.resolveRepositories();

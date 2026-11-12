@@ -3,12 +3,12 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import { TOKEN_KEY, LANG_KEY } from '@/constants';
+import { TOKEN_KEY, OAUTH_STATE_KEY, LANG_KEY } from '@/constants';
 import { getToken } from '@/server/gitstars';
 import { useUserStore } from '@/store/user';
 import SvgIcon from '@/components/svg-icon.vue';
 import VueVirtualScroller from 'vue-virtual-scroller';
-import { throttle } from 'lodash';
+import throttle from 'lodash/throttle';
 import { createI18nByLocale } from './i18n';
 
 function onResize() {
@@ -24,9 +24,10 @@ function onResize() {
 }
 
 function removeURLCode() {
-  let href = location.href.replace(/code=[^&]+/, '');
-  if (href[href.length - 1] === '?') href = href.slice(0, -1);
-  history.replaceState({}, null, href);
+  const url = new URL(location.href);
+  url.searchParams.delete('code');
+  url.searchParams.delete('state');
+  history.replaceState({}, '', url.toString());
 }
 
 async function resolveToken() {
@@ -34,15 +35,24 @@ async function resolveToken() {
   const code = searchParams.get('code');
   if (!code) return;
 
+  const state = searchParams.get('state');
+  const expectedState = sessionStorage.getItem(OAUTH_STATE_KEY);
+  sessionStorage.removeItem(OAUTH_STATE_KEY);
+
   removeURLCode();
 
-  const res = await getToken(code).catch((err) => {
-    onAppError(err);
-  });
+  // 校验 OAuth state，防止登录 CSRF
+  if (!expectedState || state !== expectedState) {
+    throw new Error('OAuth state mismatch. Please try signing in again.');
+  }
 
-  if (!res.access_token) {
-    onAppError({ message: `${res.error}. ${res.error_description}` });
-    throw new Error(res);
+  const res = await getToken(code);
+
+  if (!res?.access_token) {
+    const detail = [res?.error, res?.error_description]
+      .filter(Boolean)
+      .join('. ');
+    throw new Error(detail || 'Failed to obtain the GitHub access token');
   }
 
   localStorage.setItem(TOKEN_KEY, res.access_token);
@@ -64,13 +74,23 @@ async function initApp() {
   if (lang) userStore.$patch({ lang });
   app.use(createI18nByLocale(userStore.lang));
 
-  const token = localStorage.getItem(TOKEN_KEY);
+  try {
+    const token = localStorage.getItem(TOKEN_KEY);
 
-  if (token) {
-    userStore.$patch({ token });
-    await userStore.resolveUserinfo();
-  } else {
-    await resolveToken();
+    if (token) {
+      userStore.$patch({ token });
+      await userStore.resolveUserinfo();
+    } else {
+      await resolveToken();
+    }
+  } catch (err) {
+    // Keep the app usable (and show the error overlay) instead of leaving the
+    // initial loader spinning forever.
+    if (typeof window.onAppError === 'function') {
+      window.onAppError(err);
+    } else {
+      console.error(err);
+    }
   }
 
   app.mount('#app');

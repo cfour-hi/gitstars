@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+pnpm-workspace.yaml
+docs
+public
+.certs
+.env
+.env.*

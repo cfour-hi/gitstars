@@ -1,4 +1,3 @@
-import { nextTick } from 'vue';
 import { defineStore } from 'pinia';
 import { getStarredRepositories } from '@/server/github';
 import { STARRED_REPOS } from '@/constants';
@@ -9,27 +8,48 @@ const PAGE_SIZE = 100;
 const PARALLEL_NUM = 2;
 
 /**
- * 通过 HTTP 获取 repositories 并更新
- * Github 接口使用 HTTP2 协议，无并发限制
+ * 通过 HTTP 分页获取全部 starred repositories
  *
- * @param {Array} storeRepositories
- * @returns
+ * @returns {Promise<Array>}
  */
-async function rsolveRepositoriesByHTTP(page = 1) {
-  const parallelRequests = [];
+async function resolveRepositoriesByHTTP() {
+  const repositories = [];
+  let page = 1;
 
-  for (let i = 0; i < PARALLEL_NUM; i += 1) {
-    parallelRequests.push(
-      getStarredRepositories({ page, per_page: PAGE_SIZE }),
+  for (;;) {
+    const requests = Array.from({ length: PARALLEL_NUM }, (_, index) =>
+      getStarredRepositories({ page: page + index, per_page: PAGE_SIZE }),
     );
-    page += 1;
-  }
-  const httpRepositories = (await Promise.all(parallelRequests)).flat();
+    const batch = (await Promise.all(requests)).flat();
+    repositories.push(...batch);
 
-  if (httpRepositories.length === PAGE_SIZE * PARALLEL_NUM) {
-    return httpRepositories.concat(await rsolveRepositoriesByHTTP(page));
+    if (batch.length < PAGE_SIZE * PARALLEL_NUM) break;
+    page += PARALLEL_NUM;
   }
-  return httpRepositories;
+
+  return repositories;
+}
+
+function readCachedRepositories() {
+  try {
+    const cached = localStorage.getItem(STARRED_REPOS);
+    if (!cached) return [];
+    const repositories = JSON.parse(cached);
+    return Array.isArray(repositories) ? repositories : [];
+  } catch (error) {
+    console.error('Failed to read cached repositories:', error);
+    localStorage.removeItem(STARRED_REPOS);
+    return [];
+  }
+}
+
+function cacheRepositories(repositories) {
+  try {
+    localStorage.setItem(STARRED_REPOS, JSON.stringify(repositories));
+  } catch (error) {
+    // LocalStorage 容量有限，缓存失败不应影响本次浏览
+    console.error('Failed to cache repositories:', error);
+  }
 }
 
 export const useRepositoryStore = defineStore('repository', {
@@ -50,6 +70,10 @@ export const useRepositoryStore = defineStore('repository', {
      * 是否正在 HTTP 请求 repositories
      */
     loading: true,
+    /**
+     * repositories 拉取失败信息
+     */
+    error: '',
     /**
      * repositories 排序
      * time 或 star
@@ -82,23 +106,23 @@ export const useRepositoryStore = defineStore('repository', {
            * 当前选中的 tag 属于 Topics
            * 从 topicMap 找到 tag 及其对应的 repositories id
            */
-          const repositoryIds = tagStore.topicMap[tagStore.selectedTag];
-          if (repositoryIds) {
-            repositoriesTmp = state.all.filter((repository) =>
-              repositoryIds.includes(repository.id),
-            );
-          }
+          const repositoryIds = new Set(
+            tagStore.topicMap[tagStore.selectedTag] ?? [],
+          );
+          repositoriesTmp = state.all.filter((repository) =>
+            repositoryIds.has(repository.id),
+          );
         } else if (tagStore.selectedTagType === 'language') {
           /**
            * 当前选中的 tag 属于 Languages
            * 从 languageMap 找到 tag 及其对应的 repositories id
            */
-          const repositoryIds = tagStore.languageMap[tagStore.selectedTag];
-          if (repositoryIds) {
-            repositoriesTmp = state.all.filter((repository) =>
-              repositoryIds.includes(repository.id),
-            );
-          }
+          const repositoryIds = new Set(
+            tagStore.languageMap[tagStore.selectedTag] ?? [],
+          );
+          repositoriesTmp = state.all.filter((repository) =>
+            repositoryIds.has(repository.id),
+          );
         }
       } else if (tagStore.tagSrc === 'ranking') {
         if (rankingStore.selectedLanguage) {
@@ -158,28 +182,24 @@ export const useRepositoryStore = defineStore('repository', {
      */
     async resolveRepositories() {
       this.loading = true;
-      let localRepositories = localStorage.getItem(STARRED_REPOS);
+      this.error = '';
 
-      if (localRepositories) {
-        localRepositories = JSON.parse(localRepositories);
-        this.all = localRepositories;
+      const cachedRepositories = readCachedRepositories();
+      if (cachedRepositories.length > 0) this.all = cachedRepositories;
+
+      try {
+        const repositories = await resolveRepositoriesByHTTP();
+        // 直接整体替换数组；虚拟列表在监听里 forceUpdate 重新计算可见项，
+        // 不再清空后再回填，避免列表闪烁和 README 重复请求
+        this.all = repositories;
+        cacheRepositories(repositories);
+      } catch (error) {
+        // 拉取失败时保留缓存数据，不影响已有内容的浏览
+        this.error = error.message || 'unknown';
+        console.error('Failed to update repositories:', error);
+      } finally {
+        this.loading = false;
       }
-
-      nextTick(async () => {
-        // 开发环境默认不通过 HTTP 更新 repositories
-        // if (!import.meta.env.DEV || this.all.length === 0) {
-        const repos = await rsolveRepositoriesByHTTP();
-        // 先清空，避免新老数据 DIFF 过程中更新 DOM 导致页面崩溃
-        this.all = [];
-
-        nextTick(() => {
-          this.all = repos;
-          localStorage.setItem(STARRED_REPOS, JSON.stringify(this.all));
-        });
-        // }
-      });
-
-      this.loading = false;
     },
   },
 });

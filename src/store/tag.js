@@ -5,11 +5,12 @@ import { useRepositoryStore } from './repository';
  * 统计分析 Topics 获取所有 topic 及其对应的 repositories
  */
 function analyzeTopics() {
-  const topicMap = {};
+  // 使用无原型对象，避免仓库 topic 命名为 constructor/__proto__ 时命中原型链
+  const topicMap = Object.create(null);
   const repositoryStore = useRepositoryStore();
 
   repositoryStore.all.forEach((repository) => {
-    repository.topics.forEach((topic) => {
+    (repository.topics ?? []).forEach((topic) => {
       if (topicMap[topic]) {
         topicMap[topic].push(repository.id);
       } else {
@@ -24,7 +25,7 @@ function analyzeTopics() {
  * 统计分析 Languages 获取所有 language 及其对应的 repositories
  */
 function analyzeLanguages() {
-  const languageMap = {};
+  const languageMap = Object.create(null);
   const repositoryStore = useRepositoryStore();
 
   repositoryStore.all.forEach((repository) => {

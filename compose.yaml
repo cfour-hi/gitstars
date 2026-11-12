@@ -8,8 +8,12 @@ services:
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:?Set GITHUB_CLIENT_SECRET in .env}
       TLS_CERT_FILE: /app/cert/localhost.pem
       TLS_KEY_FILE: /app/cert/localhost-key.pem
+    # The development private key is 0600 on the host. Run the container as
+    # the host user so it can read the read-only certificate bind mount; set
+    # GITSTARS_UID/GITSTARS_GID in .env when `id -u`/`id -g` are not 1000.
+    user: '${GITSTARS_UID:-1000}:${GITSTARS_GID:-1000}'
     ports:
-      - "${GITSTARS_PORT:-8080}:8080"
+      - '${GITSTARS_PORT:-8080}:8080'
     volumes:
       - type: bind
         source: ${GITSTARS_CERT_DIR:-./.certs}

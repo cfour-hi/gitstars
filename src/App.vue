@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+import { watch } from 'vue';
 import Sidebar from '@/components/sidebar/index.vue';
 import Header from '@/components/header/index.vue';
 import SidebarRepository from '@/components/sidebar-repository/index.vue';
@@ -25,14 +26,15 @@ import { LANG_KEY } from '@/constants';
 const userStore = useUserStore();
 const { locale } = useI18n();
 
-userStore.$subscribe((mutation) => {
-  const { lang } = mutation.payload;
-  if (mutation.type === 'patch object' && lang) {
+watch(
+  () => userStore.lang,
+  (lang) => {
     locale.value = lang;
     localStorage.setItem(LANG_KEY, lang);
-  }
-});
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  },
+  { immediate: true },
+);
 </script>
 
 <style src="./styles/app.css"></style>
-<style src="./styles/microtip.css"></style>

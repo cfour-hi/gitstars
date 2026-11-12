@@ -11,7 +11,7 @@
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: transparent var(--scrollbar-thumb);
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 /* Chrome, Edge, and Safari */
@@ -26,6 +26,14 @@
 
 svg {
   display: inline-block;
+}
+
+@layer base {
+  /* 键盘聚焦时给出统一、可见的焦点样式（鼠标点击时不显示） */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 }
 
 @font-face {

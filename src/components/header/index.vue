@@ -4,7 +4,11 @@
   >
     <div class="flex items-center">
       <a :href="userinfo.html_url" rel="noopener noreferrer">
-        <img :src="userinfo.avatar_url" alt="" class="w-10 rounded-full" />
+        <img
+          :src="userinfo.avatar_url"
+          :alt="$t('userAvatar', { username })"
+          class="w-10 rounded-full"
+        />
       </a>
 
       <a
@@ -13,7 +17,7 @@
         class="ml-3 text-xl font-bold text-[#948aec] hover:underline"
       >
         <h2>
-          {{ $t('userTitle', { username: userinfo.name }) }}
+          {{ $t('userTitle', { username }) }}
           <svg-icon name="share" class="text-sm" />
         </h2>
       </a>
@@ -21,26 +25,39 @@
 
     <span class="flex-auto"></span>
 
-    <span class="cursor-pointer" @click="handleChangeLang">
+    <button
+      type="button"
+      class="inline-flex cursor-pointer items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#948aec]"
+      :aria-label="$t('languageToggle')"
+      :title="$t('languageToggle')"
+      @click="handleChangeLang"
+    >
       <svg-icon name="translate" class="text-xl" />
       <span>· </span>
       <span class="text-sm">{{ userStore.lang === 'zh' ? '中' : 'En' }}</span>
-    </span>
+    </button>
 
     <span class="mt-0.5 h-4 w-px bg-gray-400"></span>
 
-    <a :href="BRAND_URI">
+    <a :href="BRAND_URI" rel="noopener noreferrer">
       <svg-icon name="github" class="text-xl hover:opacity-50" />
     </a>
   </header>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/store/user';
 import { BRAND_URI } from '@/constants';
 
 const userStore = useUserStore();
-const { userinfo } = userStore;
+const { userinfo } = storeToRefs(userStore);
+
+// GitHub 用户的 name 可以为空，此时回退到 login，避免出现 "null 的星标存储库"
+const username = computed(
+  () => userinfo.value.name || userinfo.value.login || '',
+);
 
 const handleChangeLang = () => {
   const newLang = userStore.lang === 'zh' ? 'en' : 'zh';

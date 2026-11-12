@@ -7,44 +7,58 @@
         :placeholder="$t('repo.filterTip', { div: '|' })"
         ref="refInput"
         type="text"
+        :aria-label="$t('repo.filter')"
         class="h-7 w-full flex-auto rounded-full bg-white px-6 outline-none"
         @input="handleInputRepositoryName"
       />
 
-      <svg-icon
+      <button
         v-show="repositoryStore.filterText"
-        name="close"
-        class="absolute right-2 top-2 cursor-pointer"
+        type="button"
+        :aria-label="$t('clearSearch')"
+        :title="$t('clearSearch')"
+        class="absolute right-2 top-2 cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#948aec]"
         @click="handleClickClose"
-      />
+      >
+        <svg-icon name="close" />
+      </button>
     </div>
 
-    <div
+    <button
       v-show="tagStore.tagSrc === 'star'"
+      type="button"
       :aria-label="$t(`repo.sort.${repositoryStore.sortType}`)"
-      role="tooltip"
-      data-microtip-position="top"
-      class="ml-2.5 cursor-pointer text-sm text-gray-400"
+      :title="$t(`repo.sort.${repositoryStore.sortType}`)"
+      class="ml-2.5 cursor-pointer rounded text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#948aec]"
+      @click="handleChangeSortType"
     >
-      <svg-icon
-        :name="repositoryStore.sortType"
-        @click="handleChangeSortType"
-      ></svg-icon>
-    </div>
+      <svg-icon :name="repositoryStore.sortType" />
+    </button>
 
-    <div
+    <span
       v-if="
         tagStore.tagSrc === 'star' &&
         repositoryStore.all.length !== 0 &&
         repositoryStore.loading
       "
+      role="status"
       :aria-label="$t('repo.updating')"
-      role="tooltip"
-      data-microtip-position="top"
+      :title="$t('repo.updating')"
       class="ml-2.5 text-sm"
     >
       <svg-icon name="loading" class="animate-spin text-gray-400" />
-    </div>
+    </span>
+
+    <button
+      v-else-if="tagStore.tagSrc === 'star' && repositoryStore.error"
+      type="button"
+      :aria-label="$t('repo.loadFailed')"
+      :title="$t('repo.loadFailed')"
+      class="ml-2.5 cursor-pointer rounded text-sm text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#948aec]"
+      @click="handleRetryRepositories"
+    >
+      <svg-icon name="close" />
+    </button>
   </div>
 </template>
 
@@ -52,7 +66,7 @@
 import { ref } from 'vue';
 import { useRepositoryStore } from '@/store/repository';
 import { useTagStore } from '@/store/tag';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 
 const tagStore = useTagStore();
 const repositoryStore = useRepositoryStore();
@@ -70,5 +84,9 @@ function handleClickClose() {
 function handleChangeSortType() {
   const newSortType = repositoryStore.sortType === 'time' ? 'star' : 'time';
   repositoryStore.$patch({ sortType: newSortType });
+}
+
+function handleRetryRepositories() {
+  repositoryStore.resolveRepositories();
 }
 </script>

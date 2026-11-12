@@ -1,11 +1,13 @@
+import {
+  CORS_HEADERS,
+  exchangeCodeForToken,
+  getClientSecret,
+  jsonResponseHeaders,
+  parseTokenRequest,
+} from '../../shared/oauth.js';
+
 export const config = {
   runtime: 'edge',
-};
-
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'OPTIONS,POST',
-  'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 const log = (level, event, details = {}) => {
@@ -18,7 +20,26 @@ const log = (level, event, details = {}) => {
   );
 };
 
-export default async (request, context) => {
+const jsonResponse = (status, body, extraHeaders = {}) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: jsonResponseHeaders(extraHeaders),
+  });
+
+// The upstream response body is forwarded verbatim, so a token response and a
+// GitHub error payload both keep their exact wire format.
+const passthroughResponse = ({ status, body }) =>
+  new Response(body, { status, headers: jsonResponseHeaders() });
+
+const parseJsonSafely = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+};
+
+export default async (request) => {
   const requestId = crypto.randomUUID();
   const startedAt = Date.now();
 
@@ -31,73 +52,93 @@ export default async (request, context) => {
   if (request.method === 'OPTIONS') {
     log('info', 'request.completed', {
       requestId,
-      status: 200,
+      status: 204,
       durationMs: Date.now() - startedAt,
     });
 
-    return new Response('OK', {
-      status: 200,
-      headers: CORS_HEADERS,
-    });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
-  let phase = 'parse_request_body';
+  if (request.method !== 'POST') {
+    return jsonResponse(
+      405,
+      { error: 'method_not_allowed' },
+      { Allow: 'OPTIONS, POST' },
+    );
+  }
+
+  const clientSecret = getClientSecret();
+
+  if (!clientSecret) {
+    log('error', 'request.failed', {
+      requestId,
+      phase: 'configuration',
+      errorMessage: 'GITHUB_CLIENT_SECRET is not configured',
+    });
+
+    return jsonResponse(503, { error: 'oauth_not_configured' });
+  }
+
+  let rawBody;
+
   try {
-    const requestBody = await request.json();
-    const usesServerClientSecret = !requestBody.client_secret;
+    rawBody = await request.text();
+  } catch {
+    return jsonResponse(400, { error: 'invalid_json' });
+  }
 
-    if (usesServerClientSecret) {
-      requestBody.client_secret = process.env.VITE_GITSTARS_CLIENT_SECRET;
-    }
+  const parsed = parseTokenRequest(rawBody);
 
-    log('info', 'request.parsed', {
-      requestId,
-      hasClientId: Boolean(requestBody.client_id),
-      hasCode: Boolean(requestBody.code),
-      clientSecretSource: usesServerClientSecret ? 'environment' : 'request',
+  if (!parsed.ok) {
+    return jsonResponse(parsed.status, parsed.body);
+  }
+
+  log('info', 'request.parsed', {
+    requestId,
+    hasClientId: Boolean(parsed.value.clientId),
+    hasCode: Boolean(parsed.value.code),
+    clientSecretSource: 'environment',
+  });
+
+  const phase = 'github_token_exchange';
+
+  try {
+    const upstream = await exchangeCodeForToken({
+      code: parsed.value.code,
+      clientId: parsed.value.clientId,
+      clientSecret,
+      userAgent: 'gitstars-vercel',
     });
+    const upstreamOk = upstream.status >= 200 && upstream.status < 300;
+    const data = parseJsonSafely(upstream.body);
 
-    phase = 'github_token_exchange';
-    const res = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-
-    const data = await res.json();
-
-    log(res.ok && !data.error ? 'info' : 'warn', 'github.response', {
+    log(upstreamOk && !data?.error ? 'info' : 'warn', 'github.response', {
       requestId,
-      status: res.status,
-      ok: res.ok,
-      oauthError: data.error || undefined,
-      hasAccessToken: Boolean(data.access_token),
+      status: upstream.status,
+      ok: upstreamOk,
+      oauthError: data?.error || undefined,
+      hasAccessToken: Boolean(data?.access_token),
       durationMs: Date.now() - startedAt,
     });
 
     log('info', 'request.completed', {
       requestId,
-      status: 200,
+      status: upstream.status,
       durationMs: Date.now() - startedAt,
     });
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: CORS_HEADERS,
-    });
-  } catch (e) {
+    // Pass the upstream status and body through unchanged.
+    return passthroughResponse(upstream);
+  } catch (error) {
     log('error', 'request.failed', {
       requestId,
       phase,
-      errorName: e?.name,
-      errorMessage: e?.message || String(e),
-      stack: e?.stack,
+      errorName: error?.name,
+      errorMessage: error?.message || String(error),
+      stack: error?.stack,
       durationMs: Date.now() - startedAt,
     });
 
-    return new Response(e.message);
+    return jsonResponse(502, { error: 'oauth_upstream_error' });
   }
 };

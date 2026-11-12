@@ -1,5 +1,18 @@
 import { httpRequestGithub } from './http-request';
 
+const RANKING_BASE_URL =
+  'https://raw.githubusercontent.com/cfour-hi/github-ranking/main';
+
+async function getRankingJson(fileName) {
+  const res = await fetch(`${RANKING_BASE_URL}/${fileName}`, {
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to load ${fileName}: ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function getUserInfo() {
   return httpRequestGithub.get('/user');
 }
@@ -19,17 +32,9 @@ export async function getReadmeByMarkdown(content) {
 }
 
 export async function getGithubRankingLanguageList() {
-  const res = await fetch(
-    'https://raw.githubusercontent.com/cfour-hi/github-ranking/main/languages.json',
-  );
-  const list = await res.json();
-  return list;
+  return getRankingJson('languages.json');
 }
 
 export async function getGithubRankingLanguageMap() {
-  const res = await fetch(
-    `https://raw.githubusercontent.com/cfour-hi/github-ranking/main/ranking.json`,
-  );
-  const map = await res.json();
-  return map;
+  return getRankingJson('ranking.json');
 }
